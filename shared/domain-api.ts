@@ -4,8 +4,14 @@ export interface Domain {
   subdomain: string;
   registrar: string;
   expirationDate: string;
+  expiry_date?: string; // WHOIS expiry date (YYYY-MM-DD format)
+  ssl_status?: 'valid' | 'expired' | 'unknown';
+  ssl_expiry?: string; // SSL certificate expiry date (YYYY-MM-DD format)
   status: 'Online' | 'Offline' | 'Unknown';
   lastCheck: string;
+  lastWhoisCheck?: string;
+  lastSslCheck?: string;
+  isActive: boolean; // Whether to monitor this domain
   createdAt: string;
   userId?: string;
 }
