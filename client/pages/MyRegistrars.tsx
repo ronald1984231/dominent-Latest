@@ -202,7 +202,8 @@ export default function MyRegistrars() {
                     id="apiKey"
                     value={newRegistrar.apiKey}
                     onChange={(e) => setNewRegistrar(prev => ({ ...prev, apiKey: e.target.value }))}
-                    placeholder="API Secret"
+                    placeholder="3mM44Ywf7i6urx_FjKo6pjXqBwiP5kCxFnNV"
+                    className="font-mono"
                   />
                 </div>
 
@@ -213,7 +214,8 @@ export default function MyRegistrars() {
                     type="password"
                     value={newRegistrar.apiSecret}
                     onChange={(e) => setNewRegistrar(prev => ({ ...prev, apiSecret: e.target.value }))}
-                    placeholder="API Secret"
+                    placeholder="•••••••••••••••••••••••"
+                    className="font-mono"
                   />
                 </div>
 
@@ -223,7 +225,7 @@ export default function MyRegistrars() {
                     id="label"
                     value={newRegistrar.label}
                     onChange={(e) => setNewRegistrar(prev => ({ ...prev, label: e.target.value }))}
-                    placeholder="Enter a unique identifier label for this registrar"
+                    placeholder="godaddy_Samay"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Enter a unique identifier label for this registrar
@@ -245,7 +247,7 @@ export default function MyRegistrars() {
                   <Button variant="outline" onClick={() => setShowAddModal(false)}>
                     CANCEL
                   </Button>
-                  <Button onClick={handleAddRegistrar}>
+                  <Button onClick={handleAddRegistrar} className="bg-slate-800 hover:bg-slate-700 text-white">
                     ADD REGISTRAR
                   </Button>
                 </div>
