@@ -19,6 +19,7 @@ import MyRegistrars from "./pages/MyRegistrars";
 import DomainsWatchlist from "./pages/DomainsWatchlist";
 import Projects from "./pages/Projects";
 import Notifications from "./pages/Notifications";
+import MonitoringDashboard from "./pages/MonitoringDashboard";
 import Documentation from "./pages/Documentation";
 
 const queryClient = new QueryClient();
