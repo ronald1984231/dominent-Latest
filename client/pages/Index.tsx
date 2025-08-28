@@ -91,7 +91,7 @@ export default function Index() {
               
               <div className="flex flex-col sm:flex-row gap-4 items-start">
                 <Button size="lg" className="bg-success hover:bg-success/90 text-success-foreground font-medium px-8 py-3">
-                  <Link to="/create-account" className="flex items-center">
+                  <Link to="/dashboard" className="flex items-center">
                     Start free trial
                     <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
