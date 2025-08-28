@@ -9,16 +9,25 @@ const users: Array<{
   password: string;
   name: string;
   createdAt: string;
-}> = [
-  // Demo user with hashed password for "demo123"
-  {
-    id: "demo-user-1",
-    email: "demo@domexus.com",
-    password: "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LCeHWw6O5YbOaFO6a", // bcrypt hash of "demo123"
-    name: "Demo User",
-    createdAt: new Date().toISOString()
+}> = [];
+
+// Initialize demo user
+const initializeDemoUser = async () => {
+  if (users.length === 0) {
+    const hashedPassword = await bcrypt.hash("demo123", 12);
+    users.push({
+      id: "demo-user-1",
+      email: "demo@domexus.com",
+      password: hashedPassword,
+      name: "Demo User",
+      createdAt: new Date().toISOString()
+    });
+    console.log("📝 Demo user initialized: demo@domexus.com / demo123");
   }
-];
+};
+
+// Initialize demo user when module loads
+initializeDemoUser();
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
