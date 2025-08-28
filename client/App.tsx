@@ -28,27 +28,29 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<InternalDashboard />} />
-          <Route path="/internal/domains" element={<InternalDomains />} />
-          <Route path="/internal/registrars" element={<MyRegistrars />} />
-          <Route path="/internal/watchlist" element={<DomainsWatchlist />} />
-          <Route path="/internal/projects" element={<Projects />} />
-          <Route path="/internal/notifications" element={<Notifications />} />
-          <Route path="/internal/monitoring" element={<MonitoringDashboard />} />
-          <Route path="/internal/documentation" element={<Documentation />} />
-          <Route path="/domains-search" element={<DomainsSearch />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/create-account" element={<CreateAccount />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/dashboard" element={<InternalDashboard />} />
+            <Route path="/internal/domains" element={<InternalDomains />} />
+            <Route path="/internal/registrars" element={<MyRegistrars />} />
+            <Route path="/internal/watchlist" element={<DomainsWatchlist />} />
+            <Route path="/internal/projects" element={<Projects />} />
+            <Route path="/internal/notifications" element={<Notifications />} />
+            <Route path="/internal/monitoring" element={<MonitoringDashboard />} />
+            <Route path="/internal/documentation" element={<Documentation />} />
+            <Route path="/domains-search" element={<DomainsSearch />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/create-account" element={<CreateAccount />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
