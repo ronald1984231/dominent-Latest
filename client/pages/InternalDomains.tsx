@@ -215,10 +215,12 @@ export default function InternalDomains() {
             ) : (
               <div className="space-y-0">
                 {/* Table Header */}
-                <div className="grid grid-cols-6 gap-6 p-6 border-b bg-muted/30 text-sm font-medium text-muted-foreground">
+                <div className="grid grid-cols-8 gap-4 p-6 border-b bg-muted/30 text-sm font-medium text-muted-foreground">
                   <span className="col-span-2">NAME</span>
                   <span>REGISTRAR</span>
-                  <span>EXPIRATION DATE</span>
+                  <span>DOMAIN EXPIRY</span>
+                  <span>SSL STATUS</span>
+                  <span>SSL EXPIRY</span>
                   <span className="col-span-2">STATUS</span>
                 </div>
 
