@@ -9,6 +9,37 @@ import {
   deleteDomain,
   getRegistrars
 } from "./routes/domains";
+import {
+  getRegistrars as getRegistrarsList,
+  addRegistrar,
+  updateRegistrar,
+  deleteRegistrar,
+  testRegistrarConnection
+} from "./routes/registrars";
+import {
+  getProjects,
+  createProject,
+  updateProject,
+  deleteProject,
+  getProjectDetails,
+  addDomainToProject,
+  removeDomainFromProject
+} from "./routes/projects";
+import {
+  getNotificationSettings,
+  updateNotificationSettings,
+  resetNotificationSettings,
+  testWebhook,
+  getNotificationLogs
+} from "./routes/notifications";
+import {
+  getDashboardData,
+  searchDomains,
+  getDomainSuggestions,
+  addToWatchlist,
+  getWatchlist,
+  removeFromWatchlist
+} from "./routes/dashboard";
 
 export function createServer() {
   const app = express();
