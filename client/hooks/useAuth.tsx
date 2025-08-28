@@ -76,10 +76,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(data.token);
         localStorage.setItem('authToken', data.token);
       } else {
-        setError(data.error || 'Login failed');
+        setError(data.error || `Login failed (${response.status})`);
       }
     } catch (error) {
-      setError('Network error. Please try again.');
+      console.error('Login error:', error);
+      setError('Network error. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
