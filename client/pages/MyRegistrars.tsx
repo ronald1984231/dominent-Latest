@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { InternalHeader } from "../components/InternalHeader";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
@@ -281,7 +282,9 @@ export default function MyRegistrars() {
                     <div className="flex items-center space-x-3">
                       <div className="w-6 h-6 bg-gray-300 rounded"></div>
                       <div>
-                        <div className="font-medium text-foreground text-sm">{registrar.name}</div>
+                        <Link to={`/registrars/${registrar.id}`} className="font-medium text-primary text-sm hover:underline">
+                          {registrar.name}
+                        </Link>
                         <div className="text-xs text-muted-foreground">support@{registrar.name.split('.')[0].toLowerCase()}.com</div>
                       </div>
                     </div>
