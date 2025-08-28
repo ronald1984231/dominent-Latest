@@ -31,7 +31,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<InternalDashboard />} />
+          <Route path="/internal/domains" element={<InternalDomains />} />
+          <Route path="/internal/registrars" element={<MyRegistrars />} />
+          <Route path="/internal/watchlist" element={<DomainsWatchlist />} />
+          <Route path="/internal/projects" element={<Projects />} />
+          <Route path="/internal/notifications" element={<Notifications />} />
+          <Route path="/internal/documentation" element={<Documentation />} />
           <Route path="/domains-search" element={<DomainsSearch />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/login" element={<Login />} />
