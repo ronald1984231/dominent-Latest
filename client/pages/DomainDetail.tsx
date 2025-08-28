@@ -6,7 +6,6 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { 
   Select,
   SelectContent,
@@ -14,17 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../components/ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -52,14 +40,8 @@ import {
   CheckCircle, 
   XCircle, 
   AlertTriangle,
-  Globe,
-  Mail,
-  Server,
-  Shield,
   Clock,
-  Plus,
-  Trash2,
-  ExternalLink
+  Plus
 } from "lucide-react";
 
 export default function DomainDetail() {
@@ -72,22 +54,15 @@ export default function DomainDetail() {
   const [monitoringLogs, setMonitoringLogs] = useState<MonitoringLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [editMode, setEditMode] = useState(false);
+  const [loadingDNS, setLoadingDNS] = useState(true);
   const { toast } = useToast();
 
-  // Form states
-  const [editForm, setEditForm] = useState({
-    registrar: "",
-    expiry_date: "",
-    autoRenew: false
-  });
-  
   // DNS record form
   const [dnsForm, setDnsForm] = useState({
     name: "",
     type: "A" as const,
     value: "",
-    ttl: 3600,
+    ttl: 1800,
     priority: 10
   });
   const [addingDNS, setAddingDNS] = useState(false);
@@ -122,16 +97,14 @@ export default function DomainDetail() {
       
       setDomain(data.domain);
       setSslCertificates(data.sslCertificates);
-      setDnsRecords(data.dnsRecords);
       setServices(data.services);
       setMonitoringLogs(data.monitoringLogs);
       
-      // Initialize edit form
-      setEditForm({
-        registrar: data.domain.registrar,
-        expiry_date: data.domain.expiry_date || "",
-        autoRenew: data.domain.autoRenew || false
-      });
+      // Simulate DNS loading
+      setTimeout(() => {
+        setDnsRecords(data.dnsRecords);
+        setLoadingDNS(false);
+      }, 2000);
       
     } catch (error) {
       console.error("Failed to load domain details:", error);
@@ -142,73 +115,6 @@ export default function DomainDetail() {
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleUpdateDomain = async () => {
-    if (!id || !domain) return;
-    
-    try {
-      setUpdating(true);
-      const updates: UpdateDomainRequest = {
-        registrar: editForm.registrar,
-        expiry_date: editForm.expiry_date || undefined,
-        autoRenew: editForm.autoRenew
-      };
-      
-      const response = await fetch(`/api/domains/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updates),
-      });
-      
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Domain updated successfully.",
-        });
-        setEditMode(false);
-        loadDomainDetails();
-      } else {
-        throw new Error("Failed to update domain");
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update domain. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setUpdating(false);
-    }
-  };
-
-  const handleTriggerMonitoring = async () => {
-    if (!id) return;
-    
-    try {
-      setUpdating(true);
-      const response = await fetch(`/api/domains/${id}/monitor`, {
-        method: "POST",
-      });
-      
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Domain monitoring completed.",
-        });
-        loadDomainDetails();
-      } else {
-        throw new Error("Failed to trigger monitoring");
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to trigger monitoring. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setUpdating(false);
     }
   };
 
@@ -244,8 +150,11 @@ export default function DomainDetail() {
           title: "Success",
           description: "DNS record created successfully.",
         });
-        setDnsForm({ name: "", type: "A", value: "", ttl: 3600, priority: 10 });
-        loadDomainDetails();
+        setDnsForm({ name: "", type: "A", value: "", ttl: 1800, priority: 10 });
+        setLoadingDNS(true);
+        setTimeout(() => {
+          loadDomainDetails();
+        }, 1000);
       } else {
         throw new Error("Failed to create DNS record");
       }
@@ -260,46 +169,52 @@ export default function DomainDetail() {
     }
   };
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "online":
-      case "valid":
-      case "success":
-        return <CheckCircle className="w-4 h-4 text-success" />;
-      case "offline":
-      case "expired":
-      case "error":
-        return <XCircle className="w-4 h-4 text-destructive" />;
-      default:
-        return <AlertTriangle className="w-4 h-4 text-muted-foreground" />;
+  const handleServiceCheck = async (serviceType: string) => {
+    if (!id) return;
+    
+    try {
+      setUpdating(true);
+      const response = await fetch(`/api/domains/${id}/monitor`, {
+        method: "POST",
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: `${serviceType} check completed.`,
+        });
+        loadDomainDetails();
+      } else {
+        throw new Error("Failed to check service");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `Failed to check ${serviceType}. Please try again.`,
+        variant: "destructive",
+      });
+    } finally {
+      setUpdating(false);
     }
   };
 
-  const getExpiryStatus = (dateStr: string | undefined) => {
-    if (!dateStr) return "unknown";
+  const formatDate = (dateStr: string | undefined) => {
+    if (!dateStr) return 'Unknown';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString();
+  };
+
+  const getExpiryVariant = (dateStr: string | undefined) => {
+    if (!dateStr) return 'secondary';
     const date = new Date(dateStr);
     const now = new Date();
-    const diffDays = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays < 0) return "expired";
-    if (diffDays <= 7) return "critical";
-    if (diffDays <= 30) return "warning";
-    return "valid";
-  };
+    const diffTime = date.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  const getExpiryColor = (status: string) => {
-    switch (status) {
-      case "expired": return "text-destructive";
-      case "critical": return "text-destructive";
-      case "warning": return "text-orange-500";
-      case "valid": return "text-success";
-      default: return "text-muted-foreground";
-    }
+    if (diffDays < 0) return 'destructive';
+    if (diffDays <= 7) return 'destructive';
+    if (diffDays <= 30) return 'destructive';
+    return 'default';
   };
 
   if (loading) {
@@ -338,442 +253,321 @@ export default function DomainDetail() {
       <InternalHeader />
       
       <div className="container mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/internal/domains">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Domains
-              </Link>
+        {/* Back Navigation */}
+        <div className="flex items-center space-x-2 mb-6">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/internal/domains">
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </Link>
+          </Button>
+        </div>
+
+        {/* Domain Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-4xl font-bold text-success">{domain.domain}</h1>
+            <Button variant="outline" size="sm">
+              <Edit className="w-4 h-4 mr-2" />
+              EDIT
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">{domain.domain}</h1>
-              <p className="text-muted-foreground">Domain monitoring and management</p>
-            </div>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              onClick={handleTriggerMonitoring}
-              disabled={updating}
-            >
-              {updating ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <RefreshCw className="w-4 h-4 mr-2" />
-              )}
-              Check Now
-            </Button>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div>
+              <div className="text-sm text-muted-foreground">IN</div>
+              <div className="font-medium">{domain.registrar}</div>
+              <div className="flex items-center mt-1">
+                <div className="w-2 h-2 bg-success rounded-full mr-2"></div>
+                <span className="text-sm text-success">Connected</span>
+              </div>
+            </div>
             
-            <Button
-              variant={editMode ? "default" : "outline"}
-              onClick={() => setEditMode(!editMode)}
-            >
-              <Edit className="w-4 h-4 mr-2" />
-              {editMode ? "Cancel" : "Edit"}
-            </Button>
+            <div>
+              <div className="text-sm text-muted-foreground">EXPIRATION DATE</div>
+              <Badge 
+                variant={getExpiryVariant(domain.expiry_date) as any}
+                className="mt-1"
+              >
+                {domain.expiry_date ? formatDate(domain.expiry_date) : 'Unknown'}
+              </Badge>
+            </div>
+            
+            <div>
+              <div className="text-sm text-muted-foreground">AUTO RENEWAL</div>
+              <div className="flex items-center mt-1">
+                {domain.autoRenew ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 text-success mr-1" />
+                    <span className="text-success">YES</span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-4 h-4 text-muted-foreground mr-1" />
+                    <span className="text-muted-foreground">NO</span>
+                  </>
+                )}
+              </div>
+            </div>
+            
+            <div>
+              <div className="text-sm text-muted-foreground">STATUS</div>
+              <div className="flex items-center mt-1">
+                <div className={`w-2 h-2 rounded-full mr-2 ${
+                  domain.status === 'Online' ? 'bg-success' : 'bg-destructive'
+                }`}></div>
+                <span className={domain.status === 'Online' ? 'text-success' : 'text-destructive'}>
+                  {domain.status}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Domain Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Status</CardTitle>
-              {getStatusIcon(domain.status)}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{domain.status}</div>
-              <p className="text-xs text-muted-foreground">{domain.lastCheck}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Domain Expiry</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${getExpiryColor(getExpiryStatus(domain.expiry_date))}`}>
-                {domain.expiry_date ? new Date(domain.expiry_date).toLocaleDateString() : "Unknown"}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {domain.lastWhoisCheck ? `Checked ${new Date(domain.lastWhoisCheck).toLocaleDateString()}` : "Never checked"}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">SSL Status</CardTitle>
-              <Shield className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${getExpiryColor(domain.ssl_status === 'valid' ? 'valid' : 'expired')}`}>
-                {domain.ssl_status?.toUpperCase() || "UNKNOWN"}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {domain.lastSslCheck ? `Checked ${new Date(domain.lastSslCheck).toLocaleDateString()}` : "Never checked"}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Registrar</CardTitle>
-              <Globe className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg font-bold">{domain.registrar}</div>
-              <p className="text-xs text-muted-foreground">
-                Auto-renew: {domain.autoRenew ? "Enabled" : "Disabled"}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Domain Information Edit Form */}
-        {editMode && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Edit Domain Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="registrar">Registrar</Label>
-                  <Input
-                    id="registrar"
-                    value={editForm.registrar}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, registrar: e.target.value }))}
-                  />
+        {/* Services Section */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Services</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Nameservers</div>
+                  <div className="text-sm text-muted-foreground">
+                    {services?.nameservers?.detected ? 'Nameservers detected' : 'No nameservers detected'}
+                  </div>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="expiry_date">Expiry Date</Label>
-                  <Input
-                    id="expiry_date"
-                    type="date"
-                    value={editForm.expiry_date}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, expiry_date: e.target.value }))}
-                  />
-                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleServiceCheck('Nameservers')}
+                  disabled={updating}
+                >
+                  {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Check'}
+                </Button>
               </div>
-              
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="autoRenew"
-                  checked={editForm.autoRenew}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, autoRenew: e.target.checked }))}
-                  className="rounded border-gray-300"
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Email handled by</div>
+                  <div className="text-sm text-muted-foreground">
+                    {services?.email?.detected ? `${services.email.provider} Records detected` : 'No MX Records detected'}
+                  </div>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleServiceCheck('Email')}
+                  disabled={updating}
+                >
+                  {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Check'}
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">Hosting</div>
+                  <div className="text-sm text-muted-foreground">
+                    {services?.hosting?.detected ? `${services.hosting.provider}` : 'Not detected'}
+                  </div>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleServiceCheck('Hosting')}
+                  disabled={updating}
+                >
+                  {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Check'}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* SSL Certificates Section */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>SSL Certificates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {sslCertificates.length === 0 ? (
+              <p className="text-muted-foreground">No SSL certificates found.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>SERIAL NUMBER</TableHead>
+                    <TableHead>ISSUER</TableHead>
+                    <TableHead>VALID FROM</TableHead>
+                    <TableHead>EXPIRATION DATE</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sslCertificates.map((cert) => (
+                    <TableRow key={cert.id}>
+                      <TableCell className="font-mono text-sm">{cert.serialNumber}</TableCell>
+                      <TableCell>{cert.issuer}</TableCell>
+                      <TableCell>{formatDate(cert.validFrom)}</TableCell>
+                      <TableCell>
+                        <Badge variant={getExpiryVariant(cert.expiresAt) as any}>
+                          {formatDate(cert.expiresAt)}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Create New Record Section */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Create new record</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+              <div className="space-y-2">
+                <Label htmlFor="hostname">Hostname</Label>
+                <Input
+                  id="hostname"
+                  placeholder="Enter @ or hostname"
+                  value={dnsForm.name}
+                  onChange={(e) => setDnsForm(prev => ({ ...prev, name: e.target.value }))}
                 />
-                <Label htmlFor="autoRenew">Enable auto-renewal</Label>
               </div>
               
-              <div className="flex space-x-2">
-                <Button onClick={handleUpdateDomain} disabled={updating}>
-                  {updating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Updating...
-                    </>
-                  ) : (
-                    "Save Changes"
-                  )}
-                </Button>
-                <Button variant="outline" onClick={() => setEditMode(false)}>
-                  Cancel
-                </Button>
+              <div className="space-y-2">
+                <Label htmlFor="type">Type</Label>
+                <Select value={dnsForm.type} onValueChange={(value: any) => setDnsForm(prev => ({ ...prev, type: value }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="A">A</SelectItem>
+                    <SelectItem value="AAAA">AAAA</SelectItem>
+                    <SelectItem value="CNAME">CNAME</SelectItem>
+                    <SelectItem value="MX">MX</SelectItem>
+                    <SelectItem value="TXT">TXT</SelectItem>
+                    <SelectItem value="SRV">SRV</SelectItem>
+                    <SelectItem value="URL">URL</SelectItem>
+                    <SelectItem value="ALIAS">ALIAS</SelectItem>
+                    <SelectItem value="CAA">CAA</SelectItem>
+                    <SelectItem value="SFP">SFP</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </CardContent>
-          </Card>
-        )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="value">Value</Label>
+                <Input
+                  id="value"
+                  placeholder="Enter value or content IP"
+                  value={dnsForm.value}
+                  onChange={(e) => setDnsForm(prev => ({ ...prev, value: e.target.value }))}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="ttl">TTL</Label>
+                <Input
+                  id="ttl"
+                  type="number"
+                  value={dnsForm.ttl}
+                  onChange={(e) => setDnsForm(prev => ({ ...prev, ttl: parseInt(e.target.value) || 1800 }))}
+                />
+              </div>
 
-        {/* Tabs for detailed information */}
-        <Tabs defaultValue="services" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="services">Services</TabsTrigger>
-            <TabsTrigger value="ssl">SSL Certificates</TabsTrigger>
-            <TabsTrigger value="dns">DNS Records</TabsTrigger>
-            <TabsTrigger value="logs">Monitoring Logs</TabsTrigger>
-          </TabsList>
-
-          {/* Services Tab */}
-          <TabsContent value="services" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Server className="w-5 h-5 mr-2" />
-                  Services Detection
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Hosting */}
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Server className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Hosting</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {services?.hosting?.detected ? `${services.hosting.provider} (${services.hosting.ipAddress})` : "Not detected"}
-                      </p>
-                    </div>
-                  </div>
-                  {getStatusIcon(services?.hosting?.detected ? "success" : "unknown")}
+              {dnsForm.type === "MX" && (
+                <div className="space-y-2">
+                  <Label htmlFor="priority">Priority</Label>
+                  <Input
+                    id="priority"
+                    type="number"
+                    value={dnsForm.priority}
+                    onChange={(e) => setDnsForm(prev => ({ ...prev, priority: parseInt(e.target.value) || 10 }))}
+                  />
                 </div>
-
-                {/* Email */}
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <Mail className="w-4 h-4 text-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Email Service</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {services?.email?.detected ? `${services.email.provider} (${services.email.mxRecords?.join(", ")})` : "Not detected"}
-                      </p>
-                    </div>
-                  </div>
-                  {getStatusIcon(services?.email?.detected ? "success" : "unknown")}
-                </div>
-
-                {/* Nameservers */}
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                      <Globe className="w-4 h-4 text-purple-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Nameservers</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {services?.nameservers?.detected ? services.nameservers.servers.join(", ") : "Not detected"}
-                      </p>
-                    </div>
-                  </div>
-                  {getStatusIcon(services?.nameservers?.detected ? "success" : "unknown")}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* SSL Certificates Tab */}
-          <TabsContent value="ssl" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Shield className="w-5 h-5 mr-2" />
-                  SSL Certificates
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {sslCertificates.length === 0 ? (
-                  <p className="text-muted-foreground">No SSL certificates found.</p>
+              )}
+              
+              <Button 
+                onClick={handleCreateDNSRecord} 
+                disabled={addingDNS}
+                className="bg-slate-800 hover:bg-slate-700 text-white"
+              >
+                {addingDNS ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Serial Number</TableHead>
-                        <TableHead>Issuer</TableHead>
-                        <TableHead>Valid From</TableHead>
-                        <TableHead>Expires At</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {sslCertificates.map((cert) => (
-                        <TableRow key={cert.id}>
-                          <TableCell className="font-mono text-sm">{cert.serialNumber}</TableCell>
-                          <TableCell>{cert.issuer}</TableCell>
-                          <TableCell>{new Date(cert.validFrom).toLocaleDateString()}</TableCell>
-                          <TableCell className={getExpiryColor(getExpiryStatus(cert.expiresAt))}>
-                            {new Date(cert.expiresAt).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={cert.isValid ? "default" : "destructive"}>
-                              {cert.isValid ? "Valid" : "Invalid"}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                  "CREATE RECORD"
                 )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </Button>
+            </div>
+            
+            <div className="mt-4 p-4 bg-muted rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                You can create a record at the root of the domain or enter a hostname or subdomain.
+                A record can only work for IPv4 addresses only and is a request where your domain should direct to.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* DNS Records Tab */}
-          <TabsContent value="dns" className="space-y-6">
-            {/* Add DNS Record Form */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Create New DNS Record</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="dns-name">Hostname</Label>
-                    <Input
-                      id="dns-name"
-                      placeholder="@, www, mail, etc."
-                      value={dnsForm.name}
-                      onChange={(e) => setDnsForm(prev => ({ ...prev, name: e.target.value }))}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="dns-type">Type</Label>
-                    <Select value={dnsForm.type} onValueChange={(value: any) => setDnsForm(prev => ({ ...prev, type: value }))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="A">A</SelectItem>
-                        <SelectItem value="AAAA">AAAA</SelectItem>
-                        <SelectItem value="CNAME">CNAME</SelectItem>
-                        <SelectItem value="MX">MX</SelectItem>
-                        <SelectItem value="TXT">TXT</SelectItem>
-                        <SelectItem value="NS">NS</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="dns-value">Value</Label>
-                    <Input
-                      id="dns-value"
-                      placeholder="IP address or target"
-                      value={dnsForm.value}
-                      onChange={(e) => setDnsForm(prev => ({ ...prev, value: e.target.value }))}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="dns-ttl">TTL</Label>
-                    <Input
-                      id="dns-ttl"
-                      type="number"
-                      value={dnsForm.ttl}
-                      onChange={(e) => setDnsForm(prev => ({ ...prev, ttl: parseInt(e.target.value) || 3600 }))}
-                    />
-                  </div>
-                  
-                  <div className="flex items-end">
-                    <Button onClick={handleCreateDNSRecord} disabled={addingDNS} className="w-full">
-                      {addingDNS ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Plus className="w-4 h-4" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-                
-                {dnsForm.type === "MX" && (
-                  <div className="mt-4">
-                    <Label htmlFor="dns-priority">Priority</Label>
-                    <Input
-                      id="dns-priority"
-                      type="number"
-                      value={dnsForm.priority}
-                      onChange={(e) => setDnsForm(prev => ({ ...prev, priority: parseInt(e.target.value) || 10 }))}
-                      className="w-32"
-                    />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* DNS Records Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle>DNS Records</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {dnsRecords.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p>Getting DNS records...</p>
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Value</TableHead>
-                        <TableHead>TTL</TableHead>
-                        <TableHead>Priority</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {dnsRecords.map((record) => (
-                        <TableRow key={record.id}>
-                          <TableCell className="font-mono">{record.name}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{record.type}</Badge>
-                          </TableCell>
-                          <TableCell className="font-mono text-sm">{record.value}</TableCell>
-                          <TableCell>{record.ttl}</TableCell>
-                          <TableCell>{record.priority || "-"}</TableCell>
-                          <TableCell>
-                            <Button variant="ghost" size="sm" className="text-destructive">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Monitoring Logs Tab */}
-          <TabsContent value="logs" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Monitoring History</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {monitoringLogs.length === 0 ? (
-                  <p className="text-muted-foreground">No monitoring logs available.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {monitoringLogs.map((log) => (
-                      <div key={log.id} className="flex items-start space-x-3 p-4 border rounded-lg">
-                        {getStatusIcon(log.status)}
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <Badge variant="outline">{log.type.toUpperCase()}</Badge>
-                              <span className="text-sm font-medium">{log.message}</span>
-                            </div>
-                            <span className="text-xs text-muted-foreground">
-                              {formatDate(log.timestamp)}
-                            </span>
-                          </div>
-                          {log.details && (
-                            <pre className="text-xs text-muted-foreground mt-2 bg-muted p-2 rounded">
-                              {JSON.stringify(log.details, null, 2)}
-                            </pre>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {/* DNS Records Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              DNS Records
+              <Button variant="outline" size="sm">
+                UPDATE DNS
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loadingDNS ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                <span>Getting DNS records...</span>
+              </div>
+            ) : dnsRecords.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>No DNS records found.</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>NAME</TableHead>
+                    <TableHead>TYPE</TableHead>
+                    <TableHead>VALUE</TableHead>
+                    <TableHead>TTL</TableHead>
+                    <TableHead>PRIORITY</TableHead>
+                    <TableHead>ACTIONS</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {dnsRecords.map((record) => (
+                    <TableRow key={record.id}>
+                      <TableCell className="font-mono">{record.name}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{record.type}</Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">{record.value}</TableCell>
+                      <TableCell>{record.ttl}</TableCell>
+                      <TableCell>{record.priority || "-"}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm" className="text-destructive">
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
