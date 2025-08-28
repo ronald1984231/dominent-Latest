@@ -16,8 +16,14 @@ let domains: Domain[] = [
     subdomain: "youtube.com",
     registrar: "MarkMonitor Inc.",
     expirationDate: "15 February 2025 (108 days)",
+    expiry_date: "2025-02-15",
+    ssl_status: "valid",
+    ssl_expiry: "2024-12-31",
     status: "Online",
     lastCheck: "4 days ago",
+    lastWhoisCheck: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    lastSslCheck: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    isActive: true,
     createdAt: new Date().toISOString()
   },
   {
@@ -26,8 +32,14 @@ let domains: Domain[] = [
     subdomain: "facebook.com",
     registrar: "RegistrarSafe, LLC",
     expirationDate: "30 March 2024 (38 days)",
+    expiry_date: "2024-03-30",
+    ssl_status: "valid",
+    ssl_expiry: "2024-06-15",
     status: "Online",
     lastCheck: "3 days ago",
+    lastWhoisCheck: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    lastSslCheck: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    isActive: true,
     createdAt: new Date().toISOString()
   },
   {
@@ -36,8 +48,14 @@ let domains: Domain[] = [
     subdomain: "instagram.com",
     registrar: "RegistrarSafe, LLC",
     expirationDate: "4 June 2024 (204 days)",
+    expiry_date: "2024-06-04",
+    ssl_status: "valid",
+    ssl_expiry: "2024-08-20",
     status: "Online",
     lastCheck: "4 days ago",
+    lastWhoisCheck: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    lastSslCheck: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    isActive: true,
     createdAt: new Date().toISOString()
   },
   {
@@ -46,8 +64,14 @@ let domains: Domain[] = [
     subdomain: "amazon.com",
     registrar: "MarkMonitor Inc.",
     expirationDate: "31 October 2025 (10 days)",
+    expiry_date: "2025-10-31",
+    ssl_status: "valid",
+    ssl_expiry: "2024-12-25",
     status: "Online",
     lastCheck: "4 days ago",
+    lastWhoisCheck: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    lastSslCheck: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    isActive: true,
     createdAt: new Date().toISOString()
   },
   {
@@ -56,8 +80,14 @@ let domains: Domain[] = [
     subdomain: "reddit.com",
     registrar: "MarkMonitor Inc.",
     expirationDate: "28 April 2024 (67 days)",
+    expiry_date: "2024-04-28",
+    ssl_status: "valid",
+    ssl_expiry: "2024-07-10",
     status: "Online",
     lastCheck: "1 day ago",
+    lastWhoisCheck: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    lastSslCheck: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    isActive: true,
     createdAt: new Date().toISOString()
   }
 ];
