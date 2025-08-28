@@ -7,7 +7,11 @@ import {
   addDomain,
   checkDomain,
   deleteDomain,
-  getRegistrars
+  getRegistrars,
+  getDomainDetails,
+  updateDomain,
+  createDNSRecord,
+  triggerDomainMonitoring
 } from "./routes/domains";
 import {
   getRegistrars as getRegistrarsList,
@@ -78,7 +82,11 @@ export function createServer() {
   app.get("/api/domains", getDomains);
   app.post("/api/domains", addDomain);
   app.get("/api/domains/check/:domain", checkDomain);
+  app.get("/api/domains/:id", getDomainDetails);
+  app.put("/api/domains/:id", updateDomain);
   app.delete("/api/domains/:id", deleteDomain);
+  app.post("/api/domains/:id/monitor", triggerDomainMonitoring);
+  app.post("/api/domains/:id/dns", createDNSRecord);
   app.get("/api/registrars", getRegistrars);
 
   // Registrars management API routes
