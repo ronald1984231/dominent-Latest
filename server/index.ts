@@ -40,6 +40,18 @@ import {
   getWatchlist,
   removeFromWatchlist
 } from "./routes/dashboard";
+import {
+  getMonitoringLogs,
+  createMonitoringLog,
+  getMonitoringStats,
+  triggerDomainMonitoring,
+  triggerFullMonitoring,
+  getMonitoringStatus,
+  clearOldLogs,
+  testDomainConnectivity,
+  getMonitoringConfig
+} from "./routes/monitoring";
+import { cronService } from "./services/cron-service";
 
 export function createServer() {
   const app = express();
