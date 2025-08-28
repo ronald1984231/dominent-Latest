@@ -26,5 +26,12 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Domain monitoring API routes
+  app.get("/api/domains", getDomains);
+  app.post("/api/domains", addDomain);
+  app.get("/api/domains/check/:domain", checkDomain);
+  app.delete("/api/domains/:id", deleteDomain);
+  app.get("/api/registrars", getRegistrars);
+
   return app;
 }
