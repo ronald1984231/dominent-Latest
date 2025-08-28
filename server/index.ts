@@ -51,6 +51,11 @@ import {
   testDomainConnectivity,
   getMonitoringConfig
 } from "./routes/monitoring";
+import {
+  login,
+  signup,
+  verifyToken
+} from "./routes/auth";
 import { cronService } from "./services/cron-service";
 
 export function createServer() {
@@ -117,6 +122,11 @@ export function createServer() {
   app.delete("/api/monitoring/logs/cleanup", clearOldLogs);
   app.get("/api/monitoring/test/:domain", testDomainConnectivity);
   app.get("/api/monitoring/config", getMonitoringConfig);
+
+  // Authentication API routes
+  app.post("/api/auth/login", login);
+  app.post("/api/auth/signup", signup);
+  app.get("/api/auth/verify", verifyToken);
 
   // Start cron service for automated monitoring
   cronService.start();
