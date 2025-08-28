@@ -118,5 +118,9 @@ export function createServer() {
   app.get("/api/monitoring/test/:domain", testDomainConnectivity);
   app.get("/api/monitoring/config", getMonitoringConfig);
 
+  // Start cron service for automated monitoring
+  cronService.start();
+  console.log('🚀 Server created with monitoring enabled');
+
   return app;
 }
