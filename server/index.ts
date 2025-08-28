@@ -2,6 +2,13 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import {
+  getDomains,
+  addDomain,
+  checkDomain,
+  deleteDomain,
+  getRegistrars
+} from "./routes/domains";
 
 export function createServer() {
   const app = express();
