@@ -64,5 +64,36 @@ export function createServer() {
   app.delete("/api/domains/:id", deleteDomain);
   app.get("/api/registrars", getRegistrars);
 
+  // Registrars management API routes
+  app.get("/api/internal/registrars", getRegistrarsList);
+  app.post("/api/internal/registrars", addRegistrar);
+  app.put("/api/internal/registrars/:id", updateRegistrar);
+  app.delete("/api/internal/registrars/:id", deleteRegistrar);
+  app.post("/api/internal/registrars/:id/test", testRegistrarConnection);
+
+  // Projects management API routes
+  app.get("/api/internal/projects", getProjects);
+  app.post("/api/internal/projects", createProject);
+  app.put("/api/internal/projects/:id", updateProject);
+  app.delete("/api/internal/projects/:id", deleteProject);
+  app.get("/api/internal/projects/:id", getProjectDetails);
+  app.post("/api/internal/projects/:id/domains", addDomainToProject);
+  app.delete("/api/internal/projects/:id/domains/:domainId", removeDomainFromProject);
+
+  // Notifications API routes
+  app.get("/api/internal/notifications", getNotificationSettings);
+  app.put("/api/internal/notifications", updateNotificationSettings);
+  app.post("/api/internal/notifications/reset", resetNotificationSettings);
+  app.post("/api/internal/notifications/test-webhook", testWebhook);
+  app.get("/api/internal/notifications/logs", getNotificationLogs);
+
+  // Dashboard and search API routes
+  app.get("/api/internal/dashboard", getDashboardData);
+  app.post("/api/internal/search/domains", searchDomains);
+  app.get("/api/internal/search/suggestions", getDomainSuggestions);
+  app.post("/api/internal/watchlist", addToWatchlist);
+  app.get("/api/internal/watchlist", getWatchlist);
+  app.delete("/api/internal/watchlist/:id", removeFromWatchlist);
+
   return app;
 }
