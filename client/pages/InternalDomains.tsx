@@ -230,43 +230,110 @@ export default function InternalDomains() {
                     <p className="text-muted-foreground">No domains found. Try adjusting your search criteria.</p>
                   </div>
                 ) : (
-                  domains.map((domain, index) => (
-                    <div key={domain.id} className={`grid grid-cols-6 gap-6 p-6 hover:bg-muted/30 transition-colors ${index !== domains.length - 1 ? 'border-b' : ''}`}>
-                      <div className="col-span-2">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-5 h-5 bg-gray-300 rounded"></div>
-                          <div>
-                            <div className="font-medium text-foreground">{domain.domain}</div>
-                            <div className="text-sm text-muted-foreground">{domain.subdomain}</div>
+                  domains.map((domain, index) => {
+                    const formatDate = (dateStr: string | undefined) => {
+                      if (!dateStr) return 'Unknown';
+                      const date = new Date(dateStr);
+                      const now = new Date();
+                      const diffTime = date.getTime() - now.getTime();
+                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                      if (diffDays < 0) {
+                        return `Expired ${Math.abs(diffDays)} days ago`;
+                      } else if (diffDays === 0) {
+                        return 'Expires today';
+                      } else if (diffDays <= 30) {
+                        return `${diffDays} days`;
+                      } else {
+                        return date.toLocaleDateString();
+                      }
+                    };
+
+                    const getSSLStatusColor = (status: string | undefined) => {
+                      switch (status) {
+                        case 'valid': return 'text-success';
+                        case 'expired': return 'text-destructive';
+                        default: return 'text-muted-foreground';
+                      }
+                    };
+
+                    const getExpiryVariant = (dateStr: string | undefined) => {
+                      if (!dateStr) return 'secondary';
+                      const date = new Date(dateStr);
+                      const now = new Date();
+                      const diffTime = date.getTime() - now.getTime();
+                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                      if (diffDays < 0) return 'destructive';
+                      if (diffDays <= 7) return 'destructive';
+                      if (diffDays <= 30) return 'destructive';
+                      return 'secondary';
+                    };
+
+                    return (
+                      <div key={domain.id} className={`grid grid-cols-8 gap-4 p-6 hover:bg-muted/30 transition-colors ${index !== domains.length - 1 ? 'border-b' : ''}`}>
+                        <div className="col-span-2">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-5 h-5 bg-gray-300 rounded"></div>
+                            <div>
+                              <div className="font-medium text-foreground">{domain.domain}</div>
+                              <div className="text-sm text-muted-foreground">{domain.subdomain}</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col">
+                          <span className="text-foreground text-sm">{domain.registrar}</span>
+                          <span className="text-xs text-success">Connected</span>
+                        </div>
+
+                        <div>
+                          <Badge variant={getExpiryVariant(domain.expiry_date) as any} className="text-xs font-medium">
+                            {formatDate(domain.expiry_date)}
+                          </Badge>
+                          {domain.lastWhoisCheck && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              WHOIS: {new Date(domain.lastWhoisCheck).toLocaleDateString()}
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <div className={`text-sm font-medium ${getSSLStatusColor(domain.ssl_status)}`}>
+                            {domain.ssl_status?.toUpperCase() || 'UNKNOWN'}
+                          </div>
+                          {domain.lastSslCheck && (
+                            <div className="text-xs text-muted-foreground">
+                              SSL: {new Date(domain.lastSslCheck).toLocaleDateString()}
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          {domain.ssl_expiry ? (
+                            <Badge variant={getExpiryVariant(domain.ssl_expiry) as any} className="text-xs font-medium">
+                              {formatDate(domain.ssl_expiry)}
+                            </Badge>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">Unknown</span>
+                          )}
+                        </div>
+
+                        <div className="col-span-2 flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div>
+                              <div className="text-success text-sm font-medium">Online</div>
+                              <div className="text-xs text-muted-foreground">{domain.lastCheck}</div>
+                            </div>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Automated updated
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="flex flex-col">
-                        <span className="text-foreground">{domain.registrar}</span>
-                        <span className="text-xs text-success">Connected</span>
-                      </div>
-                      
-                      <div>
-                        <Badge variant="destructive" className="text-xs font-medium">
-                          {domain.expirationDate}
-                        </Badge>
-                      </div>
-                      
-                      <div className="col-span-2 flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          <div>
-                            <div className="text-success text-sm font-medium">Online</div>
-                            <div className="text-xs text-muted-foreground">{domain.lastCheck}</div>
-                          </div>
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Automated updated
-                        </div>
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             )}
