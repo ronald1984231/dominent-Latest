@@ -12,6 +12,7 @@ import DomainsSearch from "./pages/DomainsSearch";
 import Pricing from "./pages/Pricing";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
