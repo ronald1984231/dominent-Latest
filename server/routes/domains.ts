@@ -160,18 +160,40 @@ export const addDomain: RequestHandler = (req, res) => {
     id: Date.now().toString(),
     domain: domain.toLowerCase(),
     subdomain: domain.toLowerCase(),
-    registrar: "Unknown", // In real implementation, would fetch this
+    registrar: "Unknown", // Will be updated by monitoring
     expirationDate: "Unknown",
+    expiry_date: undefined,
+    ssl_status: "unknown",
+    ssl_expiry: undefined,
     status: "Unknown",
     lastCheck: "Never",
+    lastWhoisCheck: undefined,
+    lastSslCheck: undefined,
+    isActive: true,
     createdAt: new Date().toISOString()
   };
 
   domains.push(newDomain);
 
-  // Simulate domain check (in real implementation, would use WHOIS API)
-  setTimeout(() => {
-    checkDomainStatus(newDomain.id);
+  // Trigger immediate domain monitoring check
+  setTimeout(async () => {
+    try {
+      const { monitoringService } = await import("../services/monitoring-service");
+      const updateData = await monitoringService.monitorDomain(newDomain);
+
+      // Update the domain with monitoring results
+      const domainIndex = domains.findIndex(d => d.id === newDomain.id);
+      if (domainIndex !== -1) {
+        domains[domainIndex] = {
+          ...domains[domainIndex],
+          ...updateData,
+          status: updateData.status || "Online",
+          lastCheck: "Just now"
+        };
+      }
+    } catch (error) {
+      console.error(`Initial monitoring failed for ${domain}:`, error);
+    }
   }, 1000);
 
   const response: AddDomainResponse = {
