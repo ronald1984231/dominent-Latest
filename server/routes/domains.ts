@@ -1,11 +1,19 @@
 import { RequestHandler } from "express";
-import { 
-  Domain, 
-  DomainCheckResponse, 
-  AddDomainRequest, 
-  AddDomainResponse, 
+import {
+  Domain,
+  DomainCheckResponse,
+  AddDomainRequest,
+  AddDomainResponse,
   GetDomainsResponse,
-  DomainSearchQuery
+  DomainSearchQuery,
+  DomainDetailResponse,
+  CreateDNSRecordRequest,
+  UpdateDomainRequest,
+  DNSRecord,
+  SSLCertificate,
+  DomainServices,
+  MonitoringLog,
+  DomainMonitoringResponse
 } from "@shared/domain-api";
 
 // In-memory storage for demonstration (in production, use a real database)
@@ -237,6 +245,205 @@ export const deleteDomain: RequestHandler = (req, res) => {
 
   domains.splice(domainIndex, 1);
   res.json({ success: true });
+};
+
+// Get domain details with SSL, DNS, and monitoring info
+export const getDomainDetails: RequestHandler = (req, res) => {
+  const { id } = req.params;
+
+  const domain = domains.find(d => d.id === id);
+  if (!domain) {
+    return res.status(404).json({ error: "Domain not found" });
+  }
+
+  // Mock SSL certificates
+  const sslCertificates: SSLCertificate[] = [
+    {
+      id: "ssl-1",
+      serialNumber: "12:34:56:78:90:AB:CD:EF",
+      issuer: "Let's Encrypt Authority X3",
+      validFrom: "2024-01-01T00:00:00Z",
+      expiresAt: domain.ssl_expiry || "2024-12-31T23:59:59Z",
+      commonName: domain.domain,
+      alternativeNames: [`www.${domain.domain}`],
+      isValid: domain.ssl_status === 'valid'
+    }
+  ];
+
+  // Mock DNS records
+  const dnsRecords: DNSRecord[] = [
+    {
+      id: "dns-1",
+      name: "@",
+      type: "A",
+      value: "192.168.1.100",
+      ttl: 3600,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: "dns-2",
+      name: "www",
+      type: "CNAME",
+      value: domain.domain,
+      ttl: 3600,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: "dns-3",
+      name: "@",
+      type: "MX",
+      value: "mail.example.com",
+      ttl: 3600,
+      priority: 10,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+  ];
+
+  // Mock services detection
+  const services: DomainServices = {
+    hosting: {
+      detected: true,
+      provider: "Unknown Provider",
+      ipAddress: "192.168.1.100"
+    },
+    email: {
+      detected: true,
+      provider: "Gmail",
+      mxRecords: ["mail.example.com"]
+    },
+    nameservers: {
+      detected: true,
+      servers: ["ns1.example.com", "ns2.example.com"]
+    }
+  };
+
+  // Mock monitoring logs
+  const monitoringLogs: MonitoringLog[] = [
+    {
+      id: "log-1",
+      domainId: domain.id,
+      type: "whois",
+      status: "success",
+      message: "WHOIS data updated successfully",
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "log-2",
+      domainId: domain.id,
+      type: "ssl",
+      status: "success",
+      message: "SSL certificate is valid",
+      timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
+    }
+  ];
+
+  const response: DomainDetailResponse = {
+    domain: {
+      ...domain,
+      ssl_certificates: sslCertificates,
+      services,
+      dnsRecords
+    },
+    sslCertificates,
+    dnsRecords,
+    services,
+    monitoringLogs
+  };
+
+  res.json(response);
+};
+
+// Update domain information
+export const updateDomain: RequestHandler = (req, res) => {
+  const { id } = req.params;
+  const updates: UpdateDomainRequest = req.body;
+
+  const domainIndex = domains.findIndex(d => d.id === id);
+  if (domainIndex === -1) {
+    return res.status(404).json({ error: "Domain not found" });
+  }
+
+  domains[domainIndex] = {
+    ...domains[domainIndex],
+    ...updates
+  };
+
+  res.json({ success: true, domain: domains[domainIndex] });
+};
+
+// Create DNS record
+export const createDNSRecord: RequestHandler = (req, res) => {
+  const { domainId, name, type, value, ttl = 3600, priority }: CreateDNSRecordRequest = req.body;
+
+  const domain = domains.find(d => d.id === domainId);
+  if (!domain) {
+    return res.status(404).json({ error: "Domain not found" });
+  }
+
+  const newRecord: DNSRecord = {
+    id: Date.now().toString(),
+    name,
+    type,
+    value,
+    ttl,
+    priority,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  // Initialize dnsRecords array if it doesn't exist
+  if (!domain.dnsRecords) {
+    domain.dnsRecords = [];
+  }
+
+  domain.dnsRecords.push(newRecord);
+  domain.lastDnsCheck = new Date().toISOString();
+
+  res.json({ success: true, record: newRecord });
+};
+
+// Trigger domain monitoring
+export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+
+  const domain = domains.find(d => d.id === id);
+  if (!domain) {
+    return res.status(404).json({ error: "Domain not found" });
+  }
+
+  try {
+    // Simulate monitoring check
+    const updates: Partial<Domain> = {
+      status: Math.random() > 0.1 ? "Online" : "Offline",
+      lastCheck: "Just now",
+      lastWhoisCheck: new Date().toISOString(),
+      lastSslCheck: new Date().toISOString(),
+      lastDnsCheck: new Date().toISOString()
+    };
+
+    // Update domain
+    const domainIndex = domains.findIndex(d => d.id === id);
+    domains[domainIndex] = { ...domains[domainIndex], ...updates };
+
+    const response: DomainMonitoringResponse = {
+      success: true,
+      message: "Domain monitoring completed successfully",
+      updates
+    };
+
+    res.json(response);
+  } catch (error) {
+    const response: DomainMonitoringResponse = {
+      success: false,
+      message: "Domain monitoring failed",
+      errors: ["Failed to check domain status"]
+    };
+
+    res.status(500).json(response);
+  }
 };
 
 // Helper function to simulate domain status checking
