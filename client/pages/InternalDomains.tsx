@@ -294,6 +294,7 @@ export default function InternalDomains() {
               headers: {
                 "Content-Type": "application/json",
               },
+              body: JSON.stringify({}),
             });
 
             // Check if response is ok before trying to read body
