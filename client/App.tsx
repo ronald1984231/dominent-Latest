@@ -38,6 +38,7 @@ const App = () => (
           <Route path="/internal/watchlist" element={<DomainsWatchlist />} />
           <Route path="/internal/projects" element={<Projects />} />
           <Route path="/internal/notifications" element={<Notifications />} />
+          <Route path="/internal/monitoring" element={<MonitoringDashboard />} />
           <Route path="/internal/documentation" element={<Documentation />} />
           <Route path="/domains-search" element={<DomainsSearch />} />
           <Route path="/pricing" element={<Pricing />} />
