@@ -13,6 +13,13 @@ import Pricing from "./pages/Pricing";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import Dashboard from "./pages/Dashboard";
+import InternalDashboard from "./pages/InternalDashboard";
+import InternalDomains from "./pages/InternalDomains";
+import MyRegistrars from "./pages/MyRegistrars";
+import DomainsWatchlist from "./pages/DomainsWatchlist";
+import Projects from "./pages/Projects";
+import Notifications from "./pages/Notifications";
+import Documentation from "./pages/Documentation";
 
 const queryClient = new QueryClient();
 
