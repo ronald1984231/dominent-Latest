@@ -37,6 +37,27 @@ export default function InternalDashboard() {
     expiringDomains: 111
   });
 
+  useEffect(() => {
+    // Load monitoring stats
+    const loadMonitoringStats = async () => {
+      try {
+        const response = await fetch('/api/monitoring/stats');
+        if (response.ok) {
+          const monitoringStats = await response.json();
+          setStats(prev => ({
+            ...prev,
+            totalDomains: monitoringStats.totalDomains,
+            expiringDomains: monitoringStats.domainsExpiringSoon + monitoringStats.sslExpiringSoon
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to load monitoring stats:', error);
+      }
+    };
+
+    loadMonitoringStats();
+  }, []);
+
   const [expiringDomains] = useState<ExpiringDomain[]>([
     {
       id: "1",
