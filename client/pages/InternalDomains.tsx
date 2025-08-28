@@ -171,31 +171,87 @@ export default function InternalDomains() {
 
   const handleUpdateAllDomains = async () => {
     setUpdating(true);
-    try {
-      const promises = domains.map(async (domain) => {
-        try {
-          const response = await fetch(`/api/domains/${domain.id}/monitor`, {
-            method: "POST",
-          });
-          return await response.json();
-        } catch (error) {
-          console.error(`Failed to update ${domain.domain}:`, error);
-          return null;
-        }
-      });
 
-      await Promise.all(promises);
-      
-      toast({
-        title: "Success",
-        description: "All domains updated successfully.",
-      });
-      
-      loadDomains();
+    let successCount = 0;
+    let failedCount = 0;
+
+    try {
+      // Process domains in smaller batches to avoid overwhelming the server
+      const batchSize = 3;
+      const batches: Domain[][] = [];
+
+      for (let i = 0; i < domains.length; i += batchSize) {
+        batches.push(domains.slice(i, i + batchSize));
+      }
+
+      for (const batch of batches) {
+        const promises = batch.map(async (domain) => {
+          try {
+            const response = await fetch(`/api/domains/${domain.id}/monitor`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+
+            // Check if response is ok before trying to read body
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            // Clone the response to avoid "body stream already read" error
+            const responseClone = response.clone();
+
+            try {
+              const result = await responseClone.json();
+              successCount++;
+              return result;
+            } catch (jsonError) {
+              // If JSON parsing fails, try to get text instead
+              const text = await response.text();
+              console.warn(`Failed to parse JSON for ${domain.domain}, got text:`, text);
+              successCount++;
+              return { success: true };
+            }
+          } catch (error) {
+            console.error(`Failed to update ${domain.domain}:`, error);
+            failedCount++;
+            return null;
+          }
+        });
+
+        // Wait for current batch to complete
+        await Promise.all(promises);
+
+        // Add small delay between batches
+        if (batches.indexOf(batch) < batches.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+
+      if (failedCount === 0) {
+        toast({
+          title: "Success",
+          description: `All ${successCount} domains updated successfully.`,
+        });
+      } else {
+        toast({
+          title: "Partial Success",
+          description: `${successCount} domains updated successfully, ${failedCount} failed.`,
+          variant: failedCount > successCount ? "destructive" : "default",
+        });
+      }
+
+      // Reload domains after a short delay
+      setTimeout(() => {
+        loadDomains();
+      }, 1000);
+
     } catch (error) {
+      console.error("Update all domains error:", error);
       toast({
         title: "Error",
-        description: "Failed to update some domains.",
+        description: "Failed to update domains. Please try again.",
         variant: "destructive",
       });
     } finally {
