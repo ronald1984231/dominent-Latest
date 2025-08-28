@@ -107,5 +107,16 @@ export function createServer() {
   app.get("/api/internal/watchlist", getWatchlist);
   app.delete("/api/internal/watchlist/:id", removeFromWatchlist);
 
+  // Monitoring API routes
+  app.get("/api/monitoring/logs", getMonitoringLogs);
+  app.post("/api/monitoring/logs", createMonitoringLog);
+  app.get("/api/monitoring/stats", getMonitoringStats);
+  app.post("/api/monitoring/trigger/:domain", triggerDomainMonitoring);
+  app.post("/api/monitoring/trigger-all", triggerFullMonitoring);
+  app.get("/api/monitoring/status", getMonitoringStatus);
+  app.delete("/api/monitoring/logs/cleanup", clearOldLogs);
+  app.get("/api/monitoring/test/:domain", testDomainConnectivity);
+  app.get("/api/monitoring/config", getMonitoringConfig);
+
   return app;
 }
