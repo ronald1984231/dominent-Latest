@@ -44,6 +44,8 @@ export default function InternalDomains() {
   const [registrars, setRegistrars] = useState<string[]>([]);
   const [newDomain, setNewDomain] = useState("");
   const [addingDomain, setAddingDomain] = useState(false);
+  const [bulkDomains, setBulkDomains] = useState("");
+  const [addingBulkDomains, setAddingBulkDomains] = useState(false);
   const [updating, setUpdating] = useState(false);
   const { toast } = useToast();
 
@@ -92,6 +94,106 @@ export default function InternalDomains() {
       setRegistrars(data.registrars || []);
     } catch (error) {
       console.error("Failed to load registrars:", error);
+    }
+  };
+
+  const handleBulkAddDomains = async () => {
+    if (!bulkDomains.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter at least one domain name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const domainList = bulkDomains
+      .split('\n')
+      .map(domain => domain.trim())
+      .filter(domain => domain.length > 0)
+      .filter(domain => /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(domain));
+
+    if (domainList.length === 0) {
+      toast({
+        title: "Error",
+        description: "No valid domain names found. Please check your input.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setAddingBulkDomains(true);
+    let successCount = 0;
+    let failedCount = 0;
+    const failedDomains: string[] = [];
+
+    try {
+      // Process domains in batches of 3 to avoid overwhelming the server
+      const batchSize = 3;
+      for (let i = 0; i < domainList.length; i += batchSize) {
+        const batch = domainList.slice(i, i + batchSize);
+
+        const promises = batch.map(async (domain) => {
+          try {
+            const request: AddDomainRequest = { domain: domain.toLowerCase() };
+            const response = await fetch("/api/domains", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(request),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              successCount++;
+              return { success: true, domain };
+            } else {
+              failedCount++;
+              failedDomains.push(`${domain}: ${data.error || 'Unknown error'}`);
+              return { success: false, domain, error: data.error };
+            }
+          } catch (error) {
+            failedCount++;
+            failedDomains.push(`${domain}: Network error`);
+            return { success: false, domain, error: 'Network error' };
+          }
+        });
+
+        await Promise.all(promises);
+
+        // Add delay between batches
+        if (i + batchSize < domainList.length) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+
+      // Show results
+      if (failedCount === 0) {
+        toast({
+          title: "Success",
+          description: `All ${successCount} domains added successfully.`,
+        });
+      } else {
+        toast({
+          title: "Partial Success",
+          description: `${successCount} domains added successfully, ${failedCount} failed.`,
+          variant: failedCount > successCount ? "destructive" : "default",
+        });
+      }
+
+      if (successCount > 0) {
+        setBulkDomains("");
+        loadDomains();
+      }
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add domains. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setAddingBulkDomains(false);
     }
   };
 
