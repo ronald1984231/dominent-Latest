@@ -15,6 +15,7 @@ export function InternalHeader() {
     { name: "Domains Watchlist", path: "/internal/watchlist" },
     { name: "Projects", path: "/internal/projects" },
     { name: "Notifications", path: "/internal/notifications" },
+    { name: "Monitoring", path: "/internal/monitoring" },
     { name: "Documentation", path: "/internal/documentation" },
   ];
 
