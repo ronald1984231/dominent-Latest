@@ -23,6 +23,7 @@ import Notifications from "./pages/Notifications";
 import MonitoringDashboard from "./pages/MonitoringDashboard";
 import Documentation from "./pages/Documentation";
 import DomainDetail from "./pages/DomainDetail";
+import AddDomain from "./pages/AddDomain";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<InternalDashboard />} />
             <Route path="/internal/domains" element={<InternalDomains />} />
+            <Route path="/internal/domains/add" element={<AddDomain />} />
             <Route path="/internal/domains/:id" element={<DomainDetail />} />
             <Route path="/internal/registrars" element={<MyRegistrars />} />
             <Route path="/internal/watchlist" element={<DomainsWatchlist />} />
