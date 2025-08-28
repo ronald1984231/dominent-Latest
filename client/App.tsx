@@ -24,6 +24,10 @@ import MonitoringDashboard from "./pages/MonitoringDashboard";
 import Documentation from "./pages/Documentation";
 import DomainDetail from "./pages/DomainDetail";
 import AddDomain from "./pages/AddDomain";
+import RegistrarOverview from "./pages/RegistrarOverview";
+import RegistrarAPISettings from "./pages/RegistrarAPISettings";
+import RegistrarDomains from "./pages/RegistrarDomains";
+import RegistrarMonthlyReports from "./pages/RegistrarMonthlyReports";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +45,10 @@ const App = () => (
             <Route path="/internal/domains/add" element={<AddDomain />} />
             <Route path="/internal/domains/:id" element={<DomainDetail />} />
             <Route path="/internal/registrars" element={<MyRegistrars />} />
+            <Route path="/registrars/:id" element={<RegistrarOverview />} />
+            <Route path="/registrars/:id/domains" element={<RegistrarDomains />} />
+            <Route path="/registrars/:id/apisettings" element={<RegistrarAPISettings />} />
+            <Route path="/registrars/:id/monthlyreports" element={<RegistrarMonthlyReports />} />
             <Route path="/internal/watchlist" element={<DomainsWatchlist />} />
             <Route path="/internal/projects" element={<Projects />} />
             <Route path="/internal/notifications" element={<Notifications />} />
