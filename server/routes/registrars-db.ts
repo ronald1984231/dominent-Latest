@@ -47,11 +47,42 @@ export const getRegistrarById: RequestHandler = async (req, res) => {
 // Get all registrars
 export const getRegistrars: RequestHandler = async (req, res) => {
   try {
+    console.log('🔍 Attempting to fetch registrars...');
+
+    // First check if table exists
+    try {
+      await db.query('SELECT 1 FROM registrars LIMIT 1');
+      console.log('✅ Registrars table exists and is accessible');
+    } catch (tableError) {
+      console.error('❌ Registrars table access error:', tableError);
+
+      // If table doesn't exist, create it
+      console.log('🔧 Creating registrars table...');
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS registrars (
+          id VARCHAR(255) PRIMARY KEY,
+          name VARCHAR(255) NOT NULL,
+          label VARCHAR(255),
+          email VARCHAR(255),
+          api_key VARCHAR(255),
+          api_secret VARCHAR(255),
+          api_credentials JSONB,
+          api_status VARCHAR(50) DEFAULT 'Disconnected',
+          domain_count INTEGER DEFAULT 0,
+          status VARCHAR(50) DEFAULT 'Disconnected',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      console.log('✅ Registrars table created successfully');
+    }
+
     const result = await db.query(`
       SELECT id, name, label, email, api_status, domain_count, status, created_at
       FROM registrars
       ORDER BY created_at DESC
     `);
+
+    console.log(`📊 Found ${result.rows.length} registrars`);
 
     const registrars: Registrar[] = result.rows.map(row => {
       // Safely handle created_at conversion
@@ -85,9 +116,14 @@ export const getRegistrars: RequestHandler = async (req, res) => {
       total: registrars.length
     };
 
+    console.log('✅ Successfully returning registrars response');
     res.json(response);
   } catch (error) {
-    console.error("Error fetching registrars:", error);
+    console.error("❌ Error fetching registrars:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    });
     res.status(500).json({ error: "Failed to fetch registrars" });
   }
 };
