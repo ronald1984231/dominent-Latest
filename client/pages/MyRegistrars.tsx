@@ -9,16 +9,9 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { useToast } from "../hooks/use-toast";
+import { Registrar, AddRegistrarRequest } from "@shared/internal-api";
+import { getRegistrarConfig, getRegistrarDisplayNames, RegistrarConfig } from "@shared/registrar-config";
 
-interface Registrar {
-  id: string;
-  name: string;
-  label: string;
-  email: string;
-  apiStatus: 'Connected' | 'Disconnected' | 'Not configured';
-  domainCount: number;
-  status: 'Connected' | 'Disconnected' | 'Unmanaged';
-}
 
 export default function MyRegistrars() {
   const [registrars, setRegistrars] = useState<Registrar[]>([]);
@@ -28,8 +21,10 @@ export default function MyRegistrars() {
     registrar: "",
     apiKey: "",
     apiSecret: "",
-    label: ""
+    label: "",
+    credentials: {} as Record<string, string>
   });
+  const [selectedRegistrarConfig, setSelectedRegistrarConfig] = useState<RegistrarConfig | null>(null);
   const { toast } = useToast();
 
   // Starting with empty registrars array - all sample data removed
