@@ -52,6 +52,10 @@ export default function InternalDomains() {
   const [bulkDomains, setBulkDomains] = useState("");
   const [addingBulkDomains, setAddingBulkDomains] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [availableRegistrars, setAvailableRegistrars] = useState<Registrar[]>([]);
+  const [selectedRegistrarForImport, setSelectedRegistrarForImport] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
