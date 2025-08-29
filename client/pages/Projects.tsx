@@ -27,25 +27,8 @@ export default function Projects() {
   });
   const { toast } = useToast();
 
-  // Mock projects data to match the screenshot
-  const mockProjects: Project[] = [
-    {
-      id: "1",
-      name: "Googleplex Network Domains",
-      description: "Main project for Googleplex network domain management",
-      teamCount: 0,
-      domainCount: 26,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: "2",
-      name: "Flight Domains",
-      description: "Aviation related domain portfolio",
-      teamCount: 0,
-      domainCount: 37,
-      createdAt: new Date().toISOString()
-    }
-  ];
+  // Starting with empty projects array - all sample data removed
+  const mockProjects: Project[] = [];
 
   useEffect(() => {
     setProjects(mockProjects);
