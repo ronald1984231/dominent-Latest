@@ -38,12 +38,24 @@ export default function MyRegistrars() {
     try {
       setLoading(true);
       const response = await fetch('/api/internal/registrars');
-      const data = await response.json();
 
-      if (response.ok && data.registrars) {
+      let data: any = null;
+      try {
+        // Use a clone so we never re-read the original body stream
+        data = await response.clone().json();
+      } catch {
+        data = null;
+      }
+
+      if (!response.ok) {
+        const message = (data && data.error) ? data.error : `Failed to load registrars (HTTP ${response.status})`;
+        throw new Error(message);
+      }
+
+      if (data && Array.isArray(data.registrars)) {
         setRegistrars(data.registrars);
       } else {
-        throw new Error('Failed to load registrars');
+        setRegistrars([]);
       }
     } catch (error) {
       console.error('Error loading registrars:', error);
