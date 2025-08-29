@@ -405,6 +405,16 @@ export default function InternalDomains() {
     }
   };
 
+  const formatExpiryDate = (expiryDate: string | undefined, domain?: Domain) => {
+    // If expiry_date exists, show YYYY-MM-DD format
+    if (expiryDate) {
+      return expiryDate; // Already in YYYY-MM-DD format from WHOIS
+    }
+
+    // Fallback to "Unknown" - the WHOIS raw will be shown below
+    return 'Unknown';
+  };
+
   const getSSLStatusColor = (status: string | undefined) => {
     switch (status?.toLowerCase()) {
       case 'valid': return 'text-success';
