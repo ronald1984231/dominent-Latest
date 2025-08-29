@@ -196,7 +196,7 @@ export default function RegistrarOverview() {
           </div>
 
           {/* Main Content Area */}
-          <div className="col-span-9">
+          <div className="lg:col-span-9">
             <div className="space-y-6">
               {/* Registrar Identity Card */}
               <Card>
