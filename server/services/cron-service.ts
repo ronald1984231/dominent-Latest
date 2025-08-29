@@ -199,14 +199,28 @@ export class CronService {
     try {
       const { updateDomainFromCron } = await import("../routes/domains");
 
-      const success = updateDomainFromCron(domainId, updateData);
+      // Ensure we're passing the complete update data
+      const domainUpdates = {
+        ...(updateData.expiry_date && { expiry_date: updateData.expiry_date }),
+        ...(updateData.ssl_expiry && { ssl_expiry: updateData.ssl_expiry }),
+        ...(updateData.ssl_status && { ssl_status: updateData.ssl_status }),
+        ...(updateData.registrar && { registrar: updateData.registrar }),
+        ...(updateData.lastWhoisCheck && { lastWhoisCheck: updateData.lastWhoisCheck }),
+        ...(updateData.lastSslCheck && { lastSslCheck: updateData.lastSslCheck }),
+        status: 'Online',
+        lastCheck: 'Auto updated'
+      };
+
+      const success = updateDomainFromCron(domainId, domainUpdates);
 
       if (success) {
         console.log(`📝 Updated domain ${domainId} with:`, {
           expiry_date: updateData.expiry_date,
           ssl_expiry: updateData.ssl_expiry,
           ssl_status: updateData.ssl_status,
-          registrar: updateData.registrar
+          registrar: updateData.registrar,
+          lastWhoisCheck: updateData.lastWhoisCheck,
+          lastSslCheck: updateData.lastSslCheck
         });
       } else {
         console.warn(`⚠️ Domain with ID ${domainId} not found for update`);
