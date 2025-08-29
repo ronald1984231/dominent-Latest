@@ -462,8 +462,11 @@ export default function InternalDomains() {
       return 'Expires today';
     } else if (diffDays <= 30) {
       return `${diffDays} days`;
+    } else if (diffDays <= 90) {
+      return `${diffDays} days`;
     } else {
-      return sslExpiry; // Show YYYY-MM-DD format for long-term SSL
+      // For SSL certificates with more than 90 days, show the actual date
+      return expiry.toLocaleDateString();
     }
   };
 
@@ -681,17 +684,17 @@ export default function InternalDomains() {
                             </div>
                           )}
 
-                          {/* Show WHOIS raw data if expiry_date is NULL or show last check */}
+                          {/* Show WHOIS information */}
                           <div className="text-xs text-muted-foreground mt-1">
                             {domain.expiry_date ? (
                               domain.lastWhoisCheck ?
-                                `WHOIS: ${new Date(domain.lastWhoisCheck).toLocaleDateString()}` :
-                                'WHOIS: Not checked'
+                                `Verified: ${new Date(domain.lastWhoisCheck).toLocaleDateString()}` :
+                                'WHOIS: Not verified'
                             ) : (
                               domain.expirationDate && domain.expirationDate !== 'Unknown' ?
-                                `WHOIS: ${domain.expirationDate}` :
+                                `Raw WHOIS: ${domain.expirationDate}` :
                                 domain.lastWhoisCheck ?
-                                  `WHOIS: Last checked ${new Date(domain.lastWhoisCheck).toLocaleDateString()}` :
+                                  `Checked: ${new Date(domain.lastWhoisCheck).toLocaleDateString()}` :
                                   'WHOIS: Not checked'
                             )}
                           </div>
@@ -702,9 +705,17 @@ export default function InternalDomains() {
                         <div className={`text-sm font-medium ${getSSLStatusColor(domain.ssl_expiry)}`}>
                           {getSSLStatus(domain.ssl_expiry)}
                         </div>
-                        {domain.lastSslCheck && (
+                        {domain.ssl_expiry ? (
                           <div className="text-xs text-muted-foreground">
-                            SSL: {new Date(domain.lastSslCheck).toLocaleDateString()}
+                            SSL expires: {domain.ssl_expiry}
+                          </div>
+                        ) : domain.lastSslCheck ? (
+                          <div className="text-xs text-muted-foreground">
+                            Last checked: {new Date(domain.lastSslCheck).toLocaleDateString()}
+                          </div>
+                        ) : (
+                          <div className="text-xs text-muted-foreground">
+                            Not checked
                           </div>
                         )}
                       </div>
