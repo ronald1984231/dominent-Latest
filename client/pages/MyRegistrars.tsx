@@ -87,28 +87,77 @@ export default function MyRegistrars() {
     }
   };
 
+  const handleRegistrarChange = (registrarName: string) => {
+    const config = getRegistrarConfig(registrarName);
+    setSelectedRegistrarConfig(config || null);
+    setNewRegistrar(prev => ({
+      ...prev,
+      registrar: registrarName,
+      credentials: {}
+    }));
+  };
+
+  const handleCredentialChange = (key: string, value: string) => {
+    setNewRegistrar(prev => ({
+      ...prev,
+      credentials: {
+        ...prev.credentials,
+        [key]: value
+      }
+    }));
+  };
+
+  const validateCredentials = (): boolean => {
+    if (!selectedRegistrarConfig) return false;
+
+    for (const field of selectedRegistrarConfig.credentials) {
+      if (field.required && !newRegistrar.credentials[field.key]) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleAddRegistrar = async () => {
-    if (!newRegistrar.registrar || !newRegistrar.apiKey || !newRegistrar.apiSecret) {
+    if (!newRegistrar.registrar) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields (Registrar, API Key, and API Secret are required)",
+        description: "Please select a registrar",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!validateCredentials()) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required credential fields",
         variant: "destructive"
       });
       return;
     }
 
     try {
+      const requestData: AddRegistrarRequest = {
+        registrar: newRegistrar.registrar,
+        apiCredentials: newRegistrar.credentials,
+        label: newRegistrar.label || "Not set"
+      };
+
+      // For backward compatibility, also include apiKey and apiSecret if they exist in credentials
+      if (newRegistrar.credentials.api_key) {
+        requestData.apiKey = newRegistrar.credentials.api_key;
+      }
+      if (newRegistrar.credentials.api_secret) {
+        requestData.apiSecret = newRegistrar.credentials.api_secret;
+      }
+
       const response = await fetch('/api/internal/registrars', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          registrar: newRegistrar.registrar,
-          apiKey: newRegistrar.apiKey,
-          apiSecret: newRegistrar.apiSecret,
-          label: newRegistrar.label || "Not set"
-        }),
+        body: JSON.stringify(requestData),
       });
 
       const data = await response.json();
@@ -116,7 +165,14 @@ export default function MyRegistrars() {
       if (data.success && data.registrar) {
         setRegistrars(prev => [...prev, data.registrar]);
         setShowAddModal(false);
-        setNewRegistrar({ registrar: "", apiKey: "", apiSecret: "", label: "" });
+        setNewRegistrar({
+          registrar: "",
+          apiKey: "",
+          apiSecret: "",
+          label: "",
+          credentials: {}
+        });
+        setSelectedRegistrarConfig(null);
 
         toast({
           title: "Success",
