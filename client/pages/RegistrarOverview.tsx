@@ -186,7 +186,7 @@ export default function RegistrarOverview() {
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-muted-foreground">Website</Label>
-                      <div className="mt-1 text-sm">{getRegistrarConfig(registrar.name)?.apiUrl || 'N/A'}</div>
+                      <div className="mt-1 text-sm">{getRegistrarConfig(registrar.name)?.website || 'N/A'}</div>
                     </div>
                   </div>
                 </CardContent>
