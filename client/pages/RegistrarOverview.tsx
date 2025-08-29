@@ -7,25 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import { useToast } from "../hooks/use-toast";
 import { ArrowLeft, Edit, Settings, FileText, Globe, AlertTriangle } from "lucide-react";
+import { Registrar } from "@shared/internal-api";
+import { getRegistrarConfig } from "@shared/registrar-config";
 
-interface RegistrarDetails {
-  id: string;
-  name: string;
-  displayName: string;
-  label: string;
-  email: string;
-  apiStatus: 'Connected' | 'Disconnected' | 'Error';
-  status: 'Connected' | 'Disconnected' | 'Unmanaged';
-  domainCount: number;
-  apiKey?: string;
-  lastSync?: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export default function RegistrarOverview() {
   const { id } = useParams<{ id: string }>();
-  const [registrar, setRegistrar] = useState<RegistrarDetails | null>(null);
+  const [registrar, setRegistrar] = useState<Registrar | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -38,24 +26,15 @@ export default function RegistrarOverview() {
   const loadRegistrarDetails = async () => {
     try {
       setLoading(true);
-      
-      // Mock data based on the screenshot
-      const mockRegistrar: RegistrarDetails = {
-        id: id || "3319",
-        name: "GoDaddy.com, LLC",
-        displayName: "GoDaddy.com, LLC",
-        label: "godaddy_Samay",
-        email: "contact@example.com",
-        apiStatus: "Connected",
-        status: "Connected", 
-        domainCount: 26,
-        apiKey: "3mM44Ywf7i6urx_FjKo6pjXqBwiP5kCxFnNV",
-        lastSync: new Date().toISOString(),
-        createdAt: "2024-01-15T10:30:00Z",
-        updatedAt: new Date().toISOString()
-      };
-      
-      setRegistrar(mockRegistrar);
+
+      const response = await fetch(`/api/internal/registrars/${id}`);
+      const data = await response.json();
+
+      if (response.ok && data.success && data.registrar) {
+        setRegistrar(data.registrar);
+      } else {
+        throw new Error(data.error || 'Failed to fetch registrar');
+      }
     } catch (error) {
       console.error("Failed to load registrar details:", error);
       toast({
@@ -123,7 +102,7 @@ export default function RegistrarOverview() {
             Registrars
           </Link>
           <span className="text-muted-foreground">/</span>
-          <span className="font-medium">{registrar.displayName}</span>
+          <span className="font-medium">{getRegistrarConfig(registrar.name)?.displayName || registrar.name}</span>
         </div>
 
         {/* Main Content */}
@@ -142,8 +121,8 @@ export default function RegistrarOverview() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="font-semibold">{registrar.displayName}</h3>
-                        <p className="text-sm text-muted-foreground">Registered 2 June 2024</p>
+                        <h3 className="font-semibold">{getRegistrarConfig(registrar.name)?.displayName || registrar.name}</h3>
+                        <p className="text-sm text-muted-foreground">Registered {new Date(registrar.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                   </div>
@@ -207,7 +186,7 @@ export default function RegistrarOverview() {
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-muted-foreground">Website</Label>
-                      <div className="mt-1 text-sm">www.godaddy.com</div>
+                      <div className="mt-1 text-sm">{getRegistrarConfig(registrar.name)?.apiUrl || 'N/A'}</div>
                     </div>
                   </div>
                 </CardContent>
@@ -236,17 +215,24 @@ export default function RegistrarOverview() {
                     <div>
                       <div className="font-medium">Connection Status</div>
                       <div className="text-sm text-muted-foreground">
-                        Last updated: {new Date(registrar.updatedAt).toLocaleString()}
+                        Last updated: {new Date(registrar.createdAt).toLocaleString()}
                       </div>
                     </div>
                     {getStatusBadge(registrar.apiStatus)}
                   </div>
                   
-                  {registrar.apiKey && (
+                  {registrar.apiCredentials && (
                     <div className="mt-4 pt-4 border-t">
-                      <div className="font-medium mb-2">API Key</div>
-                      <div className="font-mono text-sm bg-muted px-3 py-2 rounded">
-                        {registrar.apiKey}
+                      <div className="font-medium mb-2">API Credentials</div>
+                      <div className="space-y-2">
+                        {Object.entries(registrar.apiCredentials).map(([key, value]) => (
+                          <div key={key} className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground capitalize">{key.replace('_', ' ')}:</span>
+                            <span className="font-mono text-sm bg-muted px-2 py-1 rounded text-right max-w-xs truncate">
+                              {key.toLowerCase().includes('secret') || key.toLowerCase().includes('password') ? '•••••••••••••••' : value}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
