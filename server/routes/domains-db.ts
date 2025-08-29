@@ -17,6 +17,20 @@ import {
 } from "@shared/domain-api";
 import { db } from "../db/connection";
 
+// Helpers to safely convert potential string/Date values to ISO strings
+const toISODate = (v: any): string | undefined => {
+  if (!v) return undefined;
+  const d = typeof v === 'string' ? new Date(v) : v;
+  if (!(d instanceof Date) || isNaN(d.getTime())) return undefined;
+  return d.toISOString().split('T')[0];
+};
+const toISO = (v: any): string | undefined => {
+  if (!v) return undefined;
+  const d = typeof v === 'string' ? new Date(v) : v;
+  if (!(d instanceof Date) || isNaN(d.getTime())) return undefined;
+  return d.toISOString();
+};
+
 // Get all domains with optional filtering
 export const getDomains: RequestHandler = async (req, res) => {
   try {
@@ -72,15 +86,15 @@ export const getDomains: RequestHandler = async (req, res) => {
       subdomain: row.subdomain || row.domain,
       registrar: row.registrar || "Unknown",
       expirationDate: row.expiration_date || "Unknown",
-      expiry_date: row.expiry_date ? row.expiry_date.toISOString().split('T')[0] : undefined,
+      expiry_date: toISODate(row.expiry_date),
       ssl_status: row.ssl_status || "unknown",
-      ssl_expiry: row.ssl_expiry ? row.ssl_expiry.toISOString() : undefined,
+      ssl_expiry: toISO(row.ssl_expiry),
       status: row.status || "Unknown",
       lastCheck: row.last_check || "Never",
-      lastWhoisCheck: row.last_whois_check ? row.last_whois_check.toISOString() : undefined,
-      lastSslCheck: row.last_ssl_check ? row.last_ssl_check.toISOString() : undefined,
+      lastWhoisCheck: toISO(row.last_whois_check),
+      lastSslCheck: toISO(row.last_ssl_check),
       isActive: row.is_active,
-      createdAt: row.created_at.toISOString()
+      createdAt: (typeof row.created_at === 'string' ? new Date(row.created_at) : row.created_at).toISOString()
     }));
 
     const response: GetDomainsResponse = {
@@ -242,15 +256,15 @@ export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
       subdomain: row.subdomain || row.domain,
       registrar: row.registrar || "Unknown",
       expirationDate: row.expiration_date || "Unknown",
-      expiry_date: row.expiry_date ? row.expiry_date.toISOString().split('T')[0] : undefined,
+      expiry_date: toISODate(row.expiry_date),
       ssl_status: row.ssl_status || "unknown",
-      ssl_expiry: row.ssl_expiry ? row.ssl_expiry.toISOString() : undefined,
+      ssl_expiry: toISO(row.ssl_expiry),
       status: row.status || "Unknown",
       lastCheck: row.last_check || "Never",
-      lastWhoisCheck: row.last_whois_check ? row.last_whois_check.toISOString() : undefined,
-      lastSslCheck: row.last_ssl_check ? row.last_ssl_check.toISOString() : undefined,
+      lastWhoisCheck: toISO(row.last_whois_check),
+      lastSslCheck: toISO(row.last_ssl_check),
       isActive: row.is_active,
-      createdAt: row.created_at.toISOString()
+      createdAt: (typeof row.created_at === 'string' ? new Date(row.created_at) : row.created_at).toISOString()
     };
 
     // Use real monitoring service
@@ -430,15 +444,15 @@ export const getAllDomainsForCron = async (): Promise<Domain[]> => {
       subdomain: row.subdomain || row.domain,
       registrar: row.registrar || "Unknown",
       expirationDate: row.expiration_date || "Unknown",
-      expiry_date: row.expiry_date ? row.expiry_date.toISOString().split('T')[0] : undefined,
+      expiry_date: toISODate(row.expiry_date),
       ssl_status: row.ssl_status || "unknown",
-      ssl_expiry: row.ssl_expiry ? row.ssl_expiry.toISOString() : undefined,
+      ssl_expiry: toISO(row.ssl_expiry),
       status: row.status || "Unknown",
       lastCheck: row.last_check || "Never",
-      lastWhoisCheck: row.last_whois_check ? row.last_whois_check.toISOString() : undefined,
-      lastSslCheck: row.last_ssl_check ? row.last_ssl_check.toISOString() : undefined,
+      lastWhoisCheck: toISO(row.last_whois_check),
+      lastSslCheck: toISO(row.last_ssl_check),
       isActive: row.is_active,
-      createdAt: row.created_at.toISOString()
+      createdAt: (typeof row.created_at === 'string' ? new Date(row.created_at) : row.created_at).toISOString()
     }));
   } catch (error) {
     console.error("Error fetching domains for cron:", error);
