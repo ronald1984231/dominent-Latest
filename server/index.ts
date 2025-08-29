@@ -62,6 +62,10 @@ import {
   signup,
   verifyToken
 } from "./routes/auth";
+import {
+  importDomainsFromRegistrar,
+  getErrorLogs
+} from "./routes/registrar-import";
 import { cronService } from "./services/cron-service";
 
 export function createServer() {
