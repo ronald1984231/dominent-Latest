@@ -7,26 +7,8 @@ import {
 } from "@shared/internal-api";
 
 // In-memory storage for demonstration (in production, use a real database)
-let projects: Project[] = [
-  {
-    id: "1",
-    name: "Googleplex Network Domains",
-    description: "Main project for Googleplex network domain management",
-    teamCount: 0,
-    domainCount: 26,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: "2",
-    name: "Flight Domains",
-    description: "Aviation related domain portfolio",
-    teamCount: 0,
-    domainCount: 37,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
+// Starting with empty array - all sample data removed
+let projects: Project[] = [];
 
 // Get all projects
 export const getProjects: RequestHandler = (req, res) => {
