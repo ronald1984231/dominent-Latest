@@ -281,20 +281,36 @@ export const importDomainsFromRegistrar: RequestHandler = async (req, res) => {
     let importedCount = 0;
     let failedCount = 0;
 
+    // Get credentials from either new api_credentials JSON or legacy fields
+    let credentials: Record<string, string> = {};
+    if (registrar.api_credentials) {
+      credentials = typeof registrar.api_credentials === 'string'
+        ? JSON.parse(registrar.api_credentials)
+        : registrar.api_credentials;
+    } else {
+      credentials = {
+        api_key: registrar.api_key,
+        api_secret: registrar.api_secret
+      };
+    }
+
     try {
       // Call appropriate registrar API based on registrar name
       switch (registrar.name.toLowerCase()) {
+        case 'godaddy.com, llc':
         case 'godaddy':
-          domains = await callGoDaddyAPI(registrar.api_key, registrar.api_secret);
+          domains = await callGoDaddyAPI(credentials.api_key, credentials.api_secret);
           break;
+        case 'namecheap, inc.':
         case 'namecheap':
-          domains = await callNamecheapAPI(registrar.api_key, registrar.api_secret);
+          domains = await callNamecheapAPI(credentials.api_user, credentials.api_key, credentials.username, credentials.client_ip);
           break;
+        case 'cloudflare, inc.':
         case 'cloudflare':
-          domains = await callCloudflareAPI(registrar.api_key, registrar.api_secret);
+          domains = await callCloudflareAPI(credentials.api_token);
           break;
         case 'porkbun':
-          domains = await callPorkbunAPI(registrar.api_key, registrar.api_secret);
+          domains = await callPorkbunAPI(credentials.api_key, credentials.api_secret);
           break;
         default:
           throw new Error(`Registrar ${registrar.name} API not supported yet`);
