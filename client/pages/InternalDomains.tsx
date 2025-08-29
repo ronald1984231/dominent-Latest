@@ -587,10 +587,69 @@ export default function InternalDomains() {
               </AlertDialogContent>
             </AlertDialog>
             
-            <Button variant="outline" className="flex items-center space-x-2">
-              <Download className="w-4 h-4" />
-              <span>IMPORT FROM REGISTRAR</span>
-            </Button>
+            <AlertDialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="flex items-center space-x-2">
+                  <Download className="w-4 h-4" />
+                  <span>IMPORT FROM REGISTRAR</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Import Domains from Registrar</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Select a registrar to import all your domains. This will fetch domain information including expiry dates, auto-renewal settings, and nameservers using the registrar's API.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="py-4">
+                  <Select value={selectedRegistrarForImport} onValueChange={setSelectedRegistrarForImport}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a registrar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableRegistrars.map(registrar => (
+                        <SelectItem key={registrar.id} value={registrar.id}>
+                          <div className="flex items-center justify-between w-full">
+                            <span>{registrar.name}</span>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xs text-muted-foreground">{registrar.label}</span>
+                              <div className={`w-2 h-2 rounded-full ${
+                                registrar.apiStatus === 'Connected' ? 'bg-green-500' : 'bg-red-500'
+                              }`}></div>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {availableRegistrars.length === 0 && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      No registrars configured. Please add a registrar first in the{" "}
+                      <Link to="/internal/registrars" className="text-primary hover:underline">
+                        Registrars page
+                      </Link>
+                      .
+                    </p>
+                  )}
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleImportFromRegistrar}
+                    disabled={importing || !selectedRegistrarForImport}
+                  >
+                    {importing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Importing...
+                      </>
+                    ) : (
+                      "Import Domains"
+                    )}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             
             <Button 
               variant="outline" 
