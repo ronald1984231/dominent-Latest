@@ -333,7 +333,12 @@ export default function MyRegistrars() {
                       <Button variant="ghost" size="sm" className="text-xs">
                         Edit
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-xs text-destructive">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-destructive"
+                        onClick={() => handleDeleteRegistrar(registrar.id, registrar.name)}
+                      >
                         Delete
                       </Button>
                     </div>
