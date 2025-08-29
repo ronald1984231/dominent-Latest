@@ -11,63 +11,18 @@ import {
 
 // Get dashboard statistics and data
 export const getDashboardData: RequestHandler = (req, res) => {
+  // Starting with empty dashboard data - all sample data removed
   const stats: DashboardStats = {
-    totalDomains: 177,
+    totalDomains: 0,
     domainsRenewalPrice: 0.00,
-    expiringDomains: 111,
-    expiringCertificates: 5,
-    onlineDomains: 170,
-    offlineDomains: 7
+    expiringDomains: 0,
+    expiringCertificates: 0,
+    onlineDomains: 0,
+    offlineDomains: 0
   };
 
-  const expiringDomains: ExpiringDomain[] = [
-    {
-      id: "1",
-      name: "umokalacrooding.online",
-      registrar: "NameCheap, Inc.",
-      expirationDate: "Expired",
-      price: "",
-      lastCheck: "1 day check 1 hours ago",
-      status: "Online"
-    },
-    {
-      id: "2", 
-      name: "hubhungereat.club",
-      registrar: "NameCheap, Inc.",
-      expirationDate: "Expired",
-      price: "",
-      lastCheck: "1 day check 1 hours ago", 
-      status: "Online"
-    },
-    {
-      id: "3",
-      name: "appmoneyservice.club",
-      registrar: "NameCheap, Inc.",
-      expirationDate: "Expired",
-      price: "",
-      lastCheck: "1 day check 1 hours ago",
-      status: "Online"
-    }
-  ];
-
-  const expiringCertificates: ExpiringCertificate[] = [
-    {
-      id: "1",
-      domain: "example1.com",
-      expirationDate: "2024-02-15",
-      issuer: "Let's Encrypt",
-      lastCheck: "2 hours ago",
-      status: "Valid"
-    },
-    {
-      id: "2", 
-      domain: "example2.com",
-      expirationDate: "2024-02-20",
-      issuer: "DigiCert",
-      lastCheck: "1 hour ago",
-      status: "Valid"
-    }
-  ];
+  const expiringDomains: ExpiringDomain[] = [];
+  const expiringCertificates: ExpiringCertificate[] = [];
 
   const response: GetDashboardResponse = {
     stats,
