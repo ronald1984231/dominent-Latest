@@ -7,6 +7,43 @@ import {
 } from "@shared/internal-api";
 import { db } from "../db/connection";
 
+// Get registrar by ID
+export const getRegistrarById: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await db.query(`
+      SELECT id, name, label, email, api_status, domain_count, status, api_credentials, created_at
+      FROM registrars
+      WHERE id = $1
+    `, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Registrar not found" });
+    }
+
+    const row = result.rows[0];
+    const registrar: Registrar = {
+      id: row.id,
+      name: row.name,
+      label: row.label || "Not set",
+      email: row.email || "Not set",
+      apiStatus: row.api_status || "Disconnected",
+      domainCount: row.domain_count || 0,
+      status: row.status || "Disconnected",
+      createdAt: row.created_at.toISOString(),
+      apiCredentials: row.api_credentials ?
+        (typeof row.api_credentials === 'string' ? JSON.parse(row.api_credentials) : row.api_credentials)
+        : undefined
+    };
+
+    res.json({ success: true, registrar });
+  } catch (error) {
+    console.error("Error fetching registrar:", error);
+    res.status(500).json({ error: "Failed to fetch registrar" });
+  }
+};
+
 // Get all registrars
 export const getRegistrars: RequestHandler = async (req, res) => {
   try {
