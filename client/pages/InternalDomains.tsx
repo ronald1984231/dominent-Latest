@@ -611,7 +611,7 @@ export default function InternalDomains() {
                       </div>
 
                       <div className="flex flex-col">
-                        <span className="text-foreground text-sm">{domain.registrar}</span>
+                        <span className="text-foreground text-sm">{domain.registrar || 'Unknown'}</span>
                         <span className="text-xs text-success">Connected</span>
                       </div>
 
