@@ -626,14 +626,28 @@ export default function InternalDomains() {
                       </div>
 
                       <div>
-                        <Badge variant={getExpiryVariant(domain.expiry_date) as any} className="text-xs font-medium">
-                          {formatDate(domain.expiry_date)}
-                        </Badge>
-                        {domain.lastWhoisCheck && (
-                          <div className="text-xs text-muted-foreground mt-1">
-                            WHOIS: {new Date(domain.lastWhoisCheck).toLocaleDateString()}
-                          </div>
-                        )}
+                        <div className="flex flex-col">
+                          {domain.expiry_date ? (
+                            <Badge variant={getExpiryVariant(domain.expiry_date) as any} className="text-xs font-medium">
+                              {formatExpiryDate(domain.expiry_date, domain)}
+                            </Badge>
+                          ) : (
+                            <div className="text-xs text-muted-foreground">
+                              Unknown
+                            </div>
+                          )}
+
+                          {/* Show WHOIS raw data if expiry_date is NULL or show last check */}
+                          {domain.lastWhoisCheck && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {domain.expiry_date ? (
+                                `WHOIS: ${new Date(domain.lastWhoisCheck).toLocaleDateString()}`
+                              ) : (
+                                `WHOIS: ${domain.expirationDate || 'No data'}`
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       <div>
