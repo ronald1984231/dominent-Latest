@@ -682,15 +682,19 @@ export default function InternalDomains() {
                           )}
 
                           {/* Show WHOIS raw data if expiry_date is NULL or show last check */}
-                          {domain.lastWhoisCheck && (
-                            <div className="text-xs text-muted-foreground mt-1">
-                              {domain.expiry_date ? (
-                                `WHOIS: ${new Date(domain.lastWhoisCheck).toLocaleDateString()}`
-                              ) : (
-                                `WHOIS: ${domain.expirationDate || 'No data'}`
-                              )}
-                            </div>
-                          )}
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {domain.expiry_date ? (
+                              domain.lastWhoisCheck ?
+                                `WHOIS: ${new Date(domain.lastWhoisCheck).toLocaleDateString()}` :
+                                'WHOIS: Not checked'
+                            ) : (
+                              domain.expirationDate && domain.expirationDate !== 'Unknown' ?
+                                `WHOIS: ${domain.expirationDate}` :
+                                domain.lastWhoisCheck ?
+                                  `WHOIS: Last checked ${new Date(domain.lastWhoisCheck).toLocaleDateString()}` :
+                                  'WHOIS: Not checked'
+                            )}
+                          </div>
                         </div>
                       </div>
 
