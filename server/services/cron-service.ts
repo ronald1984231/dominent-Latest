@@ -197,7 +197,7 @@ export class CronService {
    */
   private async updateDomainData(domainId: string, updateData: any): Promise<void> {
     try {
-      const { updateDomainFromCron } = await import("../routes/domains");
+      const { updateDomainFromCron } = await import("../routes/domains-db");
 
       // Ensure we're passing the complete update data
       const domainUpdates = {
@@ -211,7 +211,7 @@ export class CronService {
         lastCheck: 'Auto updated'
       };
 
-      const success = updateDomainFromCron(domainId, domainUpdates);
+      const success = await updateDomainFromCron(domainId, domainUpdates);
 
       if (success) {
         console.log(`📝 Updated domain ${domainId} with:`, {
