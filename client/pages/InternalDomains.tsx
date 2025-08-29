@@ -555,17 +555,18 @@ export default function InternalDomains() {
     <div className="min-h-screen bg-background">
       <InternalHeader />
       
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-foreground">Domains</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Domains</h1>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:space-x-3">
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button className="bg-success hover:bg-success/90 text-success-foreground">
+                <Button className="w-full sm:w-auto bg-success hover:bg-success/90 text-success-foreground">
                   <Plus className="w-4 h-4 mr-2" />
-                  ADD DOMAIN
+                  <span className="sm:hidden">ADD DOMAIN</span>
+                  <span className="hidden sm:inline">ADD DOMAIN</span>
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -601,9 +602,10 @@ export default function InternalDomains() {
             
             <AlertDialog open={showImportDialog} onOpenChange={setShowImportDialog}>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" className="flex items-center space-x-2">
+                <Button variant="outline" className="w-full sm:w-auto flex items-center justify-center space-x-2">
                   <Download className="w-4 h-4" />
-                  <span>IMPORT FROM REGISTRAR</span>
+                  <span className="sm:hidden">IMPORT</span>
+                  <span className="hidden sm:inline">IMPORT FROM REGISTRAR</span>
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -663,9 +665,9 @@ export default function InternalDomains() {
               </AlertDialogContent>
             </AlertDialog>
             
-            <Button 
-              variant="outline" 
-              className="flex items-center space-x-2"
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto flex items-center justify-center space-x-2"
               onClick={handleUpdateAllDomains}
               disabled={updating}
             >
@@ -674,22 +676,23 @@ export default function InternalDomains() {
               ) : (
                 <RefreshCw className="w-4 h-4" />
               )}
-              <span>UPDATE DOMAINS</span>
+              <span className="sm:hidden">UPDATE</span>
+              <span className="hidden sm:inline">UPDATE DOMAINS</span>
             </Button>
             
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" className="w-full sm:w-auto">
               <Settings className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
         {/* Filters and Search */}
-        <div className="flex items-center justify-between mb-6 space-y-4 lg:space-y-0 flex-wrap lg:flex-nowrap">
-          <div className="flex items-center space-x-4 flex-wrap">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <div className="flex flex-wrap items-center gap-3">
             <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Filters:</span>
             
             <Select value={selectedRegistrar} onValueChange={setSelectedRegistrar}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-full sm:w-48">
                 <SelectValue placeholder="Registrar" />
               </SelectTrigger>
               <SelectContent>
@@ -703,7 +706,7 @@ export default function InternalDomains() {
             </Select>
 
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-full sm:w-32">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -715,7 +718,7 @@ export default function InternalDomains() {
             </Select>
 
             <Select value={selectedSSLStatus} onValueChange={setSelectedSSLStatus}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-full sm:w-32">
                 <SelectValue placeholder="SSL" />
               </SelectTrigger>
               <SelectContent>
@@ -727,7 +730,7 @@ export default function InternalDomains() {
             </Select>
 
             <Select value={selectedExpiryStatus} onValueChange={setSelectedExpiryStatus}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-full sm:w-32">
                 <SelectValue placeholder="Expiry" />
               </SelectTrigger>
               <SelectContent>
@@ -739,18 +742,18 @@ export default function InternalDomains() {
             </Select>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <Input
               placeholder="Search domains or registrars..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              className="w-80"
+              className="w-full sm:w-80"
             />
-            <Button 
-              onClick={handleSearch} 
+            <Button
+              onClick={handleSearch}
               disabled={loading}
-              className="bg-foreground text-background hover:bg-foreground/90"
+              className="w-full sm:w-auto bg-foreground text-background hover:bg-foreground/90"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
