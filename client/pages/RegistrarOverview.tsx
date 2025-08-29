@@ -200,22 +200,22 @@ export default function RegistrarOverview() {
             <div className="space-y-6">
               {/* Registrar Identity Card */}
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle>Registrar Identity</CardTitle>
-                  <Button variant="outline" size="sm">
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <CardTitle className="text-lg sm:text-xl">Registrar Identity</CardTitle>
+                  <Button variant="outline" size="sm" className="w-full sm:w-auto">
                     <Edit className="w-4 h-4 mr-2" />
                     EDIT
                   </Button>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
                       <Label className="text-sm font-medium text-muted-foreground">Registrar name</Label>
-                      <div className="mt-1 text-sm">{registrar.name}</div>
+                      <div className="mt-1 text-sm break-words">{registrar.name}</div>
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-muted-foreground">Website</Label>
-                      <div className="mt-1 text-sm">{getRegistrarConfig(registrar.name)?.website || 'N/A'}</div>
+                      <div className="mt-1 text-sm break-all">{getRegistrarConfig(registrar.name)?.website || 'N/A'}</div>
                     </div>
                   </div>
                 </CardContent>
@@ -223,11 +223,11 @@ export default function RegistrarOverview() {
 
               {/* Status Alert */}
               {registrar.apiStatus !== 'Connected' && (
-                <div className="flex items-center p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-destructive mr-3" />
-                  <div>
+                <div className="flex items-start p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <AlertTriangle className="w-5 h-5 text-destructive mr-3 flex-shrink-0 mt-0.5" />
+                  <div className="min-w-0">
                     <div className="font-medium text-destructive">Configuration Required</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground mt-1">
                       This registrar requires additional configuration. Please check the API settings and ensure all required fields are properly configured.
                     </div>
                   </div>
@@ -237,10 +237,10 @@ export default function RegistrarOverview() {
               {/* API Status */}
               <Card>
                 <CardHeader>
-                  <CardTitle>API Connection Status</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl">API Connection Status</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
                       <div className="font-medium">Connection Status</div>
                       <div className="text-sm text-muted-foreground">
@@ -249,15 +249,15 @@ export default function RegistrarOverview() {
                     </div>
                     {getStatusBadge(registrar.apiStatus)}
                   </div>
-                  
+
                   {registrar.apiCredentials && (
                     <div className="mt-4 pt-4 border-t">
                       <div className="font-medium mb-2">API Credentials</div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {Object.entries(registrar.apiCredentials).map(([key, value]) => (
-                          <div key={key} className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground capitalize">{key.replace('_', ' ')}:</span>
-                            <span className="font-mono text-sm bg-muted px-2 py-1 rounded text-right max-w-xs truncate">
+                          <div key={key} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-4">
+                            <span className="text-sm text-muted-foreground capitalize font-medium">{key.replace('_', ' ')}:</span>
+                            <span className="font-mono text-sm bg-muted px-2 py-1 rounded break-all sm:text-right sm:max-w-xs sm:truncate">
                               {key.toLowerCase().includes('secret') || key.toLowerCase().includes('password') ? '•••••••••••••••' : value}
                             </span>
                           </div>
@@ -271,20 +271,20 @@ export default function RegistrarOverview() {
               {/* Domain Statistics */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Domain Statistics</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl">Domain Statistics</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-6">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-primary">{domains.length}</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="text-center p-4 sm:p-0">
+                      <div className="text-xl sm:text-2xl font-bold text-primary">{domains.length}</div>
                       <div className="text-sm text-muted-foreground">Total Domains</div>
                     </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-success">{domains.filter(d => d.status === 'Online').length}</div>
+                    <div className="text-center p-4 sm:p-0">
+                      <div className="text-xl sm:text-2xl font-bold text-success">{domains.filter(d => d.status === 'Online').length}</div>
                       <div className="text-sm text-muted-foreground">Active Domains</div>
                     </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-muted-foreground">{domains.filter(d => {
+                    <div className="text-center p-4 sm:p-0">
+                      <div className="text-xl sm:text-2xl font-bold text-muted-foreground">{domains.filter(d => {
                         if (!d.expiry_date) return 0;
                         const dt = new Date(d.expiry_date);
                         return !isNaN(dt.getTime()) && dt.getTime() < Date.now();
