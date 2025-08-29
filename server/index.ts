@@ -98,6 +98,7 @@ export function createServer() {
   app.get("/api/registrars", getRegistrars);
 
   // Registrars management API routes
+  app.get("/api/internal/registrars/health", getRegistrarsHealth);
   app.get("/api/internal/registrars", getRegistrarsList);
   app.get("/api/internal/registrars/:id", getRegistrarById);
   app.post("/api/internal/registrars", addRegistrar);
