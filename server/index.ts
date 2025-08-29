@@ -5,13 +5,15 @@ import { handleDemo } from "./routes/demo";
 import {
   getDomains,
   addDomain,
-  checkDomain,
   deleteDomain,
   getRegistrars,
+  triggerDomainMonitoring
+} from "./routes/domains-db";
+import {
+  checkDomain,
   getDomainDetails,
   updateDomain,
-  createDNSRecord,
-  triggerDomainMonitoring
+  createDNSRecord
 } from "./routes/domains";
 import {
   getRegistrars as getRegistrarsList,
