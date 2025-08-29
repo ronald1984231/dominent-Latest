@@ -153,16 +153,70 @@ const callPorkbunAPI = async (apiKey: string, apiSecret: string): Promise<Regist
 // WHOIS fallback function
 const performWhoisLookup = async (domain: string): Promise<RegistrarDomainData> => {
   try {
-    // Import whois library or use external service
-    // For now, return basic structure - in production, implement actual WHOIS lookup
-    return {
-      domain,
-      registrar: 'Unknown (WHOIS)',
-      expiryDate: undefined,
-      autoRenew: false,
-      nameservers: [],
-      status: 'Unknown'
-    };
+    const whois = await import('whois');
+
+    return new Promise((resolve, reject) => {
+      whois.lookup(domain, (err: any, data: any) => {
+        if (err) {
+          reject(new Error(`WHOIS lookup failed for ${domain}: ${err.message}`));
+          return;
+        }
+
+        try {
+          // Parse WHOIS data to extract registrar and expiry date
+          const lines = data.split('\n');
+          let registrar = 'Unknown (WHOIS)';
+          let expiryDate: string | undefined;
+          let nameservers: string[] = [];
+
+          for (const line of lines) {
+            const lowerLine = line.toLowerCase().trim();
+
+            // Extract registrar
+            if (lowerLine.includes('registrar:') || lowerLine.includes('registrar name:')) {
+              registrar = line.split(':')[1]?.trim() || registrar;
+            }
+
+            // Extract expiry date (various formats)
+            if (lowerLine.includes('expiry date:') ||
+                lowerLine.includes('expiration date:') ||
+                lowerLine.includes('expires:') ||
+                lowerLine.includes('registry expiry date:')) {
+              const dateStr = line.split(':')[1]?.trim();
+              if (dateStr) {
+                try {
+                  const date = new Date(dateStr);
+                  if (!isNaN(date.getTime())) {
+                    expiryDate = date.toISOString().split('T')[0];
+                  }
+                } catch (dateError) {
+                  console.warn(`Failed to parse WHOIS date for ${domain}:`, dateStr);
+                }
+              }
+            }
+
+            // Extract nameservers
+            if (lowerLine.includes('name server:') || lowerLine.includes('nameserver:')) {
+              const ns = line.split(':')[1]?.trim();
+              if (ns) {
+                nameservers.push(ns);
+              }
+            }
+          }
+
+          resolve({
+            domain,
+            registrar,
+            expiryDate,
+            autoRenew: false, // WHOIS doesn't provide auto-renewal info
+            nameservers,
+            status: 'Active'
+          });
+        } catch (parseError) {
+          reject(new Error(`Failed to parse WHOIS data for ${domain}: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`));
+        }
+      });
+    });
   } catch (error) {
     throw new Error(`WHOIS lookup failed for ${domain}: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
