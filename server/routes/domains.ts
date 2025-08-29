@@ -97,6 +97,22 @@ let domains: Domain[] = [
     lastSslCheck: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     isActive: true,
     createdAt: new Date().toISOString()
+  },
+  {
+    id: "6",
+    domain: "samay.com",
+    subdomain: "samay.com",
+    registrar: undefined, // Will be populated by monitoring
+    expirationDate: "Unknown",
+    expiry_date: undefined,
+    ssl_status: "unknown",
+    ssl_expiry: undefined,
+    status: "Unknown",
+    lastCheck: "Never",
+    lastWhoisCheck: undefined,
+    lastSslCheck: undefined,
+    isActive: true,
+    createdAt: new Date().toISOString()
   }
 ];
 
