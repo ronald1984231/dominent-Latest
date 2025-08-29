@@ -98,6 +98,7 @@ export function createServer() {
 
   // Registrars management API routes
   app.get("/api/internal/registrars", getRegistrarsList);
+  app.get("/api/internal/registrars/:id", getRegistrarById);
   app.post("/api/internal/registrars", addRegistrar);
   app.put("/api/internal/registrars/:id", updateRegistrar);
   app.delete("/api/internal/registrars/:id", deleteRegistrar);
