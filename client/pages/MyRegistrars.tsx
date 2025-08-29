@@ -40,34 +40,56 @@ export default function MyRegistrars() {
     setLoading(false);
   }, []);
 
-  const handleAddRegistrar = () => {
-    if (!newRegistrar.registrar || !newRegistrar.apiKey) {
+  const handleAddRegistrar = async () => {
+    if (!newRegistrar.registrar || !newRegistrar.apiKey || !newRegistrar.apiSecret) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Please fill in all required fields (Registrar, API Key, and API Secret are required)",
         variant: "destructive"
       });
       return;
     }
 
-    const registrar: Registrar = {
-      id: Date.now().toString(),
-      name: newRegistrar.registrar,
-      label: newRegistrar.label || "Not set",
-      email: "Not set",
-      apiStatus: "Connected",
-      domainCount: 0,
-      status: "Connected"
-    };
+    try {
+      const response = await fetch('/api/internal/registrars', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          registrar: newRegistrar.registrar,
+          apiKey: newRegistrar.apiKey,
+          apiSecret: newRegistrar.apiSecret,
+          label: newRegistrar.label || "Not set"
+        }),
+      });
 
-    setRegistrars(prev => [...prev, registrar]);
-    setShowAddModal(false);
-    setNewRegistrar({ registrar: "", apiKey: "", apiSecret: "", label: "" });
-    
-    toast({
-      title: "Success",
-      description: "Registrar API added successfully",
-    });
+      const data = await response.json();
+
+      if (data.success && data.registrar) {
+        setRegistrars(prev => [...prev, data.registrar]);
+        setShowAddModal(false);
+        setNewRegistrar({ registrar: "", apiKey: "", apiSecret: "", label: "" });
+
+        toast({
+          title: "Success",
+          description: "Registrar API added successfully",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: data.error || "Failed to add registrar API",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error adding registrar:', error);
+      toast({
+        title: "Error",
+        description: "Network error. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const getStatusBadge = (status: string) => {
