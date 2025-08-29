@@ -62,6 +62,36 @@ export default function MyRegistrars() {
     }
   };
 
+  const handleDeleteRegistrar = async (registrarId: string, registrarName: string) => {
+    try {
+      const response = await fetch(`/api/internal/registrars/${registrarId}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        setRegistrars(prev => prev.filter(r => r.id !== registrarId));
+        toast({
+          title: "Success",
+          description: `${registrarName} removed successfully`,
+        });
+      } else {
+        const data = await response.json();
+        toast({
+          title: "Error",
+          description: data.error || "Failed to remove registrar",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting registrar:', error);
+      toast({
+        title: "Error",
+        description: "Network error. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleAddRegistrar = async () => {
     if (!newRegistrar.registrar || !newRegistrar.apiKey || !newRegistrar.apiSecret) {
       toast({
