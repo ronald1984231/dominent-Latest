@@ -221,6 +221,38 @@ export default function DomainDetail() {
     return 'default';
   };
 
+  // SSL-specific functions (separate from domain expiry)
+  const getSSLExpiryVariant = (sslExpiry: string | undefined) => {
+    if (!sslExpiry) return 'secondary';
+    const expiry = new Date(sslExpiry);
+    const now = new Date();
+    const diffTime = expiry.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return 'destructive'; // Expired - red
+    if (diffDays <= 30) return 'destructive'; // Expiring soon - orange/red
+    return 'default'; // Valid - green
+  };
+
+  const formatSSLExpiry = (sslExpiry: string | undefined) => {
+    if (!sslExpiry) return 'Unknown';
+
+    const expiry = new Date(sslExpiry);
+    const now = new Date();
+    const diffTime = expiry.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      return 'Expired';
+    } else if (diffDays === 0) {
+      return 'Expires today';
+    } else if (diffDays <= 30) {
+      return `${diffDays} days`;
+    } else {
+      return expiry.toLocaleDateString(); // Show formatted date for long-term SSL
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
