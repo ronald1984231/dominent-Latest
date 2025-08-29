@@ -48,7 +48,7 @@ import {
   getMonitoringLogs,
   createMonitoringLog,
   getMonitoringStats,
-  triggerDomainMonitoring,
+  triggerDomainMonitoringByName,
   triggerFullMonitoring,
   getMonitoringStatus,
   clearOldLogs,
