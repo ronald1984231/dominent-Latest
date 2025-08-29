@@ -259,8 +259,8 @@ export const importDomainsFromRegistrar: RequestHandler = async (req, res) => {
 
     // Get registrar details from database
     const registrarResult = await db.query(`
-      SELECT id, name, api_key, api_secret 
-      FROM registrars 
+      SELECT id, name, api_key, api_secret, api_credentials
+      FROM registrars
       WHERE id = $1
     `, [registrarId]);
 
