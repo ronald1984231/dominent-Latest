@@ -154,40 +154,46 @@ export default function InternalDashboard() {
 
                 {/* Table Rows */}
                 <div className="space-y-3 pt-3">
-                  {expiringDomains.map((domain) => (
-                    <div key={domain.id} className="grid grid-cols-6 gap-4 items-center text-sm">
-                      <div className="col-span-2">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 bg-gray-300 rounded"></div>
+                  {expiringDomains.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No expiring domains found
+                    </div>
+                  ) : (
+                    expiringDomains.map((domain) => (
+                      <div key={domain.id} className="grid grid-cols-6 gap-4 items-center text-sm">
+                        <div className="col-span-2">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 bg-gray-300 rounded"></div>
+                            <div>
+                              <div className="font-medium text-foreground">{domain.name}</div>
+                              <div className="text-xs text-muted-foreground">{domain.name}</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-muted-foreground">
+                          <div>{domain.registrar}</div>
+                          <div className="text-xs">Connected</div>
+                        </div>
+
+                        <div>
+                          <Badge variant="destructive" className="text-xs">
+                            {domain.expirationDate}
+                          </Badge>
+                        </div>
+
+                        <div className="text-muted-foreground">-</div>
+
+                        <div className="flex items-center text-xs">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                           <div>
-                            <div className="font-medium text-foreground">{domain.name}</div>
-                            <div className="text-xs text-muted-foreground">{domain.name}</div>
+                            <div className="text-success">Online</div>
+                            <div className="text-muted-foreground">{domain.lastCheck}</div>
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="text-muted-foreground">
-                        <div>{domain.registrar}</div>
-                        <div className="text-xs">Connected</div>
-                      </div>
-                      
-                      <div>
-                        <Badge variant="destructive" className="text-xs">
-                          {domain.expirationDate}
-                        </Badge>
-                      </div>
-                      
-                      <div className="text-muted-foreground">-</div>
-                      
-                      <div className="flex items-center text-xs">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                        <div>
-                          <div className="text-success">Online</div>
-                          <div className="text-muted-foreground">{domain.lastCheck}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -210,24 +216,30 @@ export default function InternalDashboard() {
 
                 {/* Table Rows */}
                 <div className="space-y-3 pt-3">
-                  {expiringCertificates.map((cert) => (
-                    <div key={cert.id} className="grid grid-cols-5 gap-4 items-center text-sm">
-                      <div className="col-span-2">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 bg-gray-300 rounded"></div>
-                          <div className="font-medium text-foreground">{cert.domain}</div>
+                  {expiringCertificates.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No expiring certificates found
+                    </div>
+                  ) : (
+                    expiringCertificates.map((cert) => (
+                      <div key={cert.id} className="grid grid-cols-5 gap-4 items-center text-sm">
+                        <div className="col-span-2">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 bg-gray-300 rounded"></div>
+                            <div className="font-medium text-foreground">{cert.domain}</div>
+                          </div>
+                        </div>
+
+                        <div className="text-muted-foreground">{cert.expirationDate}</div>
+                        <div className="text-muted-foreground">{cert.issuer}</div>
+
+                        <div className="flex items-center">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                          <span className="text-success text-xs">{cert.status}</span>
                         </div>
                       </div>
-                      
-                      <div className="text-muted-foreground">{cert.expirationDate}</div>
-                      <div className="text-muted-foreground">{cert.issuer}</div>
-                      
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                        <span className="text-success text-xs">{cert.status}</span>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             </CardContent>
