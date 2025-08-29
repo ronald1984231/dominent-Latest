@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 // Mock user database (in production, use a real database)
+// Starting with empty users array - all sample data removed
 const users: Array<{
   id: string;
   email: string;
@@ -11,7 +12,7 @@ const users: Array<{
   createdAt: string;
 }> = [];
 
-// Initialize demo user
+// Initialize demo user (if needed)
 const initializeDemoUser = async () => {
   if (users.length === 0) {
     const hashedPassword = await bcrypt.hash("demo123", 12);
@@ -26,8 +27,8 @@ const initializeDemoUser = async () => {
   }
 };
 
-// Initialize demo user when module loads
-initializeDemoUser();
+// Demo user auto-initialization disabled - start with clean slate
+// Uncomment the line below to restore demo user: initializeDemoUser();
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
