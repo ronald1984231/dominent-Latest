@@ -124,7 +124,7 @@ export function createServer() {
   app.get("/api/monitoring/logs", getMonitoringLogs);
   app.post("/api/monitoring/logs", createMonitoringLog);
   app.get("/api/monitoring/stats", getMonitoringStats);
-  app.post("/api/monitoring/trigger/:domain", triggerDomainMonitoring);
+  app.post("/api/monitoring/trigger/:domain", triggerDomainMonitoringByName);
   app.post("/api/monitoring/trigger-all", triggerFullMonitoring);
   app.get("/api/monitoring/status", getMonitoringStatus);
   app.delete("/api/monitoring/logs/cleanup", clearOldLogs);
