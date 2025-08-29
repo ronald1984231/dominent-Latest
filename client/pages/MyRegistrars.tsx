@@ -36,9 +36,31 @@ export default function MyRegistrars() {
   const mockRegistrars: Registrar[] = [];
 
   useEffect(() => {
-    setRegistrars(mockRegistrars);
-    setLoading(false);
+    loadRegistrars();
   }, []);
+
+  const loadRegistrars = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/internal/registrars');
+      const data = await response.json();
+
+      if (response.ok && data.registrars) {
+        setRegistrars(data.registrars);
+      } else {
+        throw new Error('Failed to load registrars');
+      }
+    } catch (error) {
+      console.error('Error loading registrars:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load registrars. Please refresh the page.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddRegistrar = async () => {
     if (!newRegistrar.registrar || !newRegistrar.apiKey || !newRegistrar.apiSecret) {
