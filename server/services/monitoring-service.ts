@@ -220,8 +220,26 @@ export class MonitoringService {
       // Update WHOIS data (only if we got a valid result)
       if (monitorResult.expiry_date && !monitorResult.whoisError) {
         updateData.expiry_date = monitorResult.expiry_date;
+
+        // Apply registrar override logic
         if (monitorResult.registrar) {
-          updateData.registrar = monitorResult.registrar;
+          const overriddenRegistrar = await this.getRegistrarOverride(monitorResult.registrar);
+          updateData.registrar = overriddenRegistrar;
+
+          // Log if we overrode the registrar
+          if (overriddenRegistrar !== monitorResult.registrar) {
+            await this.createLog({
+              domain: domain.domain,
+              logType: 'monitoring_error',
+              severity: 'info',
+              message: `Registrar overridden from WHOIS: "${monitorResult.registrar}" → "${overriddenRegistrar}"`,
+              details: {
+                whoisRegistrar: monitorResult.registrar,
+                overriddenRegistrar: overriddenRegistrar
+              },
+              domainId: domain.id
+            });
+          }
         }
       } else if (monitorResult.whoisError) {
         // Log WHOIS error but don't overwrite existing data
