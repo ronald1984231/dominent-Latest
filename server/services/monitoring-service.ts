@@ -221,10 +221,14 @@ export class MonitoringService {
       if (monitorResult.expiry_date && !monitorResult.whoisError) {
         updateData.expiry_date = monitorResult.expiry_date;
 
+        console.log(`📋 WHOIS data updated for ${domain.domain}: expiry_date=${monitorResult.expiry_date}`);
+
         // Apply registrar override logic
         if (monitorResult.registrar) {
           const overriddenRegistrar = await this.getRegistrarOverride(monitorResult.registrar);
           updateData.registrar = overriddenRegistrar;
+
+          console.log(`🏢 Registrar updated for ${domain.domain}: ${overriddenRegistrar}`);
 
           // Log if we overrode the registrar
           if (overriddenRegistrar !== monitorResult.registrar) {
