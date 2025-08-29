@@ -1,11 +1,30 @@
 import { RequestHandler } from "express";
-import { 
-  Registrar, 
-  AddRegistrarRequest, 
-  AddRegistrarResponse, 
-  GetRegistrarsResponse 
+import {
+  Registrar,
+  AddRegistrarRequest,
+  AddRegistrarResponse,
+  GetRegistrarsResponse
 } from "@shared/internal-api";
 import { db } from "../db/connection";
+
+// Health check for registrars API
+export const getRegistrarsHealth: RequestHandler = async (req, res) => {
+  try {
+    await db.query('SELECT NOW()');
+    res.json({
+      status: 'healthy',
+      message: 'Registrars API is working',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Registrars health check failed:', error);
+    res.status(500).json({
+      status: 'unhealthy',
+      error: 'Database connection failed',
+      timestamp: new Date().toISOString()
+    });
+  }
+};
 
 // Get registrar by ID
 export const getRegistrarById: RequestHandler = async (req, res) => {
