@@ -21,7 +21,7 @@ import {
   updateRegistrar,
   deleteRegistrar,
   testRegistrarConnection
-} from "./routes/registrars";
+} from "./routes/registrars-db";
 import {
   getProjects,
   createProject,
