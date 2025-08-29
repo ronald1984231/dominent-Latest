@@ -124,20 +124,20 @@ export default function RegistrarOverview() {
     <div className="min-h-screen bg-background">
       <InternalHeader />
       
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Breadcrumb Navigation */}
-        <div className="flex items-center space-x-2 mb-6">
+        <div className="flex items-center space-x-2 mb-4 sm:mb-6 text-sm sm:text-base">
           <Link to="/internal/registrars" className="text-muted-foreground hover:text-foreground">
             Registrars
           </Link>
           <span className="text-muted-foreground">/</span>
-          <span className="font-medium">{getRegistrarConfig(registrar.name)?.displayName || registrar.name}</span>
+          <span className="font-medium truncate">{getRegistrarConfig(registrar.name)?.displayName || registrar.name}</span>
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-12 gap-6">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6">
           {/* Sidebar Navigation */}
-          <div className="col-span-3">
+          <div className="lg:col-span-3">
             <Card>
               <CardContent className="p-0">
                 <div className="flex flex-col">
