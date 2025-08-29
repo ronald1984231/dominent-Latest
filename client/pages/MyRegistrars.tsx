@@ -234,16 +234,17 @@ export default function MyRegistrars() {
       
       <div className="container mx-auto px-6 py-8">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-foreground">My Registrars</h1>
-          
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">My Registrars</h1>
+
           <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
             <DialogTrigger asChild>
-              <Button className="bg-success hover:bg-success/90 text-success-foreground">
-                + ADD REGISTRAR API
+              <Button className="w-full sm:w-auto bg-success hover:bg-success/90 text-success-foreground">
+                <span className="sm:hidden">+ ADD REGISTRAR</span>
+                <span className="hidden sm:inline">+ ADD REGISTRAR API</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="mx-4 sm:mx-0 sm:max-w-md max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add Registrar API</DialogTitle>
                 <p className="text-sm text-muted-foreground mt-2">
@@ -251,7 +252,7 @@ export default function MyRegistrars() {
                 </p>
               </DialogHeader>
               
-              <div className="space-y-4 mt-4">
+              <div className="space-y-4 mt-4 max-h-[60vh] overflow-y-auto px-1">
                 <div>
                   <Label htmlFor="registrar">Registrar</Label>
                   <Select value={newRegistrar.registrar} onValueChange={handleRegistrarChange}>
@@ -323,11 +324,11 @@ export default function MyRegistrars() {
                   </div>
                 </div>
 
-                <div className="flex justify-end space-x-3 pt-4">
-                  <Button variant="outline" onClick={() => setShowAddModal(false)}>
+                <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
+                  <Button variant="outline" onClick={() => setShowAddModal(false)} className="w-full sm:w-auto">
                     CANCEL
                   </Button>
-                  <Button onClick={handleAddRegistrar} className="bg-slate-800 hover:bg-slate-700 text-white">
+                  <Button onClick={handleAddRegistrar} className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white">
                     ADD REGISTRAR
                   </Button>
                 </div>
@@ -347,19 +348,20 @@ export default function MyRegistrars() {
                 </div>
               </div>
             ) : registrars.length === 0 ? (
-              <div className="text-center py-12">
-                <h3 className="text-lg font-medium text-foreground mb-2">No registrars configured</h3>
-                <p className="text-muted-foreground mb-4">
+              <div className="text-center py-8 sm:py-12 px-4">
+                <h3 className="text-lg sm:text-xl font-medium text-foreground mb-2">No registrars configured</h3>
+                <p className="text-sm sm:text-base text-muted-foreground mb-4 max-w-md mx-auto">
                   Add your first registrar API to start managing your domains.
                 </p>
-                <Button onClick={() => setShowAddModal(true)} className="bg-success hover:bg-success/90 text-success-foreground">
-                  + ADD REGISTRAR API
+                <Button onClick={() => setShowAddModal(true)} className="w-full sm:w-auto bg-success hover:bg-success/90 text-success-foreground">
+                  <span className="sm:hidden">+ ADD REGISTRAR</span>
+                  <span className="hidden sm:inline">+ ADD REGISTRAR API</span>
                 </Button>
               </div>
             ) : (
               <div className="space-y-0">
-                {/* Table Header */}
-                <div className="grid grid-cols-6 gap-6 p-6 border-b bg-muted/30 text-sm font-medium text-muted-foreground">
+                {/* Table Header - Hidden on mobile, show as cards */}
+                <div className="hidden lg:grid lg:grid-cols-6 gap-6 p-6 border-b bg-muted/30 text-sm font-medium text-muted-foreground">
                   <span>NAME</span>
                   <span>LABEL</span>
                   <span>EMAIL</span>
@@ -368,50 +370,104 @@ export default function MyRegistrars() {
                   <span></span>
                 </div>
 
-                {/* Table Rows */}
-                {registrars.map((registrar, index) => (
-                  <div key={registrar.id} className={`grid grid-cols-6 gap-6 p-6 hover:bg-muted/30 transition-colors ${index !== registrars.length - 1 ? 'border-b' : ''}`}>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-6 h-6 bg-gray-300 rounded"></div>
-                      <div>
-                        <Link to={`/registrars/${registrar.id}`} className="font-medium text-primary text-sm hover:underline">
-                          {registrar.name}
-                        </Link>
-                        <div className="text-xs text-muted-foreground">support@{registrar.name.split('.')[0].toLowerCase()}.com</div>
+                {/* Desktop Table Rows */}
+                <div className="hidden lg:block">
+                  {registrars.map((registrar, index) => (
+                    <div key={registrar.id} className={`grid grid-cols-6 gap-6 p-6 hover:bg-muted/30 transition-colors ${index !== registrars.length - 1 ? 'border-b' : ''}`}>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 bg-gray-300 rounded"></div>
+                        <div>
+                          <Link to={`/registrars/${registrar.id}`} className="font-medium text-primary text-sm hover:underline">
+                            {registrar.name}
+                          </Link>
+                          <div className="text-xs text-muted-foreground">support@{registrar.name.split('.')[0].toLowerCase()}.com</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center">
+                        <span className="text-sm text-muted-foreground">{registrar.label}</span>
+                      </div>
+
+                      <div className="flex items-center">
+                        <span className="text-sm text-muted-foreground">{registrar.email}</span>
+                      </div>
+
+                      <div className="flex items-center">
+                        {getStatusBadge(registrar.apiStatus)}
+                      </div>
+
+                      <div className="flex items-center">
+                        <span className="text-sm font-medium text-foreground">{registrar.domainCount} Domains</span>
+                      </div>
+
+                      <div className="flex items-center justify-end space-x-2">
+                        <Button variant="ghost" size="sm" className="text-xs">
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs text-destructive"
+                          onClick={() => handleDeleteRegistrar(registrar.id, registrar.name)}
+                        >
+                          Delete
+                        </Button>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center">
-                      <span className="text-sm text-muted-foreground">{registrar.label}</span>
+                  ))}
+                </div>
+
+                {/* Mobile Card Layout */}
+                <div className="lg:hidden">
+                  {registrars.map((registrar, index) => (
+                    <div key={registrar.id} className={`p-4 sm:p-6 hover:bg-muted/30 transition-colors ${index !== registrars.length - 1 ? 'border-b' : ''}`}>
+                      <div className="space-y-4">
+                        {/* Header Row */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-3 flex-1">
+                            <div className="w-8 h-8 bg-gray-300 rounded"></div>
+                            <div className="flex-1 min-w-0">
+                              <Link to={`/registrars/${registrar.id}`} className="font-medium text-primary text-base hover:underline block truncate">
+                                {registrar.name}
+                              </Link>
+                              <div className="text-sm text-muted-foreground">{registrar.label}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center ml-4">
+                            {getStatusBadge(registrar.apiStatus)}
+                          </div>
+                        </div>
+
+                        {/* Info Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Email:</span>
+                            <span className="ml-2 text-foreground">{registrar.email}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Domains:</span>
+                            <span className="ml-2 font-medium text-foreground">{registrar.domainCount}</span>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                          <Button variant="outline" size="sm" className="flex-1 sm:flex-none text-xs">
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 sm:flex-none text-xs text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                            onClick={() => handleDeleteRegistrar(registrar.id, registrar.name)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div className="flex items-center">
-                      <span className="text-sm text-muted-foreground">{registrar.email}</span>
-                    </div>
-                    
-                    <div className="flex items-center">
-                      {getStatusBadge(registrar.apiStatus)}
-                    </div>
-                    
-                    <div className="flex items-center">
-                      <span className="text-sm font-medium text-foreground">{registrar.domainCount} Domains</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-end space-x-2">
-                      <Button variant="ghost" size="sm" className="text-xs">
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs text-destructive"
-                        onClick={() => handleDeleteRegistrar(registrar.id, registrar.name)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </CardContent>
