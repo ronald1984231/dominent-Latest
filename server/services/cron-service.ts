@@ -180,24 +180,16 @@ export class CronService {
    * Get all active domains that should be monitored
    */
   private async getActiveDomains(): Promise<Domain[]> {
-    // In a real implementation, this would query the database
-    // For now, we'll import the domains from the existing route
-    const { getDomains } = await import("../routes/domains");
-    
-    // Mock request/response to get domains
-    const mockReq = { query: {} } as any;
-    let domains: Domain[] = [];
-    
-    const mockRes = {
-      json: (data: any) => {
-        domains = data.domains || [];
-      }
-    } as any;
+    try {
+      const { getAllDomainsForCron } = await import("../routes/domains");
+      const domains = getAllDomainsForCron();
 
-    getDomains(mockReq, mockRes, () => {});
-    
-    // Filter for active domains (assuming all are active for now)
-    return domains.filter(domain => domain.isActive !== false);
+      // Filter for active domains (assuming all are active for now)
+      return domains.filter(domain => domain.isActive !== false);
+    } catch (error) {
+      console.error('Failed to get active domains:', error);
+      return [];
+    }
   }
 
   /**
