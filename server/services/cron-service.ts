@@ -181,8 +181,8 @@ export class CronService {
    */
   private async getActiveDomains(): Promise<Domain[]> {
     try {
-      const { getAllDomainsForCron } = await import("../routes/domains");
-      const domains = getAllDomainsForCron();
+      const { getAllDomainsForCron } = await import("../routes/domains-db");
+      const domains = await getAllDomainsForCron();
 
       // Filter for active domains (assuming all are active for now)
       return domains.filter(domain => domain.isActive !== false);
