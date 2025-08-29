@@ -27,6 +27,92 @@ export class MonitoringService {
   }
 
   /**
+   * Get connected registrars from the registrars module
+   */
+  private async getConnectedRegistrars(): Promise<Registrar[]> {
+    try {
+      const { getRegistrars } = await import("../routes/registrars");
+
+      // Mock request/response to get registrars
+      let registrars: Registrar[] = [];
+      const mockReq = {} as any;
+      const mockRes = {
+        json: (data: any) => {
+          registrars = data.registrars || [];
+        }
+      } as any;
+
+      getRegistrars(mockReq, mockRes, () => {});
+
+      // Return only connected registrars
+      return registrars.filter(r => r.apiStatus === 'Connected' && r.status === 'Connected');
+    } catch (error) {
+      console.error('Failed to get connected registrars:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Check if a registrar name matches a connected registrar and override with API data
+   */
+  private async getRegistrarOverride(whoisRegistrar?: string): Promise<string | undefined> {
+    if (!whoisRegistrar) return undefined;
+
+    const connectedRegistrars = await this.getConnectedRegistrars();
+
+    // Normalize the WHOIS registrar name for comparison
+    const normalizedWhoisRegistrar = whoisRegistrar.toLowerCase();
+
+    // Check for exact or partial matches with connected registrars
+    for (const registrar of connectedRegistrars) {
+      const registrarName = registrar.name.toLowerCase();
+
+      // Direct name match
+      if (normalizedWhoisRegistrar.includes(registrarName) ||
+          registrarName.includes(normalizedWhoisRegistrar)) {
+        return registrar.name;
+      }
+
+      // Check common variations
+      const variations = this.getRegistrarVariations(registrarName);
+      for (const variation of variations) {
+        if (normalizedWhoisRegistrar.includes(variation.toLowerCase())) {
+          return registrar.name;
+        }
+      }
+    }
+
+    return whoisRegistrar; // Return original if no connected registrar match
+  }
+
+  /**
+   * Get common variations of registrar names for matching
+   */
+  private getRegistrarVariations(registrarName: string): string[] {
+    const variations: string[] = [registrarName];
+    const lower = registrarName.toLowerCase();
+
+    // Common variations map
+    const variationMap: { [key: string]: string[] } = {
+      'godaddy': ['godaddy.com', 'godaddy inc', 'godaddy.com llc', 'go daddy'],
+      'namecheap': ['namecheap inc', 'namecheap.com', 'namecheap llc'],
+      'cloudflare': ['cloudflare inc', 'cloudflare.com'],
+      'network solutions': ['networksolutions', 'networksolutions.com', 'network solutions llc'],
+      'enom': ['enom inc', 'enom.com', 'enom llc'],
+      'markmonitor': ['markmonitor inc', 'markmonitor.com']
+    };
+
+    // Find matches in variation map
+    for (const [key, vals] of Object.entries(variationMap)) {
+      if (lower.includes(key) || vals.some(v => lower.includes(v))) {
+        variations.push(...vals);
+      }
+    }
+
+    return variations;
+  }
+
+  /**
    * Log a monitoring event
    */
   async createLog(logData: CreateLogRequest): Promise<MonitoringLog> {
