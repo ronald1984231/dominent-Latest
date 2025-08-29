@@ -109,13 +109,15 @@ export default function InternalDomains() {
   const loadRegistrars = async () => {
     try {
       const response = await fetch("/api/registrars");
-      const data = await response.json();
-      setRegistrars(data.registrars || []);
+      let data: any = null;
+      try { data = await response.clone().json(); } catch { data = null; }
+      setRegistrars(Array.isArray(data?.registrars) ? data.registrars : []);
 
       // Also load available registrars for import
       const registrarsResponse = await fetch("/api/internal/registrars");
-      const registrarsData = await registrarsResponse.json();
-      setAvailableRegistrars(registrarsData.registrars || []);
+      let registrarsData: any = null;
+      try { registrarsData = await registrarsResponse.clone().json(); } catch { registrarsData = null; }
+      setAvailableRegistrars(Array.isArray(registrarsData?.registrars) ? registrarsData.registrars : []);
     } catch (error) {
       console.error("Failed to load registrars:", error);
     }
