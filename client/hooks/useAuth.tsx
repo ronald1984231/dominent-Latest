@@ -18,6 +18,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+async function parseResponseSafe(response: Response) {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { error: text };
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -42,9 +52,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-        setToken(token);
+        const data = await parseResponseSafe(response);
+        if (data && data.user) {
+          setUser(data.user);
+          setToken(token);
+        } else {
+          localStorage.removeItem('authToken');
+        }
       } else {
         localStorage.removeItem('authToken');
       }
@@ -69,14 +83,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const data: any = await parseResponseSafe(response);
 
       if (response.ok) {
-        setUser(data.user);
-        setToken(data.token);
-        localStorage.setItem('authToken', data.token);
+        if (data && data.user && data.token) {
+          setUser(data.user);
+          setToken(data.token);
+          localStorage.setItem('authToken', data.token);
+        } else {
+          setError('Invalid server response.');
+        }
       } else {
-        setError(data.error || `Login failed (${response.status})`);
+        setError((data && data.error) || `Login failed (${response.status})`);
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -99,14 +117,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ email, password, name }),
       });
 
-      const data = await response.json();
+      const data: any = await parseResponseSafe(response);
 
       if (response.ok) {
-        setUser(data.user);
-        setToken(data.token);
-        localStorage.setItem('authToken', data.token);
+        if (data && data.user && data.token) {
+          setUser(data.user);
+          setToken(data.token);
+          localStorage.setItem('authToken', data.token);
+        } else {
+          setError('Invalid server response.');
+        }
       } else {
-        setError(data.error || `Signup failed (${response.status})`);
+        setError((data && data.error) || `Signup failed (${response.status})`);
       }
     } catch (error) {
       console.error('Signup error:', error);
