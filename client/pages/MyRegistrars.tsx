@@ -255,28 +255,29 @@ export default function MyRegistrars() {
                   )}
                 </div>
 
-                <div>
-                  <Label htmlFor="apiKey">API Key</Label>
-                  <Input
-                    id="apiKey"
-                    value={newRegistrar.apiKey}
-                    onChange={(e) => setNewRegistrar(prev => ({ ...prev, apiKey: e.target.value }))}
-                    placeholder="3mM44Ywf7i6urx_FjKo6pjXqBwiP5kCxFnNV"
-                    className="font-mono"
-                  />
-                </div>
+                {/* Dynamic credential fields based on selected registrar */}
+                {selectedRegistrarConfig && selectedRegistrarConfig.credentials.map((field) => (
+                  <div key={field.key}>
+                    <Label htmlFor={field.key}>
+                      {field.label}
+                      {field.required && <span className="text-red-500 ml-1">*</span>}
+                    </Label>
+                    <Input
+                      id={field.key}
+                      type={field.type}
+                      value={newRegistrar.credentials[field.key] || ""}
+                      onChange={(e) => handleCredentialChange(field.key, e.target.value)}
+                      placeholder={field.placeholder}
+                      className="font-mono"
+                    />
+                  </div>
+                ))}
 
-                <div>
-                  <Label htmlFor="apiSecret">API Secret</Label>
-                  <Input
-                    id="apiSecret"
-                    type="password"
-                    value={newRegistrar.apiSecret}
-                    onChange={(e) => setNewRegistrar(prev => ({ ...prev, apiSecret: e.target.value }))}
-                    placeholder="•••••••••••••••••••••••"
-                    className="font-mono"
-                  />
-                </div>
+                {!selectedRegistrarConfig && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>Please select a registrar to see the required credential fields.</p>
+                  </div>
+                )}
 
                 <div>
                   <Label htmlFor="label">Label</Label>
