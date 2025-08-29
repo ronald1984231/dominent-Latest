@@ -16,6 +16,7 @@ export default function RegistrarOverview() {
   const { id } = useParams<{ id: string }>();
   const [registrar, setRegistrar] = useState<Registrar | null>(null);
   const [loading, setLoading] = useState(true);
+  const [domains, setDomains] = useState<Domain[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -23,6 +24,12 @@ export default function RegistrarOverview() {
       loadRegistrarDetails();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (registrar?.name) {
+      loadDomainsForRegistrar(registrar.name);
+    }
+  }, [registrar?.name]);
 
   const loadRegistrarDetails = async () => {
     try {
@@ -45,6 +52,27 @@ export default function RegistrarOverview() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadDomainsForRegistrar = async (registrarName: string) => {
+    try {
+      const params = new URLSearchParams();
+      params.append('registrar', registrarName);
+      params.append('limit', '1000');
+      const response = await fetch(`/api/domains?${params.toString()}`);
+      let data: Partial<GetDomainsResponse> = {};
+      try {
+        data = await response.json();
+      } catch {}
+      if (!response.ok || !data || !Array.isArray((data as any).domains)) {
+        setDomains([]);
+        return;
+      }
+      setDomains((data as GetDomainsResponse).domains);
+    } catch (e) {
+      console.error('Failed to load domains for registrar:', e);
+      setDomains([]);
     }
   };
 
