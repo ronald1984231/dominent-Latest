@@ -446,8 +446,8 @@ export default function DomainDetail() {
                       <TableCell>{cert.issuer}</TableCell>
                       <TableCell>{formatDate(cert.validFrom)}</TableCell>
                       <TableCell>
-                        <Badge variant={getExpiryVariant(cert.expiresAt) as any}>
-                          {formatDate(cert.expiresAt)}
+                        <Badge variant={getSSLExpiryVariant(cert.expiresAt) as any}>
+                          {formatSSLExpiry(cert.expiresAt)}
                         </Badge>
                       </TableCell>
                     </TableRow>
