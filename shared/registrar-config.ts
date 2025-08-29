@@ -20,6 +20,7 @@ export const REGISTRAR_CONFIGS: Record<string, RegistrarConfig> = {
   "GoDaddy.com, LLC": {
     name: "GoDaddy.com, LLC",
     displayName: "GoDaddy",
+    website: "www.godaddy.com",
     apiUrl: "https://api.godaddy.com/v1",
     credentials: [
       { key: "api_key", label: "API Key", type: "text", placeholder: "Enter your GoDaddy API key", required: true },
@@ -30,6 +31,7 @@ export const REGISTRAR_CONFIGS: Record<string, RegistrarConfig> = {
   "Namecheap, Inc.": {
     name: "Namecheap, Inc.",
     displayName: "Namecheap",
+    website: "www.namecheap.com",
     apiUrl: "https://api.namecheap.com/xml.response",
     credentials: [
       { key: "api_user", label: "API User", type: "text", placeholder: "Enter your Namecheap API username", required: true },
@@ -42,6 +44,7 @@ export const REGISTRAR_CONFIGS: Record<string, RegistrarConfig> = {
   "Cloudflare, Inc.": {
     name: "Cloudflare, Inc.",
     displayName: "Cloudflare",
+    website: "www.cloudflare.com",
     apiUrl: "https://api.cloudflare.com/client/v4",
     credentials: [
       { key: "api_token", label: "API Token", type: "password", placeholder: "Enter your Cloudflare API token", required: true }
@@ -77,6 +80,7 @@ export const REGISTRAR_CONFIGS: Record<string, RegistrarConfig> = {
   "Porkbun": {
     name: "Porkbun",
     displayName: "Porkbun",
+    website: "porkbun.com",
     apiUrl: "https://porkbun.com/api/json/v3",
     credentials: [
       { key: "api_key", label: "API Key", type: "text", placeholder: "Enter your Porkbun API key", required: true },
