@@ -501,3 +501,31 @@ export const getRegistrars: RequestHandler = (req, res) => {
     .filter(r => r && r !== "Unknown" && r.trim() !== "");
   res.json({ registrars });
 };
+
+// Helper function for cron service to update domain data
+export const updateDomainFromCron = (domainId: string, updateData: Partial<Domain>): boolean => {
+  const domainIndex = domains.findIndex(d => d.id === domainId);
+
+  if (domainIndex !== -1) {
+    const updates = {
+      ...(updateData.expiry_date && { expiry_date: updateData.expiry_date }),
+      ...(updateData.ssl_expiry && { ssl_expiry: updateData.ssl_expiry }),
+      ...(updateData.ssl_status && { ssl_status: updateData.ssl_status }),
+      ...(updateData.registrar && { registrar: updateData.registrar }),
+      ...(updateData.lastWhoisCheck && { lastWhoisCheck: updateData.lastWhoisCheck }),
+      ...(updateData.lastSslCheck && { lastSslCheck: updateData.lastSslCheck }),
+      status: 'Online',
+      lastCheck: 'Auto updated'
+    };
+
+    domains[domainIndex] = { ...domains[domainIndex], ...updates };
+    return true;
+  }
+
+  return false;
+};
+
+// Helper function to get all domains for cron service
+export const getAllDomainsForCron = (): Domain[] => {
+  return [...domains];
+};
