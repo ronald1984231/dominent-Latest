@@ -376,6 +376,61 @@ export default function InternalDomains() {
     }
   };
 
+  const handleImportFromRegistrar = async () => {
+    if (!selectedRegistrarForImport) {
+      toast({
+        title: "Error",
+        description: "Please select a registrar to import from.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setImporting(true);
+    try {
+      const request: RegistrarImportRequest = {
+        registrarId: selectedRegistrarForImport
+      };
+
+      const response = await fetch("/api/internal/registrars/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+      });
+
+      const data: RegistrarImportResponse = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Import Successful",
+          description: `Imported ${data.importedCount} domains from ${data.registrarName}. ${data.failedCount > 0 ? `${data.failedCount} domains failed to import.` : ''}`,
+        });
+
+        if (data.errors.length > 0) {
+          console.warn("Import warnings:", data.errors);
+        }
+
+        setShowImportDialog(false);
+        setSelectedRegistrarForImport("");
+        loadDomains();
+      } else {
+        toast({
+          title: "Import Failed",
+          description: data.errors.length > 0 ? data.errors[0] : "Failed to import domains.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Network error during import. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const handleSearch = () => {
     loadDomains();
   };
