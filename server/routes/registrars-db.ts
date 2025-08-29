@@ -49,6 +49,18 @@ export const getRegistrars: RequestHandler = async (req, res) => {
   try {
     console.log('🔍 Attempting to fetch registrars...');
 
+    // Test database connection first
+    try {
+      await db.query('SELECT NOW()');
+      console.log('✅ Database connection is healthy');
+    } catch (connectionError) {
+      console.error('❌ Database connection failed:', connectionError);
+      return res.status(500).json({
+        error: "Database connection failed",
+        details: process.env.NODE_ENV === 'development' ? connectionError.message : undefined
+      });
+    }
+
     // First check if table exists
     try {
       await db.query('SELECT 1 FROM registrars LIMIT 1');
@@ -58,22 +70,30 @@ export const getRegistrars: RequestHandler = async (req, res) => {
 
       // If table doesn't exist, create it
       console.log('🔧 Creating registrars table...');
-      await db.query(`
-        CREATE TABLE IF NOT EXISTS registrars (
-          id VARCHAR(255) PRIMARY KEY,
-          name VARCHAR(255) NOT NULL,
-          label VARCHAR(255),
-          email VARCHAR(255),
-          api_key VARCHAR(255),
-          api_secret VARCHAR(255),
-          api_credentials JSONB,
-          api_status VARCHAR(50) DEFAULT 'Disconnected',
-          domain_count INTEGER DEFAULT 0,
-          status VARCHAR(50) DEFAULT 'Disconnected',
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-      `);
-      console.log('✅ Registrars table created successfully');
+      try {
+        await db.query(`
+          CREATE TABLE IF NOT EXISTS registrars (
+            id VARCHAR(255) PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            label VARCHAR(255),
+            email VARCHAR(255),
+            api_key VARCHAR(255),
+            api_secret VARCHAR(255),
+            api_credentials JSONB,
+            api_status VARCHAR(50) DEFAULT 'Disconnected',
+            domain_count INTEGER DEFAULT 0,
+            status VARCHAR(50) DEFAULT 'Disconnected',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          )
+        `);
+        console.log('✅ Registrars table created successfully');
+      } catch (createError) {
+        console.error('❌ Failed to create registrars table:', createError);
+        return res.status(500).json({
+          error: "Failed to create registrars table",
+          details: process.env.NODE_ENV === 'development' ? createError.message : undefined
+        });
+      }
     }
 
     const result = await db.query(`
