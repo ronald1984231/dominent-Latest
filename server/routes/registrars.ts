@@ -7,48 +7,8 @@ import {
 } from "@shared/internal-api";
 
 // In-memory storage for demonstration (in production, use a real database)
-let registrars: Registrar[] = [
-  {
-    id: "1",
-    name: "GoDaddy.com, LLC",
-    label: "Not set",
-    email: "Not set",
-    apiStatus: "Connected",
-    domainCount: 26,
-    status: "Connected",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "2", 
-    name: "CloudFlare, Inc.",
-    label: "Not set",
-    email: "Not set",
-    apiStatus: "Connected",
-    domainCount: 2,
-    status: "Connected",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "3",
-    name: "NameCheap, Inc.",
-    label: "Not set", 
-    email: "Not set",
-    apiStatus: "Connected",
-    domainCount: 112,
-    status: "Connected",
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "4",
-    name: "PDR Ltd. d/b/a PublicDomainRegistry.com",
-    label: "Not set",
-    email: "Not set", 
-    apiStatus: "Disconnected",
-    domainCount: 3,
-    status: "Unmanaged",
-    createdAt: new Date().toISOString()
-  }
-];
+// Starting with empty array - all sample data removed
+let registrars: Registrar[] = [];
 
 // Get all registrars
 export const getRegistrars: RequestHandler = (req, res) => {
