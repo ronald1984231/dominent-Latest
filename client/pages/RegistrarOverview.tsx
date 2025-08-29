@@ -276,15 +276,19 @@ export default function RegistrarOverview() {
                 <CardContent>
                   <div className="grid grid-cols-3 gap-6">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-primary">{registrar.domainCount}</div>
+                      <div className="text-2xl font-bold text-primary">{domains.length}</div>
                       <div className="text-sm text-muted-foreground">Total Domains</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-success">24</div>
+                      <div className="text-2xl font-bold text-success">{domains.filter(d => d.status === 'Online').length}</div>
                       <div className="text-sm text-muted-foreground">Active Domains</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-muted-foreground">2</div>
+                      <div className="text-2xl font-bold text-muted-foreground">{domains.filter(d => {
+                        if (!d.expiry_date) return 0;
+                        const dt = new Date(d.expiry_date);
+                        return !isNaN(dt.getTime()) && dt.getTime() < Date.now();
+                      }).length}</div>
                       <div className="text-sm text-muted-foreground">Expired Domains</div>
                     </div>
                   </div>
