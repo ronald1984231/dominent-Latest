@@ -80,12 +80,12 @@ const callNamecheapAPI = async (apiUser: string, apiKey: string, username: strin
 };
 
 // Cloudflare API integration
-const callCloudflareAPI = async (apiKey: string, apiSecret: string): Promise<RegistrarDomainData[]> => {
+const callCloudflareAPI = async (apiToken: string): Promise<RegistrarDomainData[]> => {
   try {
     // Cloudflare uses different authentication (Bearer token)
     const response = await fetch('https://api.cloudflare.com/client/v4/registrar/domains', {
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${apiToken}`,
         'Content-Type': 'application/json'
       }
     });
