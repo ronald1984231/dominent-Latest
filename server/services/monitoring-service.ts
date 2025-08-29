@@ -1,16 +1,17 @@
-import { 
-  MonitoringLog, 
-  MonitoringAlert, 
+import {
+  MonitoringLog,
+  MonitoringAlert,
   CreateLogRequest,
   DomainMonitoringUpdate,
   MonitoringStats
 } from "@shared/monitoring-api";
 import { Domain } from "@shared/domain-api";
-import { 
-  checkDomain, 
-  isDomainExpiringSoon, 
+import { Registrar } from "@shared/internal-api";
+import {
+  checkDomain,
+  isDomainExpiringSoon,
   isSSLExpiringSoon,
-  formatDaysUntilExpiry 
+  formatDaysUntilExpiry
 } from "../utils/domain-monitor";
 import { AlertService } from "./alert-service";
 
