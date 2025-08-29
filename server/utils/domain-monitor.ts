@@ -62,20 +62,36 @@ export function getWhois(domain: string): Promise<WhoisResult> {
           if (expiryMatch) break;
         }
 
-        // Try to extract registrar information
+        // Try to extract registrar information with comprehensive patterns
         const registrarPatterns = [
           /Registrar:\s*(.*)/i,
           /Sponsoring Registrar:\s*(.*)/i,
-          /Registrar Name:\s*(.*)/i
+          /Registrar Name:\s*(.*)/i,
+          /Registrar Organization:\s*(.*)/i,
+          /Registrar WHOIS Server:\s*whois\.(.*)$/im,
+          /Registrar URL:\s*(?:https?:\/\/)?(?:www\.)?([^\/\s]+)/i,
+          /Domain registrar:\s*(.*)/i,
+          /Registration Service Provider:\s*(.*)/i,
+          /Registrar of Record:\s*(.*)/i,
+          /Record maintained by:\s*(.*)/i
         ];
 
         let registrarMatch = null;
+        let registrarSource = null;
+
         for (const pattern of registrarPatterns) {
           registrarMatch = data.match(pattern);
-          if (registrarMatch) break;
+          if (registrarMatch && registrarMatch[1] && registrarMatch[1].trim()) {
+            registrarSource = registrarMatch[1].trim();
+            break;
+          }
         }
 
-        const registrar = registrarMatch ? registrarMatch[1].trim() : undefined;
+        // Clean and normalize registrar name
+        let registrar = undefined;
+        if (registrarSource) {
+          registrar = cleanRegistrarName(registrarSource);
+        }
 
         if (expiryMatch) {
           const expiryDateStr = expiryMatch[1].trim();
