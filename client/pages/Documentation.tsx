@@ -46,22 +46,22 @@ export default function Documentation() {
 
   const docContents: Record<string, DocContent> = {
     general: {
-      title: "Domexus Documentation",
-      content: `Welcome to Domexus documentation. In this website we'll explore how to use Domexus functionalities.
+      title: "DOMINENT Documentation",
+      content: `Welcome to DOMINENT documentation. In this website we'll explore how to use DOMINENT functionalities.
 
 You'll find step-by-step instructions and doesn't need much documentation.
 
-We will explore how to connect and use registrar apis and how to set them in Domexus.
+We will explore how to connect and use registrar apis and how to set them in DOMINENT.
 
-If you're new to Domexus, we recommend you follow these documentations.
+If you're new to DOMINENT, we recommend you follow these documentations.
 
 We'll happily guide you through each step.
 
-Need more help? Contact us at support@domexus.com`
+Need more help? Contact us at support@dominent.com`
     },
     registrars: {
       title: "Registrars Setup",
-      content: `Learn how to connect your domain registrars to Domexus for automated domain management.
+      content: `Learn how to connect your domain registrars to DOMINENT for automated domain management.
 
 ## Supported Registrars
 
@@ -81,11 +81,11 @@ Need more help? Contact us at support@domexus.com`
 
 ## API Requirements
 
-Each registrar has different API requirements. Make sure you have the proper API access enabled in your registrar account before adding it to Domexus.`
+Each registrar has different API requirements. Make sure you have the proper API access enabled in your registrar account before adding it to DOMINENT.`
     },
     introduction: {
-      title: "Introduction to Domexus",
-      content: `Domexus is a comprehensive domain monitoring and management platform designed to help you keep track of your domain portfolio.
+      title: "Introduction to DOMINENT",
+      content: `DOMINENT is a comprehensive domain monitoring and management platform designed to help you keep track of your domain portfolio.
 
 ## Key Features
 
