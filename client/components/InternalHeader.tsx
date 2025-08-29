@@ -25,7 +25,7 @@ export function InternalHeader() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/dashboard" className="text-2xl font-bold text-foreground">
-            Domexus
+            DOMINENT
           </Link>
 
           {/* User info and avatar */}
