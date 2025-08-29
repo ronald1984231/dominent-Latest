@@ -30,7 +30,7 @@ export default function Login() {
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-block">
-            <h1 className="text-3xl font-bold text-primary">Domexus</h1>
+            <h1 className="text-3xl font-bold text-primary">DOMINENT</h1>
             <p className="text-muted-foreground mt-2">Domain monitoring made simple</p>
           </Link>
         </div>
@@ -124,7 +124,7 @@ export default function Login() {
             You can create a new account or use these demo credentials:
           </p>
           <div className="text-xs text-muted-foreground space-y-1">
-            <div>Email: demo@domexus.com</div>
+            <div>Email: demo@dominent.com</div>
             <div>Password: demo123</div>
           </div>
         </div>
