@@ -142,16 +142,16 @@ export default function RegistrarOverview() {
               <CardContent className="p-0">
                 <div className="flex flex-col">
                   {/* Header with Avatar */}
-                  <div className="p-6 border-b">
+                  <div className="p-4 sm:p-6 border-b">
                     <div className="flex items-center space-x-3">
-                      <Avatar className="h-12 w-12">
+                      <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
                         <AvatarFallback className="bg-primary text-primary-foreground">
                           {registrar.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <h3 className="font-semibold">{getRegistrarConfig(registrar.name)?.displayName || registrar.name}</h3>
-                        <p className="text-sm text-muted-foreground">Registered {new Date(registrar.createdAt).toLocaleDateString()}</p>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-sm sm:text-base truncate">{getRegistrarConfig(registrar.name)?.displayName || registrar.name}</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Registered {new Date(registrar.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                   </div>
@@ -160,34 +160,34 @@ export default function RegistrarOverview() {
                   <nav className="p-2">
                     <Link
                       to={`/registrars/${registrar.id}`}
-                      className="flex items-center px-4 py-2 text-sm font-medium bg-muted text-foreground rounded-md mb-1"
+                      className="flex items-center px-3 sm:px-4 py-2 text-sm font-medium bg-muted text-foreground rounded-md mb-1"
                     >
-                      <FileText className="w-4 h-4 mr-3" />
-                      Overview
+                      <FileText className="w-4 h-4 mr-2 sm:mr-3" />
+                      <span className="truncate">Overview</span>
                     </Link>
-                    
+
                     <Link
                       to={`/registrars/${registrar.id}/domains`}
-                      className="flex items-center px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md mb-1"
+                      className="flex items-center px-3 sm:px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md mb-1"
                     >
-                      <Globe className="w-4 h-4 mr-3" />
-                      Domains
+                      <Globe className="w-4 h-4 mr-2 sm:mr-3" />
+                      <span className="truncate">Domains</span>
                     </Link>
-                    
+
                     <Link
                       to={`/registrars/${registrar.id}/apisettings`}
-                      className="flex items-center px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md mb-1"
+                      className="flex items-center px-3 sm:px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md mb-1"
                     >
-                      <Settings className="w-4 h-4 mr-3" />
-                      API Settings
+                      <Settings className="w-4 h-4 mr-2 sm:mr-3" />
+                      <span className="truncate">API Settings</span>
                     </Link>
-                    
+
                     <Link
                       to={`/registrars/${registrar.id}/monthlyreports`}
-                      className="flex items-center px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md"
+                      className="flex items-center px-3 sm:px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md"
                     >
-                      <FileText className="w-4 h-4 mr-3" />
-                      Monthly reports
+                      <FileText className="w-4 h-4 mr-2 sm:mr-3" />
+                      <span className="truncate">Monthly reports</span>
                     </Link>
                   </nav>
                 </div>
