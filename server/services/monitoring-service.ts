@@ -253,13 +253,15 @@ export class MonitoringService {
         });
       }
 
-      // Update SSL data
+      // Update SSL data (separate from WHOIS)
       if (monitorResult.ssl_expiry && !monitorResult.sslError) {
         updateData.ssl_expiry = monitorResult.ssl_expiry;
-        updateData.ssl_status = monitorResult.ssl_status;
+        updateData.ssl_status = monitorResult.ssl_status || 'valid';
+
+        console.log(`🔒 SSL data updated for ${domain.domain}: expiry=${monitorResult.ssl_expiry}, status=${monitorResult.ssl_status}`);
       } else if (monitorResult.sslError) {
         updateData.ssl_status = 'unknown';
-        
+
         // Log SSL error
         await this.createLog({
           domain: domain.domain,
