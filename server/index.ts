@@ -17,6 +17,7 @@ import {
 } from "./routes/domains";
 import {
   getRegistrars as getRegistrarsList,
+  getRegistrarById,
   addRegistrar,
   updateRegistrar,
   deleteRegistrar,
