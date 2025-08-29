@@ -27,8 +27,8 @@ const initializeDemoUser = async () => {
   }
 };
 
-// Demo user auto-initialization disabled - start with clean slate
-// Uncomment the line below to restore demo user: initializeDemoUser();
+// Demo user auto-initialization enabled for demo credentials
+initializeDemoUser();
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
