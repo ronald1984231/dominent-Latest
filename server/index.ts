@@ -136,6 +136,21 @@ export function createServer() {
   app.post("/api/auth/signup", signup);
   app.get("/api/auth/verify", verifyToken);
 
+  // Manual monitoring trigger for testing
+  app.post("/api/test/trigger-monitoring", async (req, res) => {
+    try {
+      console.log('🧪 Manual monitoring trigger requested');
+      await cronService.triggerMonitoring();
+      res.json({ success: true, message: "Monitoring triggered successfully" });
+    } catch (error) {
+      console.error('Manual monitoring trigger failed:', error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
   // Start cron service for automated monitoring
   cronService.start();
   console.log('🚀 Server created with monitoring enabled');
