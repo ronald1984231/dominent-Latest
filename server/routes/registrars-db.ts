@@ -84,17 +84,18 @@ export const addRegistrar: RequestHandler = async (req, res) => {
     const newRegistrarId = Date.now().toString();
     const result = await db.query(`
       INSERT INTO registrars (
-        id, name, label, email, api_key, api_secret, 
+        id, name, label, email, api_key, api_secret, api_credentials,
         api_status, domain_count, status, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CURRENT_TIMESTAMP)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP)
       RETURNING id, name, label, email, api_status, domain_count, status, created_at
     `, [
       newRegistrarId,
       registrar,
       label || "Not set",
       "Not set",
-      apiKey,
-      apiSecret,
+      credentials.api_key || null,
+      credentials.api_secret || null,
+      JSON.stringify(credentials),
       "Connected",
       0,
       "Connected"
