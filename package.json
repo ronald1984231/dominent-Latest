@@ -22,12 +22,14 @@
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/pg": "^8.15.5",
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "node-cron": "^4.2.1",
     "node-fetch": "^2.7.0",
+    "pg": "^8.16.3",
     "whois": "^2.15.0",
     "zod": "^3.25.76"
   },
