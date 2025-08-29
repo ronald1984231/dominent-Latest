@@ -144,7 +144,7 @@ export const testWebhook: RequestHandler = async (req, res) => {
     // Simulate webhook test
     const testPayload = {
       test: true,
-      message: "This is a test notification from Domexus",
+      message: "This is a test notification from DOMINENT",
       timestamp: new Date().toISOString(),
       type: type || "test"
     };
