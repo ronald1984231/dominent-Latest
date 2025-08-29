@@ -42,12 +42,26 @@ export const getRegistrars: RequestHandler = async (req, res) => {
 // Add a new registrar
 export const addRegistrar: RequestHandler = async (req, res) => {
   try {
-    const { registrar, apiKey, apiSecret, label }: AddRegistrarRequest = req.body;
+    const { registrar, apiKey, apiSecret, apiCredentials, label }: AddRegistrarRequest = req.body;
 
-    if (!registrar || !apiKey || !apiSecret) {
+    if (!registrar) {
       const response: AddRegistrarResponse = {
         success: false,
-        error: "Registrar name, API key, and API secret are required"
+        error: "Registrar name is required"
+      };
+      return res.status(400).json(response);
+    }
+
+    // Use dynamic credentials if provided, otherwise fall back to legacy apiKey/apiSecret
+    let credentials: Record<string, string> = {};
+    if (apiCredentials && Object.keys(apiCredentials).length > 0) {
+      credentials = apiCredentials;
+    } else if (apiKey && apiSecret) {
+      credentials = { api_key: apiKey, api_secret: apiSecret };
+    } else {
+      const response: AddRegistrarResponse = {
+        success: false,
+        error: "API credentials are required"
       };
       return res.status(400).json(response);
     }
