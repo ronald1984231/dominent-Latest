@@ -288,6 +288,16 @@ export default function MyRegistrars() {
                   Loading registrars...
                 </div>
               </div>
+            ) : registrars.length === 0 ? (
+              <div className="text-center py-12">
+                <h3 className="text-lg font-medium text-foreground mb-2">No registrars configured</h3>
+                <p className="text-muted-foreground mb-4">
+                  Add your first registrar API to start managing your domains.
+                </p>
+                <Button onClick={() => setShowAddModal(true)} className="bg-success hover:bg-success/90 text-success-foreground">
+                  + ADD REGISTRAR API
+                </Button>
+              </div>
             ) : (
               <div className="space-y-0">
                 {/* Table Header */}
