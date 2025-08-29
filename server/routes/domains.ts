@@ -415,31 +415,43 @@ export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
   }
 
   try {
-    // Simulate monitoring check
-    const updates: Partial<Domain> = {
-      status: Math.random() > 0.1 ? "Online" : "Offline",
-      lastCheck: "Just now",
-      lastWhoisCheck: new Date().toISOString(),
-      lastSslCheck: new Date().toISOString(),
-      lastDnsCheck: new Date().toISOString()
-    };
+    // Use real monitoring service
+    const { monitoringService } = await import("../services/monitoring-service");
+    const monitoringUpdate = await monitoringService.monitorDomain(domain);
 
-    // Update domain
+    // Apply the monitoring updates to the domain
     const domainIndex = domains.findIndex(d => d.id === id);
-    domains[domainIndex] = { ...domains[domainIndex], ...updates };
+    if (domainIndex !== -1) {
+      const updates: Partial<Domain> = {
+        status: "Online", // Default to online if monitoring succeeds
+        lastCheck: "Just now",
+        lastWhoisCheck: monitoringUpdate.lastWhoisCheck,
+        lastSslCheck: monitoringUpdate.lastSslCheck,
+        ...(monitoringUpdate.expiry_date && { expiry_date: monitoringUpdate.expiry_date }),
+        ...(monitoringUpdate.ssl_expiry && { ssl_expiry: monitoringUpdate.ssl_expiry }),
+        ...(monitoringUpdate.ssl_status && { ssl_status: monitoringUpdate.ssl_status }),
+        ...(monitoringUpdate.registrar && { registrar: monitoringUpdate.registrar })
+      };
 
-    const response: DomainMonitoringResponse = {
-      success: true,
-      message: "Domain monitoring completed successfully",
-      updates
-    };
+      domains[domainIndex] = { ...domains[domainIndex], ...updates };
 
-    res.json(response);
+      const response: DomainMonitoringResponse = {
+        success: true,
+        message: "Domain monitoring completed successfully",
+        updates
+      };
+
+      res.json(response);
+    } else {
+      throw new Error("Domain not found during update");
+    }
   } catch (error) {
+    console.error(`Domain monitoring failed for ${domain.domain}:`, error);
+
     const response: DomainMonitoringResponse = {
       success: false,
       message: "Domain monitoring failed",
-      errors: ["Failed to check domain status"]
+      errors: [error instanceof Error ? error.message : "Unknown error"]
     };
 
     res.status(500).json(response);
