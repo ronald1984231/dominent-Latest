@@ -81,9 +81,19 @@ export default function InternalDomains() {
       });
 
       const response = await fetch(`/api/domains?${params}`);
-      const data: GetDomainsResponse = await response.json();
-      
-      setDomains(data.domains);
+      let data: Partial<GetDomainsResponse> = {};
+      try {
+        data = await response.json();
+      } catch {
+        // Non-JSON response; treat as failure
+      }
+
+      if (!response.ok || !data || !Array.isArray((data as any).domains)) {
+        setDomains([]);
+        throw new Error((data as any)?.error || `Failed to fetch domains (${response.status})`);
+      }
+
+      setDomains((data as GetDomainsResponse).domains);
     } catch (error) {
       console.error("Failed to load domains:", error);
       toast({
