@@ -32,6 +32,12 @@ export interface GetRegistrarsResponse {
   total: number;
 }
 
+export interface GetRegistrarResponse {
+  success: boolean;
+  registrar?: Registrar;
+  error?: string;
+}
+
 // Projects API Types
 export interface Project {
   id: string;
