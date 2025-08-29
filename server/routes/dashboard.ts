@@ -164,27 +164,8 @@ export const addToWatchlist: RequestHandler = (req, res) => {
 
 // Get watchlist domains
 export const getWatchlist: RequestHandler = (req, res) => {
-  // Mock watchlist data
-  const watchlist = [
-    {
-      id: "1",
-      domain: "example-domain.com",
-      addedAt: new Date(Date.now() - 86400000).toISOString(),
-      status: "Available",
-      lastChecked: new Date().toISOString(),
-      priceAlert: true,
-      targetPrice: 15.00
-    },
-    {
-      id: "2",
-      domain: "my-startup.io",
-      addedAt: new Date(Date.now() - 172800000).toISOString(),
-      status: "Taken",
-      lastChecked: new Date().toISOString(),
-      priceAlert: false,
-      targetPrice: null
-    }
-  ];
+  // Starting with empty watchlist - all sample data removed
+  const watchlist: any[] = [];
 
   res.json({ watchlist, total: watchlist.length });
 };
