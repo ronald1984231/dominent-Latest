@@ -27,6 +27,67 @@ export interface DomainMonitorResult {
 }
 
 /**
+ * Clean and normalize registrar names
+ */
+function cleanRegistrarName(rawName: string): string {
+  if (!rawName) return rawName;
+
+  let cleaned = rawName.trim();
+
+  // Remove common suffixes and normalize
+  const cleanupPatterns = [
+    // Remove WHOIS server domains
+    /^whois\./i,
+    // Remove common TLDs when registrar is just a domain
+    /\.(com|net|org|info)$/i,
+    // Remove extra whitespace
+    /\s+/g
+  ];
+
+  for (const pattern of cleanupPatterns) {
+    if (pattern.source === '\\s+') {
+      cleaned = cleaned.replace(pattern, ' ');
+    } else {
+      cleaned = cleaned.replace(pattern, '');
+    }
+  }
+
+  // Capitalize registrar names properly
+  cleaned = cleaned.replace(/\b\w+/g, (word) => {
+    // Handle special cases
+    const specialCases: { [key: string]: string } = {
+      'llc': 'LLC',
+      'inc': 'Inc.',
+      'corp': 'Corp.',
+      'ltd': 'Ltd.',
+      'gmbh': 'GmbH',
+      'sa': 'SA',
+      'bv': 'BV',
+      'ab': 'AB',
+      'ag': 'AG',
+      'as': 'AS',
+      'pvt': 'Pvt.',
+      'pty': 'Pty.',
+      'co': 'Co.',
+      'godaddy': 'GoDaddy',
+      'namecheap': 'Namecheap',
+      'cloudflare': 'Cloudflare',
+      'networksolutions': 'Network Solutions'
+    };
+
+    const lowerWord = word.toLowerCase();
+    if (specialCases[lowerWord]) {
+      return specialCases[lowerWord];
+    }
+
+    // Standard title case
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+
+  return cleaned;
+}
+
+/**
  * Get WHOIS information for a domain
  */
 export function getWhois(domain: string): Promise<WhoisResult> {
