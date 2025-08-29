@@ -18,12 +18,12 @@ const initializeDemoUser = async () => {
     const hashedPassword = await bcrypt.hash("demo123", 12);
     users.push({
       id: "demo-user-1",
-      email: "demo@domexus.com",
+      email: "demo@dominent.com",
       password: hashedPassword,
       name: "Demo User",
       createdAt: new Date().toISOString()
     });
-    console.log("📝 Demo user initialized: demo@domexus.com / demo123");
+    console.log("📝 Demo user initialized: demo@dominent.com / demo123");
   }
 };
 
