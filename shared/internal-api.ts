@@ -158,3 +158,45 @@ export interface GetDashboardResponse {
   expiringDomains: ExpiringDomain[];
   expiringCertificates: ExpiringCertificate[];
 }
+
+// Registrar Import API Types
+export interface RegistrarImportRequest {
+  registrarId: string;
+}
+
+export interface RegistrarDomainData {
+  domain: string;
+  registrar: string;
+  expiryDate?: string;
+  autoRenew?: boolean;
+  nameservers?: string[];
+  status?: string;
+}
+
+export interface RegistrarImportResponse {
+  success: boolean;
+  importedCount: number;
+  failedCount: number;
+  domains: RegistrarDomainData[];
+  errors: string[];
+  registrarName: string;
+}
+
+// Error Logs API Types
+export interface ErrorLog {
+  id: string;
+  type: 'registrar_import' | 'domain_monitoring' | 'whois_lookup' | 'ssl_check';
+  domain?: string;
+  registrarId?: string;
+  message: string;
+  details?: any;
+  timestamp: string;
+}
+
+export interface CreateErrorLogRequest {
+  type: ErrorLog['type'];
+  domain?: string;
+  registrarId?: string;
+  message: string;
+  details?: any;
+}
