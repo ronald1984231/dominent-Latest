@@ -204,15 +204,59 @@ export class CronService {
    * Update domain data with monitoring results
    */
   private async updateDomainData(domainId: string, updateData: any): Promise<void> {
-    // In a real implementation, this would update the database
-    // For now, we'll just log the update
-    console.log(`📝 Would update domain ${domainId} with:`, {
-      expiry_date: updateData.expiry_date,
-      ssl_expiry: updateData.ssl_expiry,
-      ssl_status: updateData.ssl_status,
-      lastWhoisCheck: updateData.lastWhoisCheck,
-      lastSslCheck: updateData.lastSslCheck
-    });
+    try {
+      // Import domains and update the specific domain
+      const domainsModule = await import("../routes/domains");
+
+      // Access the internal domains array through a getter function
+      const domains = await this.getDomainsList();
+      const domainIndex = domains.findIndex(d => d.id === domainId);
+
+      if (domainIndex !== -1) {
+        const updates = {
+          ...(updateData.expiry_date && { expiry_date: updateData.expiry_date }),
+          ...(updateData.ssl_expiry && { ssl_expiry: updateData.ssl_expiry }),
+          ...(updateData.ssl_status && { ssl_status: updateData.ssl_status }),
+          ...(updateData.registrar && { registrar: updateData.registrar }),
+          ...(updateData.lastWhoisCheck && { lastWhoisCheck: updateData.lastWhoisCheck }),
+          ...(updateData.lastSslCheck && { lastSslCheck: updateData.lastSslCheck }),
+          status: 'Online',
+          lastCheck: 'Auto updated'
+        };
+
+        // Apply updates to the domain
+        domains[domainIndex] = { ...domains[domainIndex], ...updates };
+
+        console.log(`📝 Updated domain ${domains[domainIndex].domain} with:`, {
+          expiry_date: updateData.expiry_date,
+          ssl_expiry: updateData.ssl_expiry,
+          ssl_status: updateData.ssl_status,
+          registrar: updateData.registrar
+        });
+      } else {
+        console.warn(`⚠️ Domain with ID ${domainId} not found for update`);
+      }
+    } catch (error) {
+      console.error(`❌ Failed to update domain ${domainId}:`, error);
+    }
+  }
+
+  /**
+   * Get domains list for updating (internal helper)
+   */
+  private async getDomainsList() {
+    const { getDomains } = await import("../routes/domains");
+
+    let domains: any[] = [];
+    const mockReq = { query: {} } as any;
+    const mockRes = {
+      json: (data: any) => {
+        domains = data.domains || [];
+      }
+    } as any;
+
+    getDomains(mockReq, mockRes, () => {});
+    return domains;
   }
 
   /**
