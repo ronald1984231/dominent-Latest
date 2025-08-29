@@ -10,6 +10,7 @@ export interface RegistrarCredentialField {
 export interface RegistrarConfig {
   name: string;
   displayName: string;
+  website?: string;
   apiUrl?: string;
   credentials: RegistrarCredentialField[];
   documentation?: string;
