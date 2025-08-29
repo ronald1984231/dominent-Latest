@@ -176,6 +176,10 @@ export default function DomainDetail() {
       setUpdating(true);
       const response = await fetch(`/api/domains/${id}/monitor`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
       });
       
       if (response.ok) {
