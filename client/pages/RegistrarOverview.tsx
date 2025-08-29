@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { InternalHeader } from "../components/InternalHeader";
 import { Button } from "../components/ui/button";
@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import { useToast } from "../hooks/use-toast";
 import { ArrowLeft, Edit, Settings, FileText, Globe, AlertTriangle } from "lucide-react";
 import { Registrar } from "@shared/internal-api";
+import { Domain, GetDomainsResponse } from "@shared/domain-api";
 import { getRegistrarConfig } from "@shared/registrar-config";
 
 
