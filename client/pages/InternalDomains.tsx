@@ -415,11 +415,55 @@ export default function InternalDomains() {
     return 'Unknown';
   };
 
-  const getSSLStatusColor = (status: string | undefined) => {
-    switch (status?.toLowerCase()) {
-      case 'valid': return 'text-success';
-      case 'expired': return 'text-destructive';
-      default: return 'text-muted-foreground';
+  const getSSLStatus = (sslExpiry: string | undefined): 'VALID' | 'EXPIRING' | 'EXPIRED' | 'UNKNOWN' => {
+    if (!sslExpiry) return 'UNKNOWN';
+
+    const expiry = new Date(sslExpiry);
+    const now = new Date();
+    const diffTime = expiry.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return 'EXPIRED';
+    if (diffDays <= 30) return 'EXPIRING';
+    return 'VALID';
+  };
+
+  const getSSLStatusColor = (sslExpiry: string | undefined) => {
+    const status = getSSLStatus(sslExpiry);
+    switch (status) {
+      case 'VALID': return 'text-green-600'; // Green
+      case 'EXPIRING': return 'text-orange-500'; // Orange
+      case 'EXPIRED': return 'text-red-600'; // Red
+      default: return 'text-muted-foreground'; // Gray
+    }
+  };
+
+  const getSSLExpiryVariant = (sslExpiry: string | undefined) => {
+    const status = getSSLStatus(sslExpiry);
+    switch (status) {
+      case 'VALID': return 'default';
+      case 'EXPIRING': return 'destructive'; // Orange-ish
+      case 'EXPIRED': return 'destructive'; // Red
+      default: return 'secondary';
+    }
+  };
+
+  const formatSSLExpiry = (sslExpiry: string | undefined) => {
+    if (!sslExpiry) return 'Unknown';
+
+    const expiry = new Date(sslExpiry);
+    const now = new Date();
+    const diffTime = expiry.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      return 'Expired';
+    } else if (diffDays === 0) {
+      return 'Expires today';
+    } else if (diffDays <= 30) {
+      return `${diffDays} days`;
+    } else {
+      return sslExpiry; // Show YYYY-MM-DD format for long-term SSL
     }
   };
 
