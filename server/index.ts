@@ -101,6 +101,8 @@ export function createServer() {
   app.put("/api/internal/registrars/:id", updateRegistrar);
   app.delete("/api/internal/registrars/:id", deleteRegistrar);
   app.post("/api/internal/registrars/:id/test", testRegistrarConnection);
+  app.post("/api/internal/registrars/import", importDomainsFromRegistrar);
+  app.get("/api/internal/logs/errors", getErrorLogs);
 
   // Projects management API routes
   app.get("/api/internal/projects", getProjects);
