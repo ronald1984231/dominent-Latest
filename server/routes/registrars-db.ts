@@ -48,21 +48,37 @@ export const getRegistrarById: RequestHandler = async (req, res) => {
 export const getRegistrars: RequestHandler = async (req, res) => {
   try {
     const result = await db.query(`
-      SELECT id, name, label, email, api_status, domain_count, status, created_at 
-      FROM registrars 
+      SELECT id, name, label, email, api_status, domain_count, status, created_at
+      FROM registrars
       ORDER BY created_at DESC
     `);
 
-    const registrars: Registrar[] = result.rows.map(row => ({
-      id: row.id,
-      name: row.name,
-      label: row.label || "Not set",
-      email: row.email || "Not set",
-      apiStatus: row.api_status || "Disconnected",
-      domainCount: row.domain_count || 0,
-      status: row.status || "Disconnected",
-      createdAt: row.created_at.toISOString()
-    }));
+    const registrars: Registrar[] = result.rows.map(row => {
+      // Safely handle created_at conversion
+      let createdAt: string;
+      try {
+        if (row.created_at) {
+          const date = typeof row.created_at === 'string' ? new Date(row.created_at) : row.created_at;
+          createdAt = date.toISOString();
+        } else {
+          createdAt = new Date().toISOString(); // Fallback to current time
+        }
+      } catch (dateError) {
+        console.warn('Error converting created_at for registrar:', row.id, dateError);
+        createdAt = new Date().toISOString(); // Fallback to current time
+      }
+
+      return {
+        id: String(row.id),
+        name: String(row.name || 'Unknown'),
+        label: String(row.label || "Not set"),
+        email: String(row.email || "Not set"),
+        apiStatus: String(row.api_status || "Disconnected") as 'Connected' | 'Disconnected' | 'Not configured',
+        domainCount: Number(row.domain_count) || 0,
+        status: String(row.status || "Disconnected") as 'Connected' | 'Disconnected' | 'Unmanaged',
+        createdAt
+      };
+    });
 
     const response: GetRegistrarsResponse = {
       registrars,
