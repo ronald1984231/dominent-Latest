@@ -193,11 +193,11 @@ export default function RegistrarOverview() {
               </Card>
 
               {/* Status Alert */}
-              {registrar.apiStatus === 'Connected' && (
+              {registrar.apiStatus !== 'Connected' && (
                 <div className="flex items-center p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
                   <AlertTriangle className="w-5 h-5 text-destructive mr-3" />
                   <div>
-                    <div className="font-medium text-destructive">Missing</div>
+                    <div className="font-medium text-destructive">Configuration Required</div>
                     <div className="text-sm text-muted-foreground">
                       This registrar requires additional configuration. Please check the API settings and ensure all required fields are properly configured.
                     </div>
