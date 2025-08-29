@@ -121,7 +121,7 @@ export class AlertService {
       severity: log.severity,
       message: log.message,
       details: log.details,
-      source: 'Domexus Domain Monitor'
+      source: 'DOMINENT Domain Monitor'
     };
 
     try {
@@ -129,7 +129,7 @@ export class AlertService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'Domexus-Monitor/1.0'
+          'User-Agent': 'DOMINENT-Monitor/1.0'
         },
         body: JSON.stringify(payload),
         timeout: 10000
@@ -161,7 +161,7 @@ export class AlertService {
     const emoji = this.getSeverityEmoji(log.severity);
     
     const payload = {
-      text: `${emoji} Domexus Domain Alert`,
+      text: `${emoji} DOMINENT Domain Alert`,
       attachments: [
         {
           color: color,
@@ -187,7 +187,7 @@ export class AlertService {
               short: false
             }
           ],
-          footer: 'Domexus Monitor',
+          footer: 'DOMINENT Monitor',
           ts: Math.floor(new Date(log.createdAt).getTime() / 1000)
         }
       ]
@@ -267,9 +267,9 @@ export class AlertService {
   async testWebhook(url: string): Promise<boolean> {
     const testPayload = {
       test: true,
-      message: 'This is a test notification from Domexus',
+      message: 'This is a test notification from DOMINENT',
       timestamp: new Date().toISOString(),
-      source: 'Domexus Domain Monitor'
+      source: 'DOMINENT Domain Monitor'
     };
 
     try {
@@ -277,7 +277,7 @@ export class AlertService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'Domexus-Monitor/1.0'
+          'User-Agent': 'DOMINENT-Monitor/1.0'
         },
         body: JSON.stringify(testPayload),
         timeout: 10000
@@ -295,7 +295,7 @@ export class AlertService {
    */
   async testSlackWebhook(url: string): Promise<boolean> {
     const testPayload = {
-      text: '✅ Domexus Test Notification',
+      text: '✅ DOMINENT Test Notification',
       attachments: [
         {
           color: '#00ff00',
@@ -306,7 +306,7 @@ export class AlertService {
               short: false
             }
           ],
-          footer: 'Domexus Monitor',
+          footer: 'DOMINENT Monitor',
           ts: Math.floor(Date.now() / 1000)
         }
       ]
