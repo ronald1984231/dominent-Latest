@@ -175,37 +175,8 @@ export const testWebhook: RequestHandler = async (req, res) => {
 
 // Get notification logs/history
 export const getNotificationLogs: RequestHandler = (req, res) => {
-  // Mock notification logs
-  const logs = [
-    {
-      id: "1",
-      type: "domain_expiration",
-      domain: "example.com",
-      message: "Domain expires in 7 days",
-      sentAt: new Date(Date.now() - 86400000).toISOString(),
-      status: "sent",
-      channel: "email"
-    },
-    {
-      id: "2",
-      type: "certificate_expiration",
-      domain: "example.com",
-      message: "SSL certificate expires in 15 days",
-      sentAt: new Date(Date.now() - 172800000).toISOString(),
-      status: "sent",
-      channel: "webhook"
-    },
-    {
-      id: "3",
-      type: "domain_expiration",
-      domain: "test.com",
-      message: "Domain expires in 1 day",
-      sentAt: new Date(Date.now() - 259200000).toISOString(),
-      status: "failed",
-      channel: "slack",
-      error: "Webhook URL not reachable"
-    }
-  ];
+  // Starting with empty notification logs - all sample data removed
+  const logs: any[] = [];
 
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
