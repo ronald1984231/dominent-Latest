@@ -86,7 +86,7 @@ export default function Index() {
               </h1>
               
               <p className="text-lg text-foreground/80 max-w-lg leading-relaxed">
-                Domexus monitors domains and SSL certificates expiration, nameservers, DNS Records, domain availability, sales and more. We notify you whenever you want.
+                DOMINENT monitors domains and SSL certificates expiration, nameservers, DNS Records, domain availability, sales and more. We notify you whenever you want.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 items-start">
@@ -110,7 +110,7 @@ export default function Index() {
               {/* Dashboard header */}
               <div className="bg-background border-b border-border px-6 py-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-foreground">Domexus</h3>
+                  <h3 className="font-semibold text-foreground">DOMINENT</h3>
                   <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                     <span>My Team</span>
                     <div className="w-6 h-6 bg-orange-500 rounded-full"></div>
