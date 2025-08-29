@@ -707,8 +707,8 @@ export default function InternalDomains() {
 
                       <div>
                         {domain.ssl_expiry ? (
-                          <Badge variant={getExpiryVariant(domain.ssl_expiry) as any} className="text-xs font-medium">
-                            {formatDate(domain.ssl_expiry)}
+                          <Badge variant={getSSLExpiryVariant(domain.ssl_expiry) as any} className="text-xs font-medium">
+                            {formatSSLExpiry(domain.ssl_expiry)}
                           </Badge>
                         ) : (
                           <span className="text-xs text-muted-foreground">Unknown</span>
