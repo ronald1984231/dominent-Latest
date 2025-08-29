@@ -40,10 +40,10 @@ const callGoDaddyAPI = async (apiKey: string, apiSecret: string): Promise<Regist
 };
 
 // Namecheap API integration (XML-based)
-const callNamecheapAPI = async (apiKey: string, apiSecret: string): Promise<RegistrarDomainData[]> => {
+const callNamecheapAPI = async (apiUser: string, apiKey: string, username: string, clientIp: string): Promise<RegistrarDomainData[]> => {
   try {
     // Namecheap uses XML API, this is a simplified example
-    const response = await fetch(`https://api.namecheap.com/xml.response?ApiUser=${apiSecret}&ApiKey=${apiKey}&UserName=${apiSecret}&Command=namecheap.domains.getList&ClientIp=127.0.0.1`, {
+    const response = await fetch(`https://api.namecheap.com/xml.response?ApiUser=${apiUser}&ApiKey=${apiKey}&UserName=${username}&Command=namecheap.domains.getList&ClientIp=${clientIp}`, {
       method: 'GET'
     });
 
