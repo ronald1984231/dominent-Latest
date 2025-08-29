@@ -32,81 +32,8 @@ export default function MyRegistrars() {
   });
   const { toast } = useToast();
 
-  // Mock registrars data to match the screenshot
-  const mockRegistrars: Registrar[] = [
-    {
-      id: "1",
-      name: "GoDaddy.com, LLC",
-      label: "Not set",
-      email: "Not set",
-      apiStatus: "Connected",
-      domainCount: 26,
-      status: "Connected"
-    },
-    {
-      id: "2", 
-      name: "CloudFlare, Inc.",
-      label: "Not set",
-      email: "Not set",
-      apiStatus: "Connected",
-      domainCount: 2,
-      status: "Connected"
-    },
-    {
-      id: "3",
-      name: "NameCheap, Inc.",
-      label: "Not set", 
-      email: "Not set",
-      apiStatus: "Connected",
-      domainCount: 112,
-      status: "Connected"
-    },
-    {
-      id: "4",
-      name: "PDR Ltd. d/b/a PublicDomainRegistry.com",
-      label: "Not set",
-      email: "Not set", 
-      apiStatus: "Disconnected",
-      domainCount: 3,
-      status: "Unmanaged"
-    },
-    {
-      id: "5",
-      name: "DomainDeluxe.com, Inc.",
-      label: "Not set",
-      email: "Not set",
-      apiStatus: "Disconnected", 
-      domainCount: 53,
-      status: "Unmanaged"
-    },
-    {
-      id: "6",
-      name: "HostGator, UAB",
-      label: "Not set",
-      email: "Not set",
-      apiStatus: "Disconnected",
-      domainCount: 1,
-      status: "Unmanaged"
-    },
-    {
-      id: "7",
-      name: "Domaindetectives, LLC",
-      label: "Not set", 
-      email: "Not set",
-      apiStatus: "Disconnected",
-      domainCount: 1,
-      status: "Unmanaged"
-    },
-    {
-      id: "8",
-      name: "GoDaddy.com, LLC",
-      label: "Not set",
-      email: "Not set",
-      apiStatus: "Connected",
-      domainCount: 1,
-      status: "Connected"
-    }
-  ];
+  // Starting with empty registrars array - all sample data removed
+  const mockRegistrars: Registrar[] = [];
 
   useEffect(() => {
     setRegistrars(mockRegistrars);
