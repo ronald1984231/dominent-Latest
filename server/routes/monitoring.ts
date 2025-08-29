@@ -91,7 +91,7 @@ export const getMonitoringStats: RequestHandler = async (req, res) => {
 };
 
 // Manually trigger domain monitoring for a specific domain
-export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
+export const triggerDomainMonitoringByName: RequestHandler = async (req, res) => {
   const { domain } = req.params;
 
   if (!domain) {
