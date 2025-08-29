@@ -6,6 +6,7 @@ export interface Registrar {
   email: string;
   apiKey?: string;
   apiSecret?: string;
+  apiCredentials?: Record<string, string>; // Dynamic credentials based on registrar
   apiStatus: 'Connected' | 'Disconnected' | 'Not configured';
   domainCount: number;
   status: 'Connected' | 'Disconnected' | 'Unmanaged';
@@ -14,8 +15,9 @@ export interface Registrar {
 
 export interface AddRegistrarRequest {
   registrar: string;
-  apiKey: string;
+  apiKey?: string;
   apiSecret?: string;
+  apiCredentials?: Record<string, string>; // Dynamic credentials
   label?: string;
 }
 
