@@ -24,13 +24,18 @@ import {
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog";
 import { useToast } from "../hooks/use-toast";
-import { 
-  Domain, 
-  GetDomainsResponse, 
-  AddDomainRequest, 
+import {
+  Domain,
+  GetDomainsResponse,
+  AddDomainRequest,
   DomainSearchQuery,
   DomainMonitoringResponse
 } from "@shared/domain-api";
+import {
+  Registrar,
+  RegistrarImportRequest,
+  RegistrarImportResponse
+} from "@shared/internal-api";
 import { Loader2, Plus, Download, RefreshCw, Settings, ExternalLink, Trash2 } from "lucide-react";
 
 export default function InternalDomains() {
