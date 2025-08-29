@@ -507,18 +507,50 @@ export const updateDomainFromCron = (domainId: string, updateData: Partial<Domai
   const domainIndex = domains.findIndex(d => d.id === domainId);
 
   if (domainIndex !== -1) {
-    const updates = {
-      ...(updateData.expiry_date && { expiry_date: updateData.expiry_date }),
-      ...(updateData.ssl_expiry && { ssl_expiry: updateData.ssl_expiry }),
-      ...(updateData.ssl_status && { ssl_status: updateData.ssl_status }),
-      ...(updateData.registrar && { registrar: updateData.registrar }),
-      ...(updateData.lastWhoisCheck && { lastWhoisCheck: updateData.lastWhoisCheck }),
-      ...(updateData.lastSslCheck && { lastSslCheck: updateData.lastSslCheck }),
-      status: 'Online',
-      lastCheck: 'Auto updated'
+    const currentDomain = domains[domainIndex];
+
+    // Build updates object - always update provided fields
+    const updates: Partial<Domain> = {
+      status: updateData.status || 'Online',
+      lastCheck: updateData.lastCheck || 'Auto updated'
     };
 
-    domains[domainIndex] = { ...domains[domainIndex], ...updates };
+    // Update expiry_date (WHOIS data) - preserve if valid data exists
+    if (updateData.expiry_date) {
+      updates.expiry_date = updateData.expiry_date;
+    }
+
+    // Update SSL data
+    if (updateData.ssl_expiry) {
+      updates.ssl_expiry = updateData.ssl_expiry;
+    }
+    if (updateData.ssl_status) {
+      updates.ssl_status = updateData.ssl_status;
+    }
+
+    // Update registrar
+    if (updateData.registrar) {
+      updates.registrar = updateData.registrar;
+    }
+
+    // Update check timestamps
+    if (updateData.lastWhoisCheck) {
+      updates.lastWhoisCheck = updateData.lastWhoisCheck;
+    }
+    if (updateData.lastSslCheck) {
+      updates.lastSslCheck = updateData.lastSslCheck;
+    }
+
+    // Apply updates
+    domains[domainIndex] = { ...currentDomain, ...updates };
+
+    console.log(`🔄 Domain ${currentDomain.domain} updated:`, {
+      expiry_date: updates.expiry_date ? 'Updated' : 'Unchanged',
+      ssl_expiry: updates.ssl_expiry ? 'Updated' : 'Unchanged',
+      ssl_status: updates.ssl_status || 'Unchanged',
+      registrar: updates.registrar ? 'Updated' : 'Unchanged'
+    });
+
     return true;
   }
 
