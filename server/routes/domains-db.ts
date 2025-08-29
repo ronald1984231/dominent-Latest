@@ -167,8 +167,8 @@ export const addDomain: RequestHandler = async (req, res) => {
 
         // Update the domain with monitoring results
         await db.query(`
-          UPDATE domains 
-          SET 
+          UPDATE domains
+          SET
             status = $1,
             last_check = $2,
             last_whois_check = $3,
@@ -186,7 +186,8 @@ export const addDomain: RequestHandler = async (req, res) => {
           updateData.expiry_date ? new Date(updateData.expiry_date) : null,
           updateData.ssl_expiry ? new Date(updateData.ssl_expiry) : null,
           updateData.ssl_status || null,
-          updateData.registrar || null
+          updateData.registrar || null,
+          newDomainId  // Missing domain ID parameter
         ]);
       } catch (error) {
         console.error(`Initial monitoring failed for ${domain}:`, error);
@@ -258,8 +259,8 @@ export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
 
     // Apply the monitoring updates to the domain
     await db.query(`
-      UPDATE domains 
-      SET 
+      UPDATE domains
+      SET
         status = $1,
         last_check = $2,
         last_whois_check = $3,
@@ -277,7 +278,8 @@ export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
       monitoringUpdate.expiry_date ? new Date(monitoringUpdate.expiry_date) : null,
       monitoringUpdate.ssl_expiry ? new Date(monitoringUpdate.ssl_expiry) : null,
       monitoringUpdate.ssl_status || null,
-      monitoringUpdate.registrar || null
+      monitoringUpdate.registrar || null,
+      id  // Missing domain ID parameter
     ]);
 
     const response: DomainMonitoringResponse = {
