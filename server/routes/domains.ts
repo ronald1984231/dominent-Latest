@@ -481,6 +481,7 @@ function checkDomainStatus(domainId: string) {
 
 // Get unique registrars for filter dropdown
 export const getRegistrars: RequestHandler = (req, res) => {
-  const registrars = [...new Set(domains.map(d => d.registrar))].filter(r => r !== "Unknown");
+  const registrars = [...new Set(domains.map(d => d.registrar))]
+    .filter(r => r && r !== "Unknown" && r.trim() !== "");
   res.json({ registrars });
 };
