@@ -234,39 +234,25 @@ export default function MyRegistrars() {
               <div className="space-y-4 mt-4">
                 <div>
                   <Label htmlFor="registrar">Registrar</Label>
-                  <Select value={newRegistrar.registrar} onValueChange={(value) => setNewRegistrar(prev => ({ ...prev, registrar: value }))}>
+                  <Select value={newRegistrar.registrar} onValueChange={handleRegistrarChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder="GoDaddy.com, LLC" />
+                      <SelectValue placeholder="Select a registrar" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="GoDaddy.com, LLC">GoDaddy.com, LLC</SelectItem>
-                      <SelectItem value="Namecheap, Inc.">Namecheap, Inc.</SelectItem>
-                      <SelectItem value="CloudFlare, Inc.">CloudFlare, Inc.</SelectItem>
-                      <SelectItem value="Domain.com, LLC">Domain.com, LLC</SelectItem>
-                      <SelectItem value="Google Domains">Google Domains</SelectItem>
-                      <SelectItem value="Amazon Route 53">Amazon Route 53</SelectItem>
-                      <SelectItem value="Porkbun">Porkbun</SelectItem>
-                      <SelectItem value="Dynadot">Dynadot</SelectItem>
-                      <SelectItem value="Name.com">Name.com</SelectItem>
-                      <SelectItem value="Network Solutions">Network Solutions</SelectItem>
-                      <SelectItem value="Hover">Hover</SelectItem>
-                      <SelectItem value="Gandi">Gandi</SelectItem>
-                      <SelectItem value="1&1 IONOS">1&1 IONOS</SelectItem>
-                      <SelectItem value="HostGator Domains">HostGator Domains</SelectItem>
-                      <SelectItem value="Bluehost">Bluehost</SelectItem>
-                      <SelectItem value="Enom">Enom</SelectItem>
-                      <SelectItem value="Register.com">Register.com</SelectItem>
-                      <SelectItem value="Tucows">Tucows</SelectItem>
-                      <SelectItem value="OVH">OVH</SelectItem>
-                      <SelectItem value="Dreamhost">Dreamhost</SelectItem>
-                      <SelectItem value="123-reg">123-reg</SelectItem>
-                      <SelectItem value="Hostinger">Hostinger</SelectItem>
-                      <SelectItem value="Epik">Epik</SelectItem>
-                      <SelectItem value="MarkMonitor">MarkMonitor</SelectItem>
-                      <SelectItem value="CSC Corporate Domains">CSC Corporate Domains</SelectItem>
+                      {getRegistrarDisplayNames().map(({ name, displayName }) => (
+                        <SelectItem key={name} value={name}>
+                          {displayName}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground mt-1">DOCUMENTATION ℹ️</p>
+                  {selectedRegistrarConfig?.documentation && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      <a href={selectedRegistrarConfig.documentation} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        📖 API Documentation
+                      </a>
+                    </p>
+                  )}
                 </div>
 
                 <div>
