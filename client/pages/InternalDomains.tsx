@@ -695,8 +695,8 @@ export default function InternalDomains() {
                       </div>
 
                       <div>
-                        <div className={`text-sm font-medium ${getSSLStatusColor(domain.ssl_status)}`}>
-                          {domain.ssl_status?.toUpperCase() || 'UNKNOWN'}
+                        <div className={`text-sm font-medium ${getSSLStatusColor(domain.ssl_expiry)}`}>
+                          {getSSLStatus(domain.ssl_expiry)}
                         </div>
                         {domain.lastSslCheck && (
                           <div className="text-xs text-muted-foreground">
