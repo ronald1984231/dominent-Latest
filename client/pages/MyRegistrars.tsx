@@ -89,7 +89,15 @@ export default function MyRegistrars() {
 
   const handleRegistrarChange = (registrarName: string) => {
     const config = getRegistrarConfig(registrarName);
-    setSelectedRegistrarConfig(config || null);
+    if (!config) {
+      toast({
+        title: "Error",
+        description: `Configuration not found for ${registrarName}. Please contact support.`,
+        variant: "destructive"
+      });
+      return;
+    }
+    setSelectedRegistrarConfig(config);
     setNewRegistrar(prev => ({
       ...prev,
       registrar: registrarName,
