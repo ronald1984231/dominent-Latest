@@ -192,11 +192,20 @@ export const addDomain: RequestHandler = (req, res) => {
       // Update the domain with monitoring results
       const domainIndex = domains.findIndex(d => d.id === newDomain.id);
       if (domainIndex !== -1) {
+        const updates: Partial<Domain> = {
+          status: "Online",
+          lastCheck: "Just now",
+          lastWhoisCheck: updateData.lastWhoisCheck,
+          lastSslCheck: updateData.lastSslCheck,
+          ...(updateData.expiry_date && { expiry_date: updateData.expiry_date }),
+          ...(updateData.ssl_expiry && { ssl_expiry: updateData.ssl_expiry }),
+          ...(updateData.ssl_status && { ssl_status: updateData.ssl_status }),
+          ...(updateData.registrar && { registrar: updateData.registrar })
+        };
+
         domains[domainIndex] = {
           ...domains[domainIndex],
-          ...updateData,
-          status: updateData.status || "Online",
-          lastCheck: "Just now"
+          ...updates
         };
       }
     } catch (error) {
