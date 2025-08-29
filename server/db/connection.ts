@@ -8,20 +8,31 @@ class Database {
   private pool: Pool;
 
   private constructor() {
+    const databaseUrl = process.env.DATABASE_URL;
+    console.log('🔍 Database URL configured:', databaseUrl ? 'Yes' : 'No');
+    console.log('🔍 Environment check:', process.env.NODE_ENV || 'development');
+
+    if (!databaseUrl) {
+      console.error('❌ DATABASE_URL environment variable is not set!');
+      console.log('Available env vars:', Object.keys(process.env).filter(key => key.includes('DB') || key.includes('DATABASE')));
+    }
+
     this.pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: {
+      connectionString: databaseUrl,
+      ssl: databaseUrl && databaseUrl.includes('neon.tech') ? {
         rejectUnauthorized: false
-      }
+      } : false
     });
 
     // Test connection
     this.pool.on('connect', () => {
-      console.log('📊 Connected to Neon PostgreSQL database');
+      console.log('📊 Connected to PostgreSQL database');
+      console.log('🔗 Connection string host:', databaseUrl ? new URL(databaseUrl).host : 'localhost');
     });
 
     this.pool.on('error', (err) => {
-      console.error('Database connection error:', err);
+      console.error('❌ Database connection error:', err);
+      console.log('🔍 DATABASE_URL value:', databaseUrl || 'NOT SET');
     });
   }
 
