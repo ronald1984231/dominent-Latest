@@ -249,6 +249,7 @@ export default function InternalDomains() {
 
       if (successCount > 0) {
         setBulkDomains("");
+        setAddDomainMode('single');
         loadDomains();
       }
     } catch (error) {
