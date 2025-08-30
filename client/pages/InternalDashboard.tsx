@@ -77,8 +77,8 @@ export default function InternalDashboard() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">Welcome Ronald Stone</h1>
-              <p className="text-muted-foreground">
-                DOMINENT is an easy to use application that will assist in managing your domains and SSL certificates, ensuring you never forget about them. Additionally, it simplifies the billing process for multiple domain providers. You can renew your domains directly from your dashboard, eliminating the need to manage each provider separately.
+              <p>
+                <br />
               </p>
             </div>
           </div>
