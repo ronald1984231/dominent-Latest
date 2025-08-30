@@ -82,14 +82,33 @@ export const addDomain: RequestHandler<
   try {
     const { domain } = req.body;
 
+    // Validate domain format
+    if (!domain || !domain.trim()) {
+      return res.status(400).json({ success: false, error: "Domain name is required" });
+    }
+
+    const cleanDomain = domain.trim().toLowerCase();
+
+    // Basic domain validation
+    const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    if (!domainRegex.test(cleanDomain)) {
+      return res.status(400).json({ success: false, error: "Invalid domain format" });
+    }
+
     // Check if domain already exists
-    const existingDomain = await db.query('SELECT id FROM domains WHERE domain = $1', [domain]);
+    const existingDomain = await db.query('SELECT id FROM domains WHERE domain = $1', [cleanDomain]);
     if (existingDomain.rows.length > 0) {
       return res.status(400).json({ success: false, error: "Domain already exists" });
     }
 
-    // WHOIS lookup
-    const whoisInfo = await fetchWhoisInfo(domain);
+    // WHOIS lookup with error handling
+    let whoisInfo = { registrar: "Unknown", expiryDate: undefined };
+    try {
+      whoisInfo = await fetchWhoisInfo(cleanDomain);
+    } catch (whoisError) {
+      console.warn(`WHOIS lookup failed for ${cleanDomain}:`, whoisError);
+      // Continue with default values
+    }
 
     // Generate unique ID
     const domainId = Date.now().toString();
@@ -102,8 +121,8 @@ export const addDomain: RequestHandler<
 
     const result = await db.query(sql, [
       domainId,
-      domain,
-      domain, // subdomain same as domain for now
+      cleanDomain,
+      cleanDomain, // subdomain same as domain for now
       whoisInfo.registrar,
       whoisInfo.expiryDate,
       "Online", // Changed from "Active" to match expected values
