@@ -163,3 +163,32 @@ export const triggerDomainMonitoring: RequestHandler = async (_req, res) => {
     res.status(500).json({ success: false, error: err instanceof Error ? err.message : "Unknown error" });
   }
 };
+
+// ---------------- Get All Domains for Cron (used by dashboard) ----------------
+export const getAllDomainsForCron = async () => {
+  try {
+    const sql = `
+      SELECT
+        id,
+        domain,
+        registrar,
+        expiry_date,
+        ssl_expiry,
+        ssl_status,
+        status,
+        last_check as "lastCheck",
+        last_whois_check as "lastWhoisCheck",
+        last_ssl_check as "lastSslCheck",
+        is_active as "isActive",
+        created_at
+      FROM domains
+      ORDER BY created_at DESC
+    `;
+
+    const results = await db.query(sql, []);
+    return results.rows;
+  } catch (err) {
+    console.error("Error fetching domains for cron:", err);
+    return [];
+  }
+};
