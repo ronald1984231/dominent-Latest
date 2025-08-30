@@ -564,8 +564,8 @@ export default function InternalDomains() {
               <AlertDialogTrigger asChild>
                 <Button className="w-full sm:w-auto bg-success hover:bg-success/90 text-success-foreground">
                   <Plus className="w-4 h-4 mr-2" />
-                  <span className="sm:hidden">ADD DOMAIN</span>
-                  <span className="hidden sm:inline">ADD DOMAIN</span>
+                  <span className="sm:hidden">ADD DOMAINS</span>
+                  <span className="hidden sm:inline">ADD DOMAINS</span>
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent className="max-w-2xl">
