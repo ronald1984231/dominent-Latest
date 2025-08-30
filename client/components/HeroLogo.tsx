@@ -6,7 +6,7 @@ export function HeroLogo({ className = "" }: HeroLogoProps) {
   return (
     <div className={`flex flex-col items-center space-y-4 ${className}`}>
       {/* Large Logo Icon */}
-      <div className="relative">
+      <div className="relative logo-container">
         <svg
           className="h-24 w-24 drop-shadow-lg"
           viewBox="0 0 96 96"
