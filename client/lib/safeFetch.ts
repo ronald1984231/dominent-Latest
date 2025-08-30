@@ -1,6 +1,7 @@
 /**
  * Safe fetch utility with retry logic, timeout, and better error handling
  */
+import { useState, useCallback } from 'react';
 
 export interface SafeFetchOptions extends RequestInit {
   timeout?: number;
