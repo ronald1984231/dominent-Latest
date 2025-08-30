@@ -289,6 +289,7 @@ export default function InternalDomains() {
           description: `Domain ${newDomain} added successfully.`,
         });
         setNewDomain("");
+        setAddDomainMode('single');
         loadDomains();
       } else {
         toast({
