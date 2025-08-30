@@ -135,7 +135,7 @@ export async function safeFetch(
       } catch (fetchError) {
         // If original fetch fails due to third-party interference, try XMLHttpRequest
         if (isThirdPartyInterferenceError(fetchError)) {
-          console.debug('Fetch intercepted by third-party, trying XMLHttpRequest fallback');
+          console.debug('Fetch intercepted by third-party (FullStory), using XMLHttpRequest fallback for:', url);
           response = await fetchWithXHR(url, {
             ...fetchOptions,
             headers: {
@@ -144,6 +144,7 @@ export async function safeFetch(
             },
           });
         } else {
+          console.debug('Fetch failed for non-third-party reason:', fetchError);
           throw fetchError;
         }
       }
