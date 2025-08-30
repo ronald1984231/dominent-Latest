@@ -44,6 +44,8 @@ import RegistrarConfig from "./pages/RegistrarConfig";
 
 const queryClient = new QueryClient();
 
+const SentryRoutes = Sentry.withSentryRouting(Routes);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -51,7 +53,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
+          <SentryRoutes>
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<InternalDashboard />} />
             <Route path="/internal/domains" element={<InternalDomains />} />
@@ -94,7 +96,7 @@ const App = () => (
             <Route path="/fullstory-test" element={<FullStoryTest />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
+          </SentryRoutes>
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
