@@ -174,6 +174,15 @@ export default function ErrorTest() {
               </Button>
 
               <Button
+                onClick={testSentryError}
+                disabled={isLoading}
+                variant="secondary"
+                className="w-full"
+              >
+                Test Sentry Error Tracking
+              </Button>
+
+              <Button
                 onClick={clearResults}
                 variant="destructive"
                 className="w-full"
