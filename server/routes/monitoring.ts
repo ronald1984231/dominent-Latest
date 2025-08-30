@@ -100,34 +100,48 @@ export const triggerDomainMonitoringByName: RequestHandler = async (req, res) =>
   }
 
   try {
-    console.log(`Manually triggering monitoring for: ${domain}`);
-    const result = await checkDomain(domain);
-    
+    console.log(`Manually triggering enhanced monitoring for: ${domain}`);
+
+    // Use enhanced monitoring instead of basic checkDomain
+    const { updateDomainInfo } = await import("../utils/enhanced-domain-monitor");
+    const result = await updateDomainInfo(domain);
+
     // Log the monitoring result
     await monitoringService.createLog({
       domain: domain,
       logType: 'monitoring_error',
       severity: 'info',
-      message: `Manual monitoring triggered for ${domain}`,
+      message: `Manual enhanced monitoring triggered for ${domain}`,
       details: {
-        expiry_date: result.expiry_date,
+        domain_expiry: result.domain_expiry,
         ssl_expiry: result.ssl_expiry,
         ssl_status: result.ssl_status,
-        registrar: result.registrar
+        registrar: result.registrar,
+        source: result.source,
+        errors: result.errors
       }
     });
 
     res.json({
       success: true,
-      result,
-      message: `Monitoring completed for ${domain}`
+      result: {
+        domain: result.domain,
+        expiry_date: result.domain_expiry,
+        ssl_expiry: result.ssl_expiry,
+        ssl_status: result.ssl_status,
+        registrar: result.registrar,
+        source: result.source,
+        status: result.status,
+        errors: result.errors
+      },
+      message: `Enhanced monitoring completed for ${domain}`
     });
   } catch (error) {
-    console.error(`Manual monitoring failed for ${domain}:`, error);
-    
+    console.error(`Manual enhanced monitoring failed for ${domain}:`, error);
+
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Monitoring failed"
+      error: error instanceof Error ? error.message : "Enhanced monitoring failed"
     });
   }
 };
