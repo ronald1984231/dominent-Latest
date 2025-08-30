@@ -89,9 +89,12 @@ export function setupResizeObserverErrorHandler(): void {
 
     // Suppress specific FullStory evaluation errors
     if (
-      event.message?.includes("TypeError: Failed to fetch") &&
+      (event.message?.includes("TypeError: Failed to fetch") ||
+       event.message?.includes("Failed to fetch")) &&
       (event.filename?.includes("fs.js") ||
-        (event.lineno === 4 && event.colno === 60118))
+       (event.lineno === 4 && event.colno === 60118) ||
+       event.error?.stack?.includes("eval at messageHandler") ||
+       event.error?.stack?.includes("safeFetch"))
     ) {
       event.preventDefault();
       event.stopPropagation();
