@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
+import { Logo } from "./Logo";
 
 export function InternalHeader() {
   const location = useLocation();
@@ -25,8 +26,8 @@ export function InternalHeader() {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/dashboard" className="text-2xl font-bold text-foreground">
-            DOMINENT
+          <Link to="/dashboard" className="hover:opacity-80 transition-opacity">
+            <Logo size="md" />
           </Link>
 
           {/* User info and avatar */}
