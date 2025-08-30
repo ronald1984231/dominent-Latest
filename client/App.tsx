@@ -46,6 +46,7 @@ const App = () => (
             <Route path="/internal/domains/add" element={<AddDomain />} />
             <Route path="/internal/domains/:id" element={<DomainDetail />} />
             <Route path="/internal/registrars" element={<MyRegistrars />} />
+            <Route path="/internal/registrar-config" element={<RegistrarConfig />} />
             <Route path="/registrars/:id" element={<RegistrarOverview />} />
             <Route path="/registrars/:id/domains" element={<RegistrarDomains />} />
             <Route path="/registrars/:id/apisettings" element={<RegistrarAPISettings />} />
