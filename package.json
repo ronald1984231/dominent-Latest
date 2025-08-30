@@ -31,6 +31,7 @@
     "node-fetch": "^2.7.0",
     "pg": "^8.16.3",
     "whois": "^2.15.0",
+    "whois-json": "^2.0.4",
     "zod": "^3.25.76"
   },
   "devDependencies": {
