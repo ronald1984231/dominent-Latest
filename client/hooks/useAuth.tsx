@@ -19,12 +19,23 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 async function parseResponseSafe(response: Response) {
-  const text = await response.text();
-  if (!text) return null;
   try {
-    return JSON.parse(text);
+    if (response.bodyUsed) {
+      return null;
+    }
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return await response.json();
+    }
+    const text = await response.text();
+    if (!text) return null;
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { error: text };
+    }
   } catch {
-    return { error: text };
+    return null;
   }
 }
 
