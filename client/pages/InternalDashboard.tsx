@@ -61,11 +61,31 @@ export default function InternalDashboard() {
         setLoading(true);
         setError(null);
 
-        const dashboardData = await safeFetchJson<{
-          stats: DashboardStats;
-          expiringDomains: ExpiringDomain[];
-          expiringCertificates: ExpiringCertificate[];
-        }>("/api/internal/dashboard");
+        let dashboardData;
+
+        try {
+          // Try safeFetch first
+          dashboardData = await safeFetchJson<{
+            stats: DashboardStats;
+            expiringDomains: ExpiringDomain[];
+            expiringCertificates: ExpiringCertificate[];
+          }>("/api/internal/dashboard");
+        } catch (safeFetchError) {
+          console.warn("SafeFetch failed, trying emergency bypass:", safeFetchError);
+
+          // Emergency fallback using bypass mechanism
+          try {
+            dashboardData = await bypassFetchJson<{
+              stats: DashboardStats;
+              expiringDomains: ExpiringDomain[];
+              expiringCertificates: ExpiringCertificate[];
+            }>("/api/internal/dashboard");
+            console.info("Emergency bypass successful for dashboard data");
+          } catch (bypassError) {
+            console.error("Both safeFetch and bypass failed:", bypassError);
+            throw safeFetchError; // Throw the original error for better debugging
+          }
+        }
 
         setStats(dashboardData.stats);
         setExpiringDomains(dashboardData.expiringDomains || []);
