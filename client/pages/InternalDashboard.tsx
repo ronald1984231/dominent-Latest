@@ -50,6 +50,8 @@ export default function InternalDashboard() {
   const [expiringCertificates, setExpiringCertificates] = useState<
     ExpiringCertificate[]
   >([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Load complete dashboard data
