@@ -113,3 +113,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Logo animations - safe animations that don't trigger ResizeObserver */
+.logo-pulse-ring {
+  animation: logo-pulse 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.hero-pulse-ring-1 {
+  animation: logo-pulse 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.hero-pulse-ring-2 {
+  animation: logo-pulse 2s ease-in-out infinite 0.5s;
+  transform-origin: center;
+}
+
+@keyframes logo-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.1;
+    transform: scale(1.3);
+  }
+}
