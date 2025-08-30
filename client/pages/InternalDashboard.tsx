@@ -34,35 +34,33 @@ export default function InternalDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     totalDomains: 0,
     domainsRenewalPrice: 0.00,
-    expiringDomains: 0
+    expiringDomains: 0,
+    expiringCertificates: 0,
+    onlineDomains: 0,
+    offlineDomains: 0
   });
 
+  const [expiringDomains, setExpiringDomains] = useState<ExpiringDomain[]>([]);
+  const [expiringCertificates, setExpiringCertificates] = useState<ExpiringCertificate[]>([]);
+
   useEffect(() => {
-    // Load monitoring stats
-    const loadMonitoringStats = async () => {
+    // Load complete dashboard data
+    const loadDashboardData = async () => {
       try {
-        const response = await fetch('/api/monitoring/stats');
+        const response = await fetch('/api/internal/dashboard');
         if (response.ok) {
-          const monitoringStats = await response.json();
-          setStats(prev => ({
-            ...prev,
-            totalDomains: monitoringStats.totalDomains,
-            expiringDomains: monitoringStats.domainsExpiringSoon + monitoringStats.sslExpiringSoon
-          }));
+          const dashboardData = await response.json();
+          setStats(dashboardData.stats);
+          setExpiringDomains(dashboardData.expiringDomains || []);
+          setExpiringCertificates(dashboardData.expiringCertificates || []);
         }
       } catch (error) {
-        console.error('Failed to load monitoring stats:', error);
+        console.error('Failed to load dashboard data:', error);
       }
     };
 
-    loadMonitoringStats();
+    loadDashboardData();
   }, []);
-
-  // Starting with empty expiring domains - all sample data removed
-  const [expiringDomains] = useState<ExpiringDomain[]>([]);
-
-  // Starting with empty expiring certificates - all sample data removed
-  const [expiringCertificates] = useState<ExpiringCertificate[]>([]);
 
   return (
     <div className="min-h-screen bg-background">
