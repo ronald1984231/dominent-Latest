@@ -31,7 +31,9 @@ export function InternalHeader() {
 
           {/* User info and avatar */}
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">Googleplex Network</span>
+            <span className="text-sm text-muted-foreground">
+              Googleplex Network
+            </span>
             <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
               R
             </div>
@@ -47,8 +49,8 @@ export function InternalHeader() {
                 to={item.path}
                 className={`text-sm font-medium whitespace-nowrap pb-3 border-b-2 transition-colors ${
                   isActive(item.path)
-                    ? 'text-foreground border-primary'
-                    : 'text-muted-foreground border-transparent hover:text-foreground hover:border-border'
+                    ? "text-foreground border-primary"
+                    : "text-muted-foreground border-transparent hover:text-foreground hover:border-border"
                 }`}
               >
                 {item.name}

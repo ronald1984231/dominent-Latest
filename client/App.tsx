@@ -46,15 +46,30 @@ const App = () => (
             <Route path="/internal/domains/add" element={<AddDomain />} />
             <Route path="/internal/domains/:id" element={<DomainDetail />} />
             <Route path="/internal/registrars" element={<MyRegistrars />} />
-            <Route path="/internal/registrar-config" element={<RegistrarConfig />} />
+            <Route
+              path="/internal/registrar-config"
+              element={<RegistrarConfig />}
+            />
             <Route path="/registrars/:id" element={<RegistrarOverview />} />
-            <Route path="/registrars/:id/domains" element={<RegistrarDomains />} />
-            <Route path="/registrars/:id/apisettings" element={<RegistrarAPISettings />} />
-            <Route path="/registrars/:id/monthlyreports" element={<RegistrarMonthlyReports />} />
+            <Route
+              path="/registrars/:id/domains"
+              element={<RegistrarDomains />}
+            />
+            <Route
+              path="/registrars/:id/apisettings"
+              element={<RegistrarAPISettings />}
+            />
+            <Route
+              path="/registrars/:id/monthlyreports"
+              element={<RegistrarMonthlyReports />}
+            />
             <Route path="/internal/watchlist" element={<DomainsWatchlist />} />
             <Route path="/internal/projects" element={<Projects />} />
             <Route path="/internal/notifications" element={<Notifications />} />
-            <Route path="/internal/monitoring" element={<MonitoringDashboard />} />
+            <Route
+              path="/internal/monitoring"
+              element={<MonitoringDashboard />}
+            />
             <Route path="/internal/documentation" element={<Documentation />} />
             <Route path="/domains-search" element={<DomainsSearch />} />
             <Route path="/pricing" element={<Pricing />} />

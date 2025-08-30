@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { InternalHeader } from "../components/InternalHeader";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Link } from "react-router-dom";
 
@@ -33,21 +38,23 @@ interface ExpiringCertificate {
 export default function InternalDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     totalDomains: 0,
-    domainsRenewalPrice: 0.00,
+    domainsRenewalPrice: 0.0,
     expiringDomains: 0,
     expiringCertificates: 0,
     onlineDomains: 0,
-    offlineDomains: 0
+    offlineDomains: 0,
   });
 
   const [expiringDomains, setExpiringDomains] = useState<ExpiringDomain[]>([]);
-  const [expiringCertificates, setExpiringCertificates] = useState<ExpiringCertificate[]>([]);
+  const [expiringCertificates, setExpiringCertificates] = useState<
+    ExpiringCertificate[]
+  >([]);
 
   useEffect(() => {
     // Load complete dashboard data
     const loadDashboardData = async () => {
       try {
-        const response = await fetch('/api/internal/dashboard');
+        const response = await fetch("/api/internal/dashboard");
         if (response.ok) {
           const dashboardData = await response.json();
           setStats(dashboardData.stats);
@@ -55,7 +62,7 @@ export default function InternalDashboard() {
           setExpiringCertificates(dashboardData.expiringCertificates || []);
         }
       } catch (error) {
-        console.error('Failed to load dashboard data:', error);
+        console.error("Failed to load dashboard data:", error);
       }
     };
 
@@ -65,7 +72,7 @@ export default function InternalDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <InternalHeader />
-      
+
       <div className="container mx-auto px-6 py-8">
         {/* Welcome Section */}
         <div className="flex items-center justify-between mb-8">
@@ -74,7 +81,9 @@ export default function InternalDashboard() {
               <span className="text-white font-bold text-lg">���</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Welcome Ronald Stone</h1>
+              <h1 className="text-2xl font-bold text-foreground">
+                Welcome Ronald Stone
+              </h1>
               <p>
                 <br />
               </p>
@@ -96,8 +105,12 @@ export default function InternalDashboard() {
                   <div className="w-6 h-6 bg-green-500 rounded-full"></div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Domains</p>
-                  <p className="text-3xl font-bold text-foreground">{stats.totalDomains}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Domains
+                  </p>
+                  <p className="text-3xl font-bold text-foreground">
+                    {stats.totalDomains}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -110,8 +123,12 @@ export default function InternalDashboard() {
                   <span className="text-green-600 text-lg">$</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Domains Renewal Price</p>
-                  <p className="text-3xl font-bold text-foreground">{stats.domainsRenewalPrice.toFixed(2)} $</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Domains Renewal Price
+                  </p>
+                  <p className="text-3xl font-bold text-foreground">
+                    {stats.domainsRenewalPrice.toFixed(2)} $
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -124,8 +141,12 @@ export default function InternalDashboard() {
                   <div className="w-6 h-6 bg-blue-500 rounded-full"></div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Expiring Domains</p>
-                  <p className="text-3xl font-bold text-foreground">{stats.expiringDomains + stats.expiringCertificates}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Expiring Domains
+                  </p>
+                  <p className="text-3xl font-bold text-foreground">
+                    {stats.expiringDomains + stats.expiringCertificates}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -137,7 +158,9 @@ export default function InternalDashboard() {
           {/* Expiring Domains */}
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold">Expiring Domains</CardTitle>
+              <CardTitle className="text-lg font-semibold">
+                Expiring Domains
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
@@ -158,13 +181,20 @@ export default function InternalDashboard() {
                     </div>
                   ) : (
                     expiringDomains.map((domain) => (
-                      <div key={domain.id} className="grid grid-cols-6 gap-4 items-center text-sm">
+                      <div
+                        key={domain.id}
+                        className="grid grid-cols-6 gap-4 items-center text-sm"
+                      >
                         <div className="col-span-2">
                           <div className="flex items-center space-x-2">
                             <div className="w-4 h-4 bg-gray-300 rounded"></div>
                             <div>
-                              <div className="font-medium text-foreground">{domain.name}</div>
-                              <div className="text-xs text-muted-foreground">{domain.name}</div>
+                              <div className="font-medium text-foreground">
+                                {domain.name}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {domain.name}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -186,7 +216,9 @@ export default function InternalDashboard() {
                           <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                           <div>
                             <div className="text-success">Online</div>
-                            <div className="text-muted-foreground">{domain.lastCheck}</div>
+                            <div className="text-muted-foreground">
+                              {domain.lastCheck}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -200,7 +232,9 @@ export default function InternalDashboard() {
           {/* Expiring Certificates */}
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold">Expiring Certificates</CardTitle>
+              <CardTitle className="text-lg font-semibold">
+                Expiring Certificates
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
@@ -220,20 +254,31 @@ export default function InternalDashboard() {
                     </div>
                   ) : (
                     expiringCertificates.map((cert) => (
-                      <div key={cert.id} className="grid grid-cols-5 gap-4 items-center text-sm">
+                      <div
+                        key={cert.id}
+                        className="grid grid-cols-5 gap-4 items-center text-sm"
+                      >
                         <div className="col-span-2">
                           <div className="flex items-center space-x-2">
                             <div className="w-4 h-4 bg-gray-300 rounded"></div>
-                            <div className="font-medium text-foreground">{cert.domain}</div>
+                            <div className="font-medium text-foreground">
+                              {cert.domain}
+                            </div>
                           </div>
                         </div>
 
-                        <div className="text-muted-foreground">{cert.expirationDate}</div>
-                        <div className="text-muted-foreground">{cert.issuer}</div>
+                        <div className="text-muted-foreground">
+                          {cert.expirationDate}
+                        </div>
+                        <div className="text-muted-foreground">
+                          {cert.issuer}
+                        </div>
 
                         <div className="flex items-center">
                           <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                          <span className="text-success text-xs">{cert.status}</span>
+                          <span className="text-success text-xs">
+                            {cert.status}
+                          </span>
                         </div>
                       </div>
                     ))

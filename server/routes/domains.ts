@@ -13,7 +13,7 @@ import {
   SSLCertificate,
   DomainServices,
   MonitoringLog,
-  DomainMonitoringResponse
+  DomainMonitoringResponse,
 } from "@shared/domain-api";
 
 // In-memory storage for demonstration (in production, use a real database)
@@ -28,23 +28,24 @@ export const getDomains: RequestHandler = (req, res) => {
   // Apply search filter
   if (query.search) {
     const searchTerm = query.search.toLowerCase();
-    filteredDomains = filteredDomains.filter(domain => 
-      domain.domain.toLowerCase().includes(searchTerm) ||
-      domain.registrar.toLowerCase().includes(searchTerm)
+    filteredDomains = filteredDomains.filter(
+      (domain) =>
+        domain.domain.toLowerCase().includes(searchTerm) ||
+        domain.registrar.toLowerCase().includes(searchTerm),
     );
   }
 
   // Apply registrar filter
-  if (query.registrar && query.registrar !== 'all') {
-    filteredDomains = filteredDomains.filter(domain => 
-      domain.registrar.toLowerCase().includes(query.registrar!.toLowerCase())
+  if (query.registrar && query.registrar !== "all") {
+    filteredDomains = filteredDomains.filter((domain) =>
+      domain.registrar.toLowerCase().includes(query.registrar!.toLowerCase()),
     );
   }
 
   // Apply status filter
-  if (query.status && query.status !== 'all') {
-    filteredDomains = filteredDomains.filter(domain => 
-      domain.status.toLowerCase() === query.status!.toLowerCase()
+  if (query.status && query.status !== "all") {
+    filteredDomains = filteredDomains.filter(
+      (domain) => domain.status.toLowerCase() === query.status!.toLowerCase(),
     );
   }
 
@@ -55,7 +56,7 @@ export const getDomains: RequestHandler = (req, res) => {
 
   const response: GetDomainsResponse = {
     domains: paginatedDomains,
-    total: filteredDomains.length
+    total: filteredDomains.length,
   };
 
   res.json(response);
@@ -68,17 +69,19 @@ export const addDomain: RequestHandler = (req, res) => {
   if (!domain) {
     const response: AddDomainResponse = {
       success: false,
-      error: "Domain is required"
+      error: "Domain is required",
     };
     return res.status(400).json(response);
   }
 
   // Check if domain already exists
-  const existingDomain = domains.find(d => d.domain.toLowerCase() === domain.toLowerCase());
+  const existingDomain = domains.find(
+    (d) => d.domain.toLowerCase() === domain.toLowerCase(),
+  );
   if (existingDomain) {
     const response: AddDomainResponse = {
       success: false,
-      error: "Domain is already being monitored"
+      error: "Domain is already being monitored",
     };
     return res.status(409).json(response);
   }
@@ -98,7 +101,7 @@ export const addDomain: RequestHandler = (req, res) => {
     lastWhoisCheck: undefined,
     lastSslCheck: undefined,
     isActive: true,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
   domains.push(newDomain);
@@ -106,26 +109,31 @@ export const addDomain: RequestHandler = (req, res) => {
   // Trigger immediate domain monitoring check
   setTimeout(async () => {
     try {
-      const { monitoringService } = await import("../services/monitoring-service");
-      const updateData = await monitoringService.enhancedMonitorDomain(newDomain);
+      const { monitoringService } = await import(
+        "../services/monitoring-service"
+      );
+      const updateData =
+        await monitoringService.enhancedMonitorDomain(newDomain);
 
       // Update the domain with monitoring results
-      const domainIndex = domains.findIndex(d => d.id === newDomain.id);
+      const domainIndex = domains.findIndex((d) => d.id === newDomain.id);
       if (domainIndex !== -1) {
         const updates: Partial<Domain> = {
           status: "Online",
           lastCheck: "Just now",
           lastWhoisCheck: updateData.lastWhoisCheck,
           lastSslCheck: updateData.lastSslCheck,
-          ...(updateData.expiry_date && { expiry_date: updateData.expiry_date }),
+          ...(updateData.expiry_date && {
+            expiry_date: updateData.expiry_date,
+          }),
           ...(updateData.ssl_expiry && { ssl_expiry: updateData.ssl_expiry }),
           ...(updateData.ssl_status && { ssl_status: updateData.ssl_status }),
-          ...(updateData.registrar && { registrar: updateData.registrar })
+          ...(updateData.registrar && { registrar: updateData.registrar }),
         };
 
         domains[domainIndex] = {
           ...domains[domainIndex],
-          ...updates
+          ...updates,
         };
       }
     } catch (error) {
@@ -135,7 +143,7 @@ export const addDomain: RequestHandler = (req, res) => {
 
   const response: AddDomainResponse = {
     success: true,
-    domain: newDomain
+    domain: newDomain,
   };
 
   res.json(response);
@@ -154,10 +162,12 @@ export const checkDomain: RequestHandler = (req, res) => {
     domain: domain,
     isAvailable: false, // Most domains we'd check are not available
     registrar: "Unknown Registrar",
-    expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+    expirationDate: new Date(
+      Date.now() + 365 * 24 * 60 * 60 * 1000,
+    ).toISOString(),
     nameservers: ["ns1.example.com", "ns2.example.com"],
     status: "Online",
-    lastChecked: new Date().toISOString()
+    lastChecked: new Date().toISOString(),
   };
 
   res.json(mockResponse);
@@ -167,7 +177,7 @@ export const checkDomain: RequestHandler = (req, res) => {
 export const deleteDomain: RequestHandler = (req, res) => {
   const { id } = req.params;
 
-  const domainIndex = domains.findIndex(d => d.id === id);
+  const domainIndex = domains.findIndex((d) => d.id === id);
   if (domainIndex === -1) {
     return res.status(404).json({ error: "Domain not found" });
   }
@@ -180,7 +190,7 @@ export const deleteDomain: RequestHandler = (req, res) => {
 export const getDomainDetails: RequestHandler = (req, res) => {
   const { id } = req.params;
 
-  const domain = domains.find(d => d.id === id);
+  const domain = domains.find((d) => d.id === id);
   if (!domain) {
     return res.status(404).json({ error: "Domain not found" });
   }
@@ -195,8 +205,8 @@ export const getDomainDetails: RequestHandler = (req, res) => {
       expiresAt: domain.ssl_expiry || "2024-12-31T23:59:59Z",
       commonName: domain.domain,
       alternativeNames: [`www.${domain.domain}`],
-      isValid: domain.ssl_status === 'valid'
-    }
+      isValid: domain.ssl_status === "valid",
+    },
   ];
 
   // Mock DNS records
@@ -208,7 +218,7 @@ export const getDomainDetails: RequestHandler = (req, res) => {
       value: "192.168.1.100",
       ttl: 3600,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     },
     {
       id: "dns-2",
@@ -217,7 +227,7 @@ export const getDomainDetails: RequestHandler = (req, res) => {
       value: domain.domain,
       ttl: 3600,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     },
     {
       id: "dns-3",
@@ -227,8 +237,8 @@ export const getDomainDetails: RequestHandler = (req, res) => {
       ttl: 3600,
       priority: 10,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
+      updatedAt: new Date().toISOString(),
+    },
   ];
 
   // Mock services detection
@@ -236,17 +246,17 @@ export const getDomainDetails: RequestHandler = (req, res) => {
     hosting: {
       detected: true,
       provider: "Unknown Provider",
-      ipAddress: "192.168.1.100"
+      ipAddress: "192.168.1.100",
     },
     email: {
       detected: true,
       provider: "Gmail",
-      mxRecords: ["mail.example.com"]
+      mxRecords: ["mail.example.com"],
     },
     nameservers: {
       detected: true,
-      servers: ["ns1.example.com", "ns2.example.com"]
-    }
+      servers: ["ns1.example.com", "ns2.example.com"],
+    },
   };
 
   // Mock monitoring logs
@@ -257,7 +267,7 @@ export const getDomainDetails: RequestHandler = (req, res) => {
       type: "whois",
       status: "success",
       message: "WHOIS data updated successfully",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     },
     {
       id: "log-2",
@@ -265,8 +275,8 @@ export const getDomainDetails: RequestHandler = (req, res) => {
       type: "ssl",
       status: "success",
       message: "SSL certificate is valid",
-      timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
-    }
+      timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    },
   ];
 
   const response: DomainDetailResponse = {
@@ -274,12 +284,12 @@ export const getDomainDetails: RequestHandler = (req, res) => {
       ...domain,
       ssl_certificates: sslCertificates,
       services,
-      dnsRecords
+      dnsRecords,
     },
     sslCertificates,
     dnsRecords,
     services,
-    monitoringLogs
+    monitoringLogs,
   };
 
   res.json(response);
@@ -290,14 +300,14 @@ export const updateDomain: RequestHandler = (req, res) => {
   const { id } = req.params;
   const updates: UpdateDomainRequest = req.body;
 
-  const domainIndex = domains.findIndex(d => d.id === id);
+  const domainIndex = domains.findIndex((d) => d.id === id);
   if (domainIndex === -1) {
     return res.status(404).json({ error: "Domain not found" });
   }
 
   domains[domainIndex] = {
     ...domains[domainIndex],
-    ...updates
+    ...updates,
   };
 
   res.json({ success: true, domain: domains[domainIndex] });
@@ -305,9 +315,16 @@ export const updateDomain: RequestHandler = (req, res) => {
 
 // Create DNS record
 export const createDNSRecord: RequestHandler = (req, res) => {
-  const { domainId, name, type, value, ttl = 3600, priority }: CreateDNSRecordRequest = req.body;
+  const {
+    domainId,
+    name,
+    type,
+    value,
+    ttl = 3600,
+    priority,
+  }: CreateDNSRecordRequest = req.body;
 
-  const domain = domains.find(d => d.id === domainId);
+  const domain = domains.find((d) => d.id === domainId);
   if (!domain) {
     return res.status(404).json({ error: "Domain not found" });
   }
@@ -320,7 +337,7 @@ export const createDNSRecord: RequestHandler = (req, res) => {
     ttl,
     priority,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   };
 
   // Initialize dnsRecords array if it doesn't exist
@@ -338,28 +355,39 @@ export const createDNSRecord: RequestHandler = (req, res) => {
 export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
   const { id } = req.params;
 
-  const domain = domains.find(d => d.id === id);
+  const domain = domains.find((d) => d.id === id);
   if (!domain) {
     return res.status(404).json({ error: "Domain not found" });
   }
 
   try {
     // Use real monitoring service
-    const { monitoringService } = await import("../services/monitoring-service");
-    const monitoringUpdate = await monitoringService.enhancedMonitorDomain(domain);
+    const { monitoringService } = await import(
+      "../services/monitoring-service"
+    );
+    const monitoringUpdate =
+      await monitoringService.enhancedMonitorDomain(domain);
 
     // Apply the monitoring updates to the domain
-    const domainIndex = domains.findIndex(d => d.id === id);
+    const domainIndex = domains.findIndex((d) => d.id === id);
     if (domainIndex !== -1) {
       const updates: Partial<Domain> = {
         status: "Online", // Default to online if monitoring succeeds
         lastCheck: "Just now",
         lastWhoisCheck: monitoringUpdate.lastWhoisCheck,
         lastSslCheck: monitoringUpdate.lastSslCheck,
-        ...(monitoringUpdate.expiry_date && { expiry_date: monitoringUpdate.expiry_date }),
-        ...(monitoringUpdate.ssl_expiry && { ssl_expiry: monitoringUpdate.ssl_expiry }),
-        ...(monitoringUpdate.ssl_status && { ssl_status: monitoringUpdate.ssl_status }),
-        ...(monitoringUpdate.registrar && { registrar: monitoringUpdate.registrar })
+        ...(monitoringUpdate.expiry_date && {
+          expiry_date: monitoringUpdate.expiry_date,
+        }),
+        ...(monitoringUpdate.ssl_expiry && {
+          ssl_expiry: monitoringUpdate.ssl_expiry,
+        }),
+        ...(monitoringUpdate.ssl_status && {
+          ssl_status: monitoringUpdate.ssl_status,
+        }),
+        ...(monitoringUpdate.registrar && {
+          registrar: monitoringUpdate.registrar,
+        }),
       };
 
       domains[domainIndex] = { ...domains[domainIndex], ...updates };
@@ -367,7 +395,7 @@ export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
       const response: DomainMonitoringResponse = {
         success: true,
         message: "Domain monitoring completed successfully",
-        updates
+        updates,
       };
 
       res.json(response);
@@ -380,7 +408,7 @@ export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
     const response: DomainMonitoringResponse = {
       success: false,
       message: "Domain monitoring failed",
-      errors: [error instanceof Error ? error.message : "Unknown error"]
+      errors: [error instanceof Error ? error.message : "Unknown error"],
     };
 
     res.status(500).json(response);
@@ -389,34 +417,40 @@ export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
 
 // Helper function to simulate domain status checking
 function checkDomainStatus(domainId: string) {
-  const domain = domains.find(d => d.id === domainId);
+  const domain = domains.find((d) => d.id === domainId);
   if (!domain) return;
 
   // Simulate fetching real domain information
   domain.status = Math.random() > 0.1 ? "Online" : "Offline";
   domain.lastCheck = "Just now";
   domain.registrar = "Simulated Registrar Inc.";
-  domain.expirationDate = new Date(Date.now() + Math.random() * 365 * 24 * 60 * 60 * 1000).toLocaleDateString();
+  domain.expirationDate = new Date(
+    Date.now() + Math.random() * 365 * 24 * 60 * 60 * 1000,
+  ).toLocaleDateString();
 }
 
 // Get unique registrars for filter dropdown
 export const getRegistrars: RequestHandler = (req, res) => {
-  const registrars = [...new Set(domains.map(d => d.registrar))]
-    .filter(r => r && r !== "Unknown" && r.trim() !== "");
+  const registrars = [...new Set(domains.map((d) => d.registrar))].filter(
+    (r) => r && r !== "Unknown" && r.trim() !== "",
+  );
   res.json({ registrars });
 };
 
 // Helper function for cron service to update domain data
-export const updateDomainFromCron = (domainId: string, updateData: Partial<Domain>): boolean => {
-  const domainIndex = domains.findIndex(d => d.id === domainId);
+export const updateDomainFromCron = (
+  domainId: string,
+  updateData: Partial<Domain>,
+): boolean => {
+  const domainIndex = domains.findIndex((d) => d.id === domainId);
 
   if (domainIndex !== -1) {
     const currentDomain = domains[domainIndex];
 
     // Build updates object - always update provided fields
     const updates: Partial<Domain> = {
-      status: updateData.status || 'Online',
-      lastCheck: updateData.lastCheck || 'Auto updated'
+      status: updateData.status || "Online",
+      lastCheck: updateData.lastCheck || "Auto updated",
     };
 
     // Update expiry_date (WHOIS data) - preserve if valid data exists
@@ -449,10 +483,10 @@ export const updateDomainFromCron = (domainId: string, updateData: Partial<Domai
     domains[domainIndex] = { ...currentDomain, ...updates };
 
     console.log(`🔄 Domain ${currentDomain.domain} updated:`, {
-      expiry_date: updates.expiry_date ? 'Updated' : 'Unchanged',
-      ssl_expiry: updates.ssl_expiry ? 'Updated' : 'Unchanged',
-      ssl_status: updates.ssl_status || 'Unchanged',
-      registrar: updates.registrar ? 'Updated' : 'Unchanged'
+      expiry_date: updates.expiry_date ? "Updated" : "Unchanged",
+      ssl_expiry: updates.ssl_expiry ? "Updated" : "Unchanged",
+      ssl_status: updates.ssl_status || "Unchanged",
+      registrar: updates.registrar ? "Updated" : "Unchanged",
     });
 
     return true;

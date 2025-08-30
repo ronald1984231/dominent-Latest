@@ -3,7 +3,7 @@ import {
   MonitoringAlert,
   CreateLogRequest,
   DomainMonitoringUpdate,
-  MonitoringStats
+  MonitoringStats,
 } from "@shared/monitoring-api";
 import { Domain } from "@shared/domain-api";
 import { Registrar } from "@shared/internal-api";
@@ -11,13 +11,13 @@ import {
   checkDomain,
   isDomainExpiringSoon,
   isSSLExpiringSoon,
-  formatDaysUntilExpiry
+  formatDaysUntilExpiry,
 } from "../utils/domain-monitor";
 import {
   updateDomainInfo,
   RegistrarConfig,
   DomainInfo,
-  validateRegistrarConfig
+  validateRegistrarConfig,
 } from "../utils/enhanced-domain-monitor";
 import { AlertService } from "./alert-service";
 
@@ -38,7 +38,10 @@ export class MonitoringService {
    */
   setRegistrarConfig(registrarName: string, config: RegistrarConfig): boolean {
     if (!validateRegistrarConfig(config)) {
-      console.error(`Invalid registrar configuration for ${registrarName}:`, config);
+      console.error(
+        `Invalid registrar configuration for ${registrarName}:`,
+        config,
+      );
       return false;
     }
 
@@ -67,12 +70,17 @@ export class MonitoringService {
       if (domain.registrar) {
         registrarConfig = this.getRegistrarConfig(domain.registrar);
         if (registrarConfig) {
-          console.log(`🔧 Using registrar API configuration for ${domain.registrar}`);
+          console.log(
+            `🔧 Using registrar API configuration for ${domain.registrar}`,
+          );
         }
       }
 
       // Use enhanced domain monitoring
-      const enhancedResult: DomainInfo = await updateDomainInfo(domain.domain, registrarConfig);
+      const enhancedResult: DomainInfo = await updateDomainInfo(
+        domain.domain,
+        registrarConfig,
+      );
       const now = new Date().toISOString();
 
       // Prepare update data
@@ -81,14 +89,16 @@ export class MonitoringService {
         domain: domain.domain,
         lastWhoisCheck: now,
         lastSslCheck: now,
-        status: enhancedResult.status || 'Unknown',
-        preserveExpiryDate: false // We have fresh data
+        status: enhancedResult.status || "Unknown",
+        preserveExpiryDate: false, // We have fresh data
       };
 
       // Update domain data from enhanced monitoring
       if (enhancedResult.domain_expiry) {
         updateData.expiry_date = enhancedResult.domain_expiry;
-        console.log(`📋 Enhanced domain data: expiry_date=${enhancedResult.domain_expiry}`);
+        console.log(
+          `📋 Enhanced domain data: expiry_date=${enhancedResult.domain_expiry}`,
+        );
       }
 
       if (enhancedResult.registrar && enhancedResult.registrar !== "Unknown") {
@@ -100,101 +110,129 @@ export class MonitoringService {
       if (enhancedResult.ssl_expiry) {
         updateData.ssl_expiry = enhancedResult.ssl_expiry;
         updateData.ssl_status = enhancedResult.ssl_status;
-        console.log(`🔒 Enhanced SSL data: expiry=${enhancedResult.ssl_expiry}, status=${enhancedResult.ssl_status}`);
+        console.log(
+          `🔒 Enhanced SSL data: expiry=${enhancedResult.ssl_expiry}, status=${enhancedResult.ssl_status}`,
+        );
       }
 
       // Log the data source and any errors
       if (enhancedResult.source) {
         await this.createLog({
           domain: domain.domain,
-          logType: 'monitoring_success',
-          severity: 'info',
+          logType: "monitoring_success",
+          severity: "info",
           message: `Domain data updated from ${enhancedResult.source} source`,
           details: {
             source: enhancedResult.source,
             registrarConfigUsed: !!registrarConfig,
-            registrarType: registrarConfig?.type
+            registrarType: registrarConfig?.type,
           },
-          domainId: domain.id
+          domainId: domain.id,
         });
       }
 
       if (enhancedResult.errors && enhancedResult.errors.length > 0) {
         await this.createLog({
           domain: domain.domain,
-          logType: 'monitoring_error',
-          severity: 'warning',
-          message: `Enhanced monitoring encountered errors: ${enhancedResult.errors.join(', ')}`,
+          logType: "monitoring_error",
+          severity: "warning",
+          message: `Enhanced monitoring encountered errors: ${enhancedResult.errors.join(", ")}`,
           details: { errors: enhancedResult.errors },
-          domainId: domain.id
+          domainId: domain.id,
         });
       }
 
       // Check for domain expiry alerts
       if (updateData.expiry_date) {
-        const daysUntilExpiry = Math.ceil((new Date(updateData.expiry_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+        const daysUntilExpiry = Math.ceil(
+          (new Date(updateData.expiry_date).getTime() - new Date().getTime()) /
+            (1000 * 60 * 60 * 24),
+        );
 
         // Alert at 30, 15, 7, and 1 days
         if ([30, 15, 7, 1].includes(daysUntilExpiry) || daysUntilExpiry <= 0) {
-          const severity = daysUntilExpiry <= 0 ? 'critical' : daysUntilExpiry <= 7 ? 'critical' : 'warning';
-          const message = daysUntilExpiry <= 0
-            ? `Domain ${domain.domain} has expired!`
-            : `Domain ${domain.domain} expires in ${daysUntilExpiry} day${daysUntilExpiry === 1 ? '' : 's'}`;
+          const severity =
+            daysUntilExpiry <= 0
+              ? "critical"
+              : daysUntilExpiry <= 7
+                ? "critical"
+                : "warning";
+          const message =
+            daysUntilExpiry <= 0
+              ? `Domain ${domain.domain} has expired!`
+              : `Domain ${domain.domain} expires in ${daysUntilExpiry} day${daysUntilExpiry === 1 ? "" : "s"}`;
 
           await this.createLog({
             domain: domain.domain,
-            logType: 'domain_expiry',
+            logType: "domain_expiry",
             severity,
             message,
             details: {
               daysUntilExpiry,
               expiryDate: updateData.expiry_date,
-              dataSource: enhancedResult.source
+              dataSource: enhancedResult.source,
             },
-            domainId: domain.id
+            domainId: domain.id,
           });
         }
       }
 
       // Check for SSL expiry alerts
       if (updateData.ssl_expiry) {
-        const daysUntilSSLExpiry = Math.ceil((new Date(updateData.ssl_expiry).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+        const daysUntilSSLExpiry = Math.ceil(
+          (new Date(updateData.ssl_expiry).getTime() - new Date().getTime()) /
+            (1000 * 60 * 60 * 24),
+        );
 
         // Alert at 30, 15, 7, and 1 days for SSL
-        if ([30, 15, 7, 1].includes(daysUntilSSLExpiry) || daysUntilSSLExpiry <= 0) {
-          const severity = daysUntilSSLExpiry <= 0 ? 'critical' : daysUntilSSLExpiry <= 7 ? 'critical' : 'warning';
-          const message = daysUntilSSLExpiry <= 0
-            ? `SSL certificate for ${domain.domain} has expired!`
-            : `SSL certificate for ${domain.domain} expires in ${daysUntilSSLExpiry} day${daysUntilSSLExpiry === 1 ? '' : 's'}`;
+        if (
+          [30, 15, 7, 1].includes(daysUntilSSLExpiry) ||
+          daysUntilSSLExpiry <= 0
+        ) {
+          const severity =
+            daysUntilSSLExpiry <= 0
+              ? "critical"
+              : daysUntilSSLExpiry <= 7
+                ? "critical"
+                : "warning";
+          const message =
+            daysUntilSSLExpiry <= 0
+              ? `SSL certificate for ${domain.domain} has expired!`
+              : `SSL certificate for ${domain.domain} expires in ${daysUntilSSLExpiry} day${daysUntilSSLExpiry === 1 ? "" : "s"}`;
 
           await this.createLog({
             domain: domain.domain,
-            logType: 'ssl_expiry',
+            logType: "ssl_expiry",
             severity,
             message,
             details: {
               daysUntilExpiry: daysUntilSSLExpiry,
               sslExpiryDate: updateData.ssl_expiry,
               sslStatus: updateData.ssl_status,
-              dataSource: enhancedResult.source
+              dataSource: enhancedResult.source,
             },
-            domainId: domain.id
+            domainId: domain.id,
           });
         }
       }
 
       return updateData;
     } catch (error) {
-      console.error(`Enhanced monitoring failed for domain ${domain.domain}:`, error);
+      console.error(
+        `Enhanced monitoring failed for domain ${domain.domain}:`,
+        error,
+      );
 
       // Log monitoring failure
       await this.createLog({
         domain: domain.domain,
-        logType: 'monitoring_error',
-        severity: 'error',
-        message: `Enhanced domain monitoring failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        details: { error: error instanceof Error ? error.message : 'Unknown error' },
-        domainId: domain.id
+        logType: "monitoring_error",
+        severity: "error",
+        message: `Enhanced domain monitoring failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        details: {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        domainId: domain.id,
       });
 
       // Fallback to regular monitoring
@@ -215,15 +253,17 @@ export class MonitoringService {
       const mockRes = {
         json: (data: any) => {
           registrars = data.registrars || [];
-        }
+        },
       } as any;
 
       getRegistrars(mockReq, mockRes, () => {});
 
       // Return only connected registrars
-      return registrars.filter(r => r.apiStatus === 'Connected' && r.status === 'Connected');
+      return registrars.filter(
+        (r) => r.apiStatus === "Connected" && r.status === "Connected",
+      );
     } catch (error) {
-      console.error('Failed to get connected registrars:', error);
+      console.error("Failed to get connected registrars:", error);
       return [];
     }
   }
@@ -231,7 +271,9 @@ export class MonitoringService {
   /**
    * Check if a registrar name matches a connected registrar and override with API data
    */
-  private async getRegistrarOverride(whoisRegistrar?: string): Promise<string | undefined> {
+  private async getRegistrarOverride(
+    whoisRegistrar?: string,
+  ): Promise<string | undefined> {
     if (!whoisRegistrar) return undefined;
 
     const connectedRegistrars = await this.getConnectedRegistrars();
@@ -244,8 +286,10 @@ export class MonitoringService {
       const registrarName = registrar.name.toLowerCase();
 
       // Direct name match
-      if (normalizedWhoisRegistrar.includes(registrarName) ||
-          registrarName.includes(normalizedWhoisRegistrar)) {
+      if (
+        normalizedWhoisRegistrar.includes(registrarName) ||
+        registrarName.includes(normalizedWhoisRegistrar)
+      ) {
         return registrar.name;
       }
 
@@ -270,17 +314,21 @@ export class MonitoringService {
 
     // Common variations map
     const variationMap: { [key: string]: string[] } = {
-      'godaddy': ['godaddy.com', 'godaddy inc', 'godaddy.com llc', 'go daddy'],
-      'namecheap': ['namecheap inc', 'namecheap.com', 'namecheap llc'],
-      'cloudflare': ['cloudflare inc', 'cloudflare.com'],
-      'network solutions': ['networksolutions', 'networksolutions.com', 'network solutions llc'],
-      'enom': ['enom inc', 'enom.com', 'enom llc'],
-      'markmonitor': ['markmonitor inc', 'markmonitor.com']
+      godaddy: ["godaddy.com", "godaddy inc", "godaddy.com llc", "go daddy"],
+      namecheap: ["namecheap inc", "namecheap.com", "namecheap llc"],
+      cloudflare: ["cloudflare inc", "cloudflare.com"],
+      "network solutions": [
+        "networksolutions",
+        "networksolutions.com",
+        "network solutions llc",
+      ],
+      enom: ["enom inc", "enom.com", "enom llc"],
+      markmonitor: ["markmonitor inc", "markmonitor.com"],
     };
 
     // Find matches in variation map
     for (const [key, vals] of Object.entries(variationMap)) {
-      if (lower.includes(key) || vals.some(v => lower.includes(v))) {
+      if (lower.includes(key) || vals.some((v) => lower.includes(v))) {
         variations.push(...vals);
       }
     }
@@ -302,14 +350,16 @@ export class MonitoringService {
       alertSent: false,
       alertChannels: [],
       createdAt: new Date().toISOString(),
-      domainId: logData.domainId
+      domainId: logData.domainId,
     };
 
     monitoringLogs.push(log);
-    console.log(`[MONITORING LOG] ${log.severity.toUpperCase()}: ${log.message}`);
+    console.log(
+      `[MONITORING LOG] ${log.severity.toUpperCase()}: ${log.message}`,
+    );
 
     // Send alerts for critical and warning logs
-    if (log.severity === 'critical' || log.severity === 'warning') {
+    if (log.severity === "critical" || log.severity === "warning") {
       await this.sendAlerts(log);
     }
 
@@ -322,32 +372,33 @@ export class MonitoringService {
   private async sendAlerts(log: MonitoringLog): Promise<void> {
     try {
       const channels = await this.alertService.getEnabledChannels();
-      const sentChannels: ('email' | 'webhook' | 'slack')[] = [];
+      const sentChannels: ("email" | "webhook" | "slack")[] = [];
 
       for (const channel of channels) {
         try {
           const success = await this.alertService.sendAlert(log, channel);
           if (success) {
             sentChannels.push(channel);
-            
+
             // Create alert record
             const alert: MonitoringAlert = {
-              id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+              id:
+                Date.now().toString() + Math.random().toString(36).substr(2, 9),
               logId: log.id,
               domain: log.domain,
               alertType: log.logType as any,
               channel: channel,
               recipient: await this.alertService.getChannelRecipient(channel),
-              status: 'sent',
+              status: "sent",
               sentAt: new Date().toISOString(),
               retryCount: 0,
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
             };
             monitoringAlerts.push(alert);
           }
         } catch (error) {
           console.error(`Failed to send alert via ${channel}:`, error);
-          
+
           // Create failed alert record
           const alert: MonitoringAlert = {
             id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
@@ -356,10 +407,10 @@ export class MonitoringService {
             alertType: log.logType as any,
             channel: channel,
             recipient: await this.alertService.getChannelRecipient(channel),
-            status: 'failed',
-            error: error instanceof Error ? error.message : 'Unknown error',
+            status: "failed",
+            error: error instanceof Error ? error.message : "Unknown error",
             retryCount: 0,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
           };
           monitoringAlerts.push(alert);
         }
@@ -369,7 +420,7 @@ export class MonitoringService {
       log.alertSent = sentChannels.length > 0;
       log.alertChannels = sentChannels;
     } catch (error) {
-      console.error('Failed to send alerts:', error);
+      console.error("Failed to send alerts:", error);
     }
   }
 
@@ -378,7 +429,7 @@ export class MonitoringService {
    */
   async monitorDomain(domain: Domain): Promise<DomainMonitoringUpdate> {
     console.log(`Monitoring domain: ${domain.domain}`);
-    
+
     try {
       const monitorResult = await checkDomain(domain.domain);
       const now = new Date().toISOString();
@@ -389,35 +440,41 @@ export class MonitoringService {
         domain: domain.domain,
         lastWhoisCheck: now,
         lastSslCheck: now,
-        status: 'Online', // Will be updated based on checks
-        preserveExpiryDate: true
+        status: "Online", // Will be updated based on checks
+        preserveExpiryDate: true,
       };
 
       // Update WHOIS data (only if we got a valid result)
       if (monitorResult.expiry_date && !monitorResult.whoisError) {
         updateData.expiry_date = monitorResult.expiry_date;
 
-        console.log(`📋 WHOIS data updated for ${domain.domain}: expiry_date=${monitorResult.expiry_date}`);
+        console.log(
+          `📋 WHOIS data updated for ${domain.domain}: expiry_date=${monitorResult.expiry_date}`,
+        );
 
         // Apply registrar override logic
         if (monitorResult.registrar) {
-          const overriddenRegistrar = await this.getRegistrarOverride(monitorResult.registrar);
+          const overriddenRegistrar = await this.getRegistrarOverride(
+            monitorResult.registrar,
+          );
           updateData.registrar = overriddenRegistrar;
 
-          console.log(`🏢 Registrar updated for ${domain.domain}: ${overriddenRegistrar}`);
+          console.log(
+            `🏢 Registrar updated for ${domain.domain}: ${overriddenRegistrar}`,
+          );
 
           // Log if we overrode the registrar
           if (overriddenRegistrar !== monitorResult.registrar) {
             await this.createLog({
               domain: domain.domain,
-              logType: 'monitoring_error',
-              severity: 'info',
+              logType: "monitoring_error",
+              severity: "info",
               message: `Registrar overridden from WHOIS: "${monitorResult.registrar}" → "${overriddenRegistrar}"`,
               details: {
                 whoisRegistrar: monitorResult.registrar,
-                overriddenRegistrar: overriddenRegistrar
+                overriddenRegistrar: overriddenRegistrar,
               },
-              domainId: domain.id
+              domainId: domain.id,
             });
           }
         }
@@ -425,114 +482,142 @@ export class MonitoringService {
         // Log WHOIS error but don't overwrite existing data
         await this.createLog({
           domain: domain.domain,
-          logType: 'monitoring_error',
-          severity: 'warning',
+          logType: "monitoring_error",
+          severity: "warning",
           message: `WHOIS check failed: ${monitorResult.whoisError}`,
           details: { error: monitorResult.whoisError },
-          domainId: domain.id
+          domainId: domain.id,
         });
       }
 
       // Update SSL data (separate from WHOIS)
       if (monitorResult.ssl_expiry && !monitorResult.sslError) {
         updateData.ssl_expiry = monitorResult.ssl_expiry;
-        updateData.ssl_status = monitorResult.ssl_status || 'valid';
+        updateData.ssl_status = monitorResult.ssl_status || "valid";
 
-        console.log(`🔒 SSL data updated for ${domain.domain}: expiry=${monitorResult.ssl_expiry}, status=${monitorResult.ssl_status}`);
+        console.log(
+          `🔒 SSL data updated for ${domain.domain}: expiry=${monitorResult.ssl_expiry}, status=${monitorResult.ssl_status}`,
+        );
       } else if (monitorResult.sslError) {
-        updateData.ssl_status = 'unknown';
+        updateData.ssl_status = "unknown";
 
         // Log SSL error
         await this.createLog({
           domain: domain.domain,
-          logType: 'monitoring_error',
-          severity: 'info',
+          logType: "monitoring_error",
+          severity: "info",
           message: `SSL check failed: ${monitorResult.sslError}`,
           details: { error: monitorResult.sslError },
-          domainId: domain.id
+          domainId: domain.id,
         });
       }
 
       // Check for domain expiry alerts (use existing or new expiry date)
       const expiryToCheck = updateData.expiry_date || domain.expiry_date;
       if (expiryToCheck) {
-        const daysUntilExpiry = Math.ceil((new Date(expiryToCheck).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-        
+        const daysUntilExpiry = Math.ceil(
+          (new Date(expiryToCheck).getTime() - new Date().getTime()) /
+            (1000 * 60 * 60 * 24),
+        );
+
         // Alert at 30, 15, 7, and 1 days
         if ([30, 15, 7, 1].includes(daysUntilExpiry) || daysUntilExpiry <= 0) {
-          const severity = daysUntilExpiry <= 0 ? 'critical' : daysUntilExpiry <= 7 ? 'critical' : 'warning';
-          const message = daysUntilExpiry <= 0 
-            ? `Domain ${domain.domain} has expired!`
-            : `Domain ${domain.domain} expires in ${daysUntilExpiry} day${daysUntilExpiry === 1 ? '' : 's'}`;
-            
+          const severity =
+            daysUntilExpiry <= 0
+              ? "critical"
+              : daysUntilExpiry <= 7
+                ? "critical"
+                : "warning";
+          const message =
+            daysUntilExpiry <= 0
+              ? `Domain ${domain.domain} has expired!`
+              : `Domain ${domain.domain} expires in ${daysUntilExpiry} day${daysUntilExpiry === 1 ? "" : "s"}`;
+
           await this.createLog({
             domain: domain.domain,
-            logType: 'domain_expiry',
+            logType: "domain_expiry",
             severity,
             message,
             details: {
               daysUntilExpiry,
-              expiryDate: expiryToCheck
+              expiryDate: expiryToCheck,
             },
-            domainId: domain.id
+            domainId: domain.id,
           });
         }
       }
 
       // Check for SSL expiry alerts
       if (updateData.ssl_expiry) {
-        const daysUntilSSLExpiry = Math.ceil((new Date(updateData.ssl_expiry).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-        
+        const daysUntilSSLExpiry = Math.ceil(
+          (new Date(updateData.ssl_expiry).getTime() - new Date().getTime()) /
+            (1000 * 60 * 60 * 24),
+        );
+
         // Alert at 30, 15, 7, and 1 days for SSL
-        if ([30, 15, 7, 1].includes(daysUntilSSLExpiry) || daysUntilSSLExpiry <= 0) {
-          const severity = daysUntilSSLExpiry <= 0 ? 'critical' : daysUntilSSLExpiry <= 7 ? 'critical' : 'warning';
-          const message = daysUntilSSLExpiry <= 0 
-            ? `SSL certificate for ${domain.domain} has expired!`
-            : `SSL certificate for ${domain.domain} expires in ${daysUntilSSLExpiry} day${daysUntilSSLExpiry === 1 ? '' : 's'}`;
-            
+        if (
+          [30, 15, 7, 1].includes(daysUntilSSLExpiry) ||
+          daysUntilSSLExpiry <= 0
+        ) {
+          const severity =
+            daysUntilSSLExpiry <= 0
+              ? "critical"
+              : daysUntilSSLExpiry <= 7
+                ? "critical"
+                : "warning";
+          const message =
+            daysUntilSSLExpiry <= 0
+              ? `SSL certificate for ${domain.domain} has expired!`
+              : `SSL certificate for ${domain.domain} expires in ${daysUntilSSLExpiry} day${daysUntilSSLExpiry === 1 ? "" : "s"}`;
+
           await this.createLog({
             domain: domain.domain,
-            logType: 'ssl_expiry',
+            logType: "ssl_expiry",
             severity,
             message,
             details: {
               daysUntilExpiry: daysUntilSSLExpiry,
               sslExpiryDate: updateData.ssl_expiry,
-              sslStatus: updateData.ssl_status
+              sslStatus: updateData.ssl_status,
             },
-            domainId: domain.id
+            domainId: domain.id,
           });
         }
       }
 
       // Check if SSL status changed to expired
-      if (updateData.ssl_status === 'expired' && domain.ssl_status !== 'expired') {
+      if (
+        updateData.ssl_status === "expired" &&
+        domain.ssl_status !== "expired"
+      ) {
         await this.createLog({
           domain: domain.domain,
-          logType: 'ssl_expiry',
-          severity: 'critical',
+          logType: "ssl_expiry",
+          severity: "critical",
           message: `SSL certificate for ${domain.domain} is now expired`,
           details: {
             sslExpiryDate: updateData.ssl_expiry,
             sslStatus: updateData.ssl_status,
-            previousStatus: domain.ssl_status
+            previousStatus: domain.ssl_status,
           },
-          domainId: domain.id
+          domainId: domain.id,
         });
       }
 
       return updateData;
     } catch (error) {
       console.error(`Failed to monitor domain ${domain.domain}:`, error);
-      
+
       // Log monitoring failure
       await this.createLog({
         domain: domain.domain,
-        logType: 'monitoring_error',
-        severity: 'error',
-        message: `Domain monitoring failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        details: { error: error instanceof Error ? error.message : 'Unknown error' },
-        domainId: domain.id
+        logType: "monitoring_error",
+        severity: "error",
+        message: `Domain monitoring failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        details: {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        domainId: domain.id,
       });
 
       return {
@@ -540,8 +625,8 @@ export class MonitoringService {
         domain: domain.domain,
         lastWhoisCheck: new Date().toISOString(),
         lastSslCheck: new Date().toISOString(),
-        status: 'Unknown',
-        preserveExpiryDate: true
+        status: "Unknown",
+        preserveExpiryDate: true,
       };
     }
   }
@@ -560,21 +645,28 @@ export class MonitoringService {
 
     // Apply filters
     if (query.domain) {
-      filteredLogs = filteredLogs.filter(log => 
-        log.domain.toLowerCase().includes(query.domain!.toLowerCase())
+      filteredLogs = filteredLogs.filter((log) =>
+        log.domain.toLowerCase().includes(query.domain!.toLowerCase()),
       );
     }
 
     if (query.logType) {
-      filteredLogs = filteredLogs.filter(log => log.logType === query.logType);
+      filteredLogs = filteredLogs.filter(
+        (log) => log.logType === query.logType,
+      );
     }
 
     if (query.severity) {
-      filteredLogs = filteredLogs.filter(log => log.severity === query.severity);
+      filteredLogs = filteredLogs.filter(
+        (log) => log.severity === query.severity,
+      );
     }
 
     // Sort by creation date (newest first)
-    filteredLogs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    filteredLogs.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
 
     // Apply pagination
     const page = query.page || 1;
@@ -586,7 +678,7 @@ export class MonitoringService {
       logs: paginatedLogs,
       total: filteredLogs.length,
       page,
-      totalPages: Math.ceil(filteredLogs.length / limit)
+      totalPages: Math.ceil(filteredLogs.length / limit),
     };
   }
 
@@ -594,17 +686,19 @@ export class MonitoringService {
    * Get monitoring statistics
    */
   getStats(domains: Domain[]): MonitoringStats {
-    const activeDomains = domains.filter(d => d.isActive !== false);
-    const domainsExpiringSoon = activeDomains.filter(d => 
-      d.expiry_date && isDomainExpiringSoon(d.expiry_date, 30)
+    const activeDomains = domains.filter((d) => d.isActive !== false);
+    const domainsExpiringSoon = activeDomains.filter(
+      (d) => d.expiry_date && isDomainExpiringSoon(d.expiry_date, 30),
     );
-    const sslExpiringSoon = activeDomains.filter(d => 
-      d.ssl_expiry && isSSLExpiringSoon(d.ssl_expiry, 30)
+    const sslExpiringSoon = activeDomains.filter(
+      (d) => d.ssl_expiry && isSSLExpiringSoon(d.ssl_expiry, 30),
     );
-    
-    const criticalAlerts = monitoringLogs.filter(log => 
-      log.severity === 'critical' && 
-      log.createdAt > new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+
+    const criticalAlerts = monitoringLogs.filter(
+      (log) =>
+        log.severity === "critical" &&
+        log.createdAt >
+          new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     ).length;
 
     return {
@@ -614,7 +708,7 @@ export class MonitoringService {
       sslExpiringSoon: sslExpiringSoon.length,
       criticalAlerts,
       lastMonitoringRun: this.getLastMonitoringRun(),
-      nextMonitoringRun: this.getNextMonitoringRun()
+      nextMonitoringRun: this.getNextMonitoringRun(),
     };
   }
 
@@ -637,11 +731,11 @@ export class MonitoringService {
   clearOldLogs(days: number = 90): number {
     const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     const initialCount = monitoringLogs.length;
-    
-    monitoringLogs = monitoringLogs.filter(log => 
-      new Date(log.createdAt) > cutoffDate
+
+    monitoringLogs = monitoringLogs.filter(
+      (log) => new Date(log.createdAt) > cutoffDate,
     );
-    
+
     const removed = initialCount - monitoringLogs.length;
     console.log(`Cleared ${removed} old monitoring logs`);
     return removed;

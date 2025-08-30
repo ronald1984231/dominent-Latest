@@ -7,7 +7,7 @@ The enhanced domain monitoring system integrates registrar API access with fallb
 ## Features
 
 - **Registrar API Integration**: Direct API access to registrars like Namecheap, GoDaddy, Cloudflare
-- **Intelligent Fallbacks**: API → WHOIS → SSL checking with graceful degradation  
+- **Intelligent Fallbacks**: API → WHOIS → SSL checking with graceful degradation
 - **Enhanced Error Handling**: Detailed error reporting and retry mechanisms
 - **Batch Processing**: Efficient bulk domain monitoring with rate limiting
 - **Configuration Management**: Web-based registrar API configuration interface
@@ -15,19 +15,25 @@ The enhanced domain monitoring system integrates registrar API access with fallb
 ## Supported Registrars
 
 ### Namecheap
+
 Required configuration:
+
 - API User
-- API Key  
+- API Key
 - Username
 - Client IP
 
 ### GoDaddy
+
 Required configuration:
+
 - API Key
 - API Secret
 
 ### Cloudflare
+
 Required configuration:
+
 - API Token
 
 ## Usage
@@ -39,6 +45,7 @@ Navigate to `/internal/registrar-config` in the web interface to configure your 
 ### 2. API Endpoints
 
 #### Set Registrar Configuration
+
 ```bash
 POST /api/registrar-config
 {
@@ -46,7 +53,7 @@ POST /api/registrar-config
   "config": {
     "type": "namecheap",
     "apiUser": "your_username",
-    "apiKey": "your_api_key", 
+    "apiKey": "your_api_key",
     "username": "your_username",
     "clientIp": "your_server_ip"
   }
@@ -54,6 +61,7 @@ POST /api/registrar-config
 ```
 
 #### Test Configuration
+
 ```bash
 POST /api/registrar-config/test
 {
@@ -63,6 +71,7 @@ POST /api/registrar-config/test
 ```
 
 #### Test Enhanced Monitoring
+
 ```bash
 POST /api/monitoring/enhanced-test/example.com
 ```
@@ -70,14 +79,17 @@ POST /api/monitoring/enhanced-test/example.com
 ### 3. Programmatic Usage
 
 ```javascript
-import { updateDomainInfo, RegistrarConfig } from "./server/utils/enhanced-domain-monitor";
+import {
+  updateDomainInfo,
+  RegistrarConfig,
+} from "./server/utils/enhanced-domain-monitor";
 
 const config = {
   type: "namecheap",
   apiUser: "your_username",
   apiKey: "your_api_key",
-  username: "your_username", 
-  clientIp: "your_server_ip"
+  username: "your_username",
+  clientIp: "your_server_ip",
 };
 
 const result = await updateDomainInfo("example.com", config);
@@ -86,7 +98,7 @@ console.log(result);
 //   domain: "example.com",
 //   registrar: "Namecheap, Inc.",
 //   domain_expiry: "2024-12-31",
-//   ssl_expiry: "2024-11-15", 
+//   ssl_expiry: "2024-11-15",
 //   ssl_status: "valid",
 //   status: "Online",
 //   source: "api"
@@ -96,7 +108,7 @@ console.log(result);
 ## Data Prioritization
 
 1. **Registrar API** (highest priority) - Real-time, authoritative data
-2. **WHOIS Lookup** (fallback) - Publicly available registry data  
+2. **WHOIS Lookup** (fallback) - Publicly available registry data
 3. **SSL Certificate** (independent) - Certificate expiry information
 
 ## Benefits
@@ -115,17 +127,19 @@ console.log(result);
 ## Example Registrar Configurations
 
 ### Namecheap Example
+
 ```javascript
 {
   type: "namecheap",
-  apiUser: "ronaldstone", 
+  apiUser: "ronaldstone",
   apiKey: "abc123def456",
   username: "ronaldstone",
   clientIp: "192.168.1.100"
 }
 ```
 
-### GoDaddy Example  
+### GoDaddy Example
+
 ```javascript
 {
   type: "godaddy",
@@ -135,9 +149,10 @@ console.log(result);
 ```
 
 ### Cloudflare Example
+
 ```javascript
 {
-  type: "cloudflare", 
+  type: "cloudflare",
   apiToken: "your_global_api_token"
 }
 ```
@@ -147,7 +162,7 @@ console.log(result);
 Test the enhanced monitoring system:
 
 1. Configure a registrar API in the web interface
-2. Navigate to `/internal/monitoring` 
+2. Navigate to `/internal/monitoring`
 3. Use the enhanced monitoring test endpoint
 4. Check monitoring logs for results
 

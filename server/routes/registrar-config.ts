@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { monitoringService } from "../services/monitoring-service";
-import { 
-  RegistrarConfig, 
-  validateRegistrarConfig 
+import {
+  RegistrarConfig,
+  validateRegistrarConfig,
 } from "../utils/enhanced-domain-monitor";
 
 export interface RegistrarConfigRequest {
@@ -31,7 +31,7 @@ export interface GetRegistrarConfigsResponse {
  */
 export async function setRegistrarConfig(
   req: Request<{}, RegistrarConfigResponse, RegistrarConfigRequest>,
-  res: Response<RegistrarConfigResponse>
+  res: Response<RegistrarConfigResponse>,
 ) {
   try {
     const { registrarName, config } = req.body;
@@ -39,7 +39,7 @@ export async function setRegistrarConfig(
     if (!registrarName || !config) {
       return res.status(400).json({
         success: false,
-        message: "Registrar name and configuration are required"
+        message: "Registrar name and configuration are required",
       });
     }
 
@@ -47,7 +47,7 @@ export async function setRegistrarConfig(
     if (!validateRegistrarConfig(config)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid configuration for registrar type: ${config.type}`
+        message: `Invalid configuration for registrar type: ${config.type}`,
       });
     }
 
@@ -59,19 +59,19 @@ export async function setRegistrarConfig(
         success: true,
         message: `Registrar configuration set successfully for ${registrarName}`,
         registrarName,
-        configType: config.type
+        configType: config.type,
       });
     } else {
       res.status(400).json({
         success: false,
-        message: `Failed to set registrar configuration for ${registrarName}`
+        message: `Failed to set registrar configuration for ${registrarName}`,
       });
     }
   } catch (error) {
     console.error("Set registrar config error:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error"
+      message: "Internal server error",
     });
   }
 }
@@ -81,7 +81,7 @@ export async function setRegistrarConfig(
  */
 export async function getRegistrarConfig(
   req: Request<{ registrarName: string }>,
-  res: Response
+  res: Response,
 ) {
   try {
     const { registrarName } = req.params;
@@ -89,7 +89,7 @@ export async function getRegistrarConfig(
     if (!registrarName) {
       return res.status(400).json({
         success: false,
-        message: "Registrar name is required"
+        message: "Registrar name is required",
       });
     }
 
@@ -106,25 +106,25 @@ export async function getRegistrarConfig(
         hasUsername: !!config.username,
         hasClientIp: !!config.clientIp,
         hasApiToken: !!config.apiToken,
-        hasApiSecret: !!config.apiSecret
+        hasApiSecret: !!config.apiSecret,
       };
 
       res.json({
         success: true,
         registrarName,
-        config: sanitizedConfig
+        config: sanitizedConfig,
       });
     } else {
       res.status(404).json({
         success: false,
-        message: `No configuration found for registrar: ${registrarName}`
+        message: `No configuration found for registrar: ${registrarName}`,
       });
     }
   } catch (error) {
     console.error("Get registrar config error:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error"
+      message: "Internal server error",
     });
   }
 }
@@ -134,7 +134,7 @@ export async function getRegistrarConfig(
  */
 export async function getRegistrarConfigs(
   req: Request,
-  res: Response<GetRegistrarConfigsResponse>
+  res: Response<GetRegistrarConfigsResponse>,
 ) {
   try {
     // This would ideally come from a database or persistent storage
@@ -144,16 +144,16 @@ export async function getRegistrarConfigs(
       { name: "GoDaddy", type: "godaddy" },
       { name: "Cloudflare", type: "cloudflare" },
       { name: "Network Solutions", type: "networksolutions" },
-      { name: "Enom", type: "enom" }
+      { name: "Enom", type: "enom" },
     ];
 
-    const configs = supportedRegistrars.map(registrar => {
+    const configs = supportedRegistrars.map((registrar) => {
       const config = monitoringService.getRegistrarConfig(registrar.name);
       return {
         registrarName: registrar.name,
         type: registrar.type,
         configured: !!config,
-        valid: config ? validateRegistrarConfig(config) : false
+        valid: config ? validateRegistrarConfig(config) : false,
       };
     });
 
@@ -162,7 +162,7 @@ export async function getRegistrarConfigs(
     console.error("Get registrar configs error:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error"
+      message: "Internal server error",
     } as any);
   }
 }
@@ -172,7 +172,7 @@ export async function getRegistrarConfigs(
  */
 export async function removeRegistrarConfig(
   req: Request<{ registrarName: string }>,
-  res: Response<RegistrarConfigResponse>
+  res: Response<RegistrarConfigResponse>,
 ) {
   try {
     const { registrarName } = req.params;
@@ -180,7 +180,7 @@ export async function removeRegistrarConfig(
     if (!registrarName) {
       return res.status(400).json({
         success: false,
-        message: "Registrar name is required"
+        message: "Registrar name is required",
       });
     }
 
@@ -189,13 +189,13 @@ export async function removeRegistrarConfig(
     res.json({
       success: true,
       message: `Registrar configuration removal requested for ${registrarName}`,
-      registrarName
+      registrarName,
     });
   } catch (error) {
     console.error("Remove registrar config error:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error"
+      message: "Internal server error",
     });
   }
 }
@@ -205,7 +205,7 @@ export async function removeRegistrarConfig(
  */
 export async function testRegistrarConfig(
   req: Request<{}, any, RegistrarConfigRequest>,
-  res: Response
+  res: Response,
 ) {
   try {
     const { registrarName, config } = req.body;
@@ -213,7 +213,7 @@ export async function testRegistrarConfig(
     if (!registrarName || !config) {
       return res.status(400).json({
         success: false,
-        message: "Registrar name and configuration are required"
+        message: "Registrar name and configuration are required",
       });
     }
 
@@ -224,14 +224,16 @@ export async function testRegistrarConfig(
       return res.status(400).json({
         success: false,
         message: `Configuration validation failed for ${config.type}`,
-        details: "Please check that all required fields are provided"
+        details: "Please check that all required fields are provided",
       });
     }
 
     // Test the configuration by trying to fetch data for a test domain
     try {
-      const { updateDomainInfo } = await import("../utils/enhanced-domain-monitor");
-      
+      const { updateDomainInfo } = await import(
+        "../utils/enhanced-domain-monitor"
+      );
+
       // Use a common test domain that should exist
       const testDomain = "google.com";
       const result = await updateDomainInfo(testDomain, config);
@@ -245,21 +247,21 @@ export async function testRegistrarConfig(
           domain: result.domain,
           source: result.source,
           hasData: !!(result.domain_expiry || result.registrar !== "Unknown"),
-          errors: result.errors
-        }
+          errors: result.errors,
+        },
       });
     } catch (testError) {
       res.status(400).json({
         success: false,
         message: `Registrar configuration test failed for ${registrarName}`,
-        error: testError instanceof Error ? testError.message : "Unknown error"
+        error: testError instanceof Error ? testError.message : "Unknown error",
       });
     }
   } catch (error) {
     console.error("Test registrar config error:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error"
+      message: "Internal server error",
     });
   }
 }

@@ -7,13 +7,13 @@ import {
   addDomain,
   deleteDomain,
   getRegistrars,
-  triggerDomainMonitoring
+  triggerDomainMonitoring,
 } from "./routes/domains-db";
 import {
   checkDomain,
   getDomainDetails,
   updateDomain,
-  createDNSRecord
+  createDNSRecord,
 } from "./routes/domains";
 import {
   getRegistrars as getRegistrarsList,
@@ -22,7 +22,7 @@ import {
   updateRegistrar,
   deleteRegistrar,
   testRegistrarConnection,
-  getRegistrarsHealth
+  getRegistrarsHealth,
 } from "./routes/registrars-db";
 import {
   getProjects,
@@ -31,14 +31,14 @@ import {
   deleteProject,
   getProjectDetails,
   addDomainToProject,
-  removeDomainFromProject
+  removeDomainFromProject,
 } from "./routes/projects";
 import {
   getNotificationSettings,
   updateNotificationSettings,
   resetNotificationSettings,
   testWebhook,
-  getNotificationLogs
+  getNotificationLogs,
 } from "./routes/notifications";
 import {
   getDashboardData,
@@ -46,7 +46,7 @@ import {
   getDomainSuggestions,
   addToWatchlist,
   getWatchlist,
-  removeFromWatchlist
+  removeFromWatchlist,
 } from "./routes/dashboard";
 import {
   getMonitoringLogs,
@@ -58,23 +58,19 @@ import {
   clearOldLogs,
   testDomainConnectivity,
   getMonitoringConfig,
-  testEnhancedMonitoring
+  testEnhancedMonitoring,
 } from "./routes/monitoring";
-import {
-  login,
-  signup,
-  verifyToken
-} from "./routes/auth";
+import { login, signup, verifyToken } from "./routes/auth";
 import {
   importDomainsFromRegistrar,
-  getErrorLogs
+  getErrorLogs,
 } from "./routes/registrar-import";
 import {
   setRegistrarConfig,
   getRegistrarConfig,
   getRegistrarConfigs,
   removeRegistrarConfig,
-  testRegistrarConfig
+  testRegistrarConfig,
 } from "./routes/registrar-config";
 import { cronService } from "./services/cron-service";
 
@@ -123,7 +119,10 @@ export function createServer() {
   app.delete("/api/internal/projects/:id", deleteProject);
   app.get("/api/internal/projects/:id", getProjectDetails);
   app.post("/api/internal/projects/:id/domains", addDomainToProject);
-  app.delete("/api/internal/projects/:id/domains/:domainId", removeDomainFromProject);
+  app.delete(
+    "/api/internal/projects/:id/domains/:domainId",
+    removeDomainFromProject,
+  );
 
   // Notifications API routes
   app.get("/api/internal/notifications", getNotificationSettings);
@@ -167,21 +166,21 @@ export function createServer() {
   // Manual monitoring trigger for testing
   app.post("/api/test/trigger-monitoring", async (req, res) => {
     try {
-      console.log('🧪 Manual monitoring trigger requested');
+      console.log("🧪 Manual monitoring trigger requested");
       await cronService.triggerMonitoring();
       res.json({ success: true, message: "Monitoring triggered successfully" });
     } catch (error) {
-      console.error('Manual monitoring trigger failed:', error);
+      console.error("Manual monitoring trigger failed:", error);
       res.status(500).json({
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error"
+        error: error instanceof Error ? error.message : "Unknown error",
       });
     }
   });
 
   // Start cron service for automated monitoring
   cronService.start();
-  console.log('🚀 Server created with monitoring enabled');
+  console.log("🚀 Server created with monitoring enabled");
 
   return app;
 }

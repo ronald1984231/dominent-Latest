@@ -1,12 +1,12 @@
 import { RequestHandler } from "express";
-import { 
+import {
   DashboardStats,
   ExpiringDomain,
   ExpiringCertificate,
   GetDashboardResponse,
   DomainSearchRequest,
   DomainSearchResponse,
-  DomainSearchResult
+  DomainSearchResult,
 } from "@shared/internal-api";
 
 // Get dashboard statistics and data
@@ -17,62 +17,71 @@ export const getDashboardData: RequestHandler = async (req, res) => {
     const domains = await getAllDomainsForCron();
 
     // Calculate stats
-    const activeDomains = domains.filter(d => d.isActive !== false);
+    const activeDomains = domains.filter((d) => d.isActive !== false);
     const now = new Date();
-    const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const thirtyDaysFromNow = new Date(
+      now.getTime() + 30 * 24 * 60 * 60 * 1000,
+    );
 
     // Find expiring domains (within 30 days)
     const expiringDomains: ExpiringDomain[] = activeDomains
-      .filter(d => {
+      .filter((d) => {
         if (!d.expiry_date) return false;
         const expiryDate = new Date(d.expiry_date);
         return expiryDate <= thirtyDaysFromNow && expiryDate > now;
       })
-      .map(d => ({
+      .map((d) => ({
         id: d.id,
         name: d.domain,
-        registrar: d.registrar || 'Unknown',
-        expirationDate: d.expiry_date ? new Date(d.expiry_date).toLocaleDateString() : 'Unknown',
-        price: '-', // Price data not available in current schema
-        lastCheck: d.lastCheck || 'Never',
-        status: d.status || 'Unknown'
+        registrar: d.registrar || "Unknown",
+        expirationDate: d.expiry_date
+          ? new Date(d.expiry_date).toLocaleDateString()
+          : "Unknown",
+        price: "-", // Price data not available in current schema
+        lastCheck: d.lastCheck || "Never",
+        status: d.status || "Unknown",
       }));
 
     // Find expiring certificates (within 30 days)
     const expiringCertificates: ExpiringCertificate[] = activeDomains
-      .filter(d => {
+      .filter((d) => {
         if (!d.ssl_expiry) return false;
         const sslExpiryDate = new Date(d.ssl_expiry);
         return sslExpiryDate <= thirtyDaysFromNow && sslExpiryDate > now;
       })
-      .map(d => ({
+      .map((d) => ({
         id: `ssl-${d.id}`,
         domain: d.domain,
-        expirationDate: d.ssl_expiry ? new Date(d.ssl_expiry).toLocaleDateString() : 'Unknown',
-        issuer: 'Auto-detected', // Issuer data not available in current schema
-        lastCheck: d.lastSslCheck ? new Date(d.lastSslCheck).toLocaleDateString() : 'Never',
-        status: d.ssl_status === 'valid' ? 'Valid' : d.ssl_status || 'Unknown'
+        expirationDate: d.ssl_expiry
+          ? new Date(d.ssl_expiry).toLocaleDateString()
+          : "Unknown",
+        issuer: "Auto-detected", // Issuer data not available in current schema
+        lastCheck: d.lastSslCheck
+          ? new Date(d.lastSslCheck).toLocaleDateString()
+          : "Never",
+        status: d.ssl_status === "valid" ? "Valid" : d.ssl_status || "Unknown",
       }));
 
     const stats: DashboardStats = {
       totalDomains: domains.length,
-      domainsRenewalPrice: 0.00, // Renewal price data not available
+      domainsRenewalPrice: 0.0, // Renewal price data not available
       expiringDomains: expiringDomains.length,
       expiringCertificates: expiringCertificates.length,
-      onlineDomains: activeDomains.filter(d => d.status === 'Online').length,
-      offlineDomains: activeDomains.filter(d => d.status === 'Offline').length
+      onlineDomains: activeDomains.filter((d) => d.status === "Online").length,
+      offlineDomains: activeDomains.filter((d) => d.status === "Offline")
+        .length,
     };
 
     const response: GetDashboardResponse = {
       stats,
       expiringDomains,
-      expiringCertificates
+      expiringCertificates,
     };
 
     res.json(response);
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
-    res.status(500).json({ error: 'Failed to fetch dashboard data' });
+    console.error("Error fetching dashboard data:", error);
+    res.status(500).json({ error: "Failed to fetch dashboard data" });
   }
 };
 
@@ -85,44 +94,59 @@ export const searchDomains: RequestHandler = (req, res) => {
       success: false,
       query: domain || "",
       results: [],
-      error: "Domain name is required"
+      error: "Domain name is required",
     };
     return res.status(400).json(response);
   }
 
-  const cleanDomain = domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '');
-  const domainName = cleanDomain.split('.')[0];
+  const cleanDomain = domain
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "");
+  const domainName = cleanDomain.split(".")[0];
 
   // Default extensions to check
-  const defaultExtensions = ['com', 'net', 'org', 'io', 'app', 'dev', 'co', 'me', 'info'];
-  const extensionsToCheck = extensions && extensions.length > 0 ? extensions : defaultExtensions;
+  const defaultExtensions = [
+    "com",
+    "net",
+    "org",
+    "io",
+    "app",
+    "dev",
+    "co",
+    "me",
+    "info",
+  ];
+  const extensionsToCheck =
+    extensions && extensions.length > 0 ? extensions : defaultExtensions;
 
-  const results: DomainSearchResult[] = extensionsToCheck.map(ext => {
+  const results: DomainSearchResult[] = extensionsToCheck.map((ext) => {
     const fullDomain = `${domainName}.${ext}`;
     const available = Math.random() > 0.6; // 40% availability rate
-    
+
     let price = "";
     let registrar = "";
-    
+
     if (available) {
       // Set realistic pricing based on extension
       switch (ext) {
-        case 'com':
-        case 'net':
-        case 'org':
+        case "com":
+        case "net":
+        case "org":
           price = `$${(12 + Math.random() * 5).toFixed(2)}/year`;
           break;
-        case 'io':
+        case "io":
           price = `$${(59 + Math.random() * 10).toFixed(2)}/year`;
           break;
-        case 'app':
-        case 'dev':
+        case "app":
+        case "dev":
           price = `$${(19 + Math.random() * 10).toFixed(2)}/year`;
           break;
         default:
           price = `$${(15 + Math.random() * 20).toFixed(2)}/year`;
       }
-      
+
       registrar = Math.random() > 0.5 ? "GoDaddy" : "Namecheap";
     }
 
@@ -131,7 +155,7 @@ export const searchDomains: RequestHandler = (req, res) => {
       available,
       price: available ? price : undefined,
       registrar: available ? registrar : undefined,
-      currency: "USD"
+      currency: "USD",
     };
   });
 
@@ -140,8 +164,8 @@ export const searchDomains: RequestHandler = (req, res) => {
     if (a.available && !b.available) return -1;
     if (!a.available && b.available) return 1;
     if (a.available && b.available && a.price && b.price) {
-      const priceA = parseFloat(a.price.replace(/[^0-9.]/g, ''));
-      const priceB = parseFloat(b.price.replace(/[^0-9.]/g, ''));
+      const priceA = parseFloat(a.price.replace(/[^0-9.]/g, ""));
+      const priceB = parseFloat(b.price.replace(/[^0-9.]/g, ""));
       return priceA - priceB;
     }
     return 0;
@@ -150,7 +174,7 @@ export const searchDomains: RequestHandler = (req, res) => {
   const response: DomainSearchResponse = {
     success: true,
     query: cleanDomain,
-    results
+    results,
   };
 
   res.json(response);
@@ -159,13 +183,13 @@ export const searchDomains: RequestHandler = (req, res) => {
 // Get domain suggestions based on search term
 export const getDomainSuggestions: RequestHandler = (req, res) => {
   const { q } = req.query;
-  
-  if (!q || typeof q !== 'string') {
+
+  if (!q || typeof q !== "string") {
     return res.json({ suggestions: [] });
   }
 
   const searchTerm = q.toLowerCase().trim();
-  
+
   // Generate domain suggestions
   const suggestions = [
     `${searchTerm}.com`,
@@ -177,7 +201,7 @@ export const getDomainSuggestions: RequestHandler = (req, res) => {
     `${searchTerm}pro.com`,
     `${searchTerm}hub.com`,
     `${searchTerm}.io`,
-    `${searchTerm}.app`
+    `${searchTerm}.app`,
   ].slice(0, 5); // Limit to 5 suggestions
 
   res.json({ suggestions });
@@ -198,10 +222,10 @@ export const addToWatchlist: RequestHandler = (req, res) => {
   // 4. Set up monitoring
 
   // Simulate success
-  res.json({ 
-    success: true, 
+  res.json({
+    success: true,
     message: `${domain} has been added to your watchlist`,
-    domain: domain
+    domain: domain,
   });
 };
 
@@ -218,8 +242,8 @@ export const removeFromWatchlist: RequestHandler = (req, res) => {
   const { id } = req.params;
 
   // In a real application, you would remove from database
-  res.json({ 
-    success: true, 
-    message: "Domain removed from watchlist"
+  res.json({
+    success: true,
+    message: "Domain removed from watchlist",
   });
 };

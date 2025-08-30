@@ -1,14 +1,32 @@
 import { useState, useEffect } from "react";
 import { InternalHeader } from "../components/InternalHeader";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { Badge } from "../components/ui/badge";
 import { useToast } from "../hooks/use-toast";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { CheckCircle, XCircle, Settings, TestTube, Save, Trash2 } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  Settings,
+  TestTube,
+  Save,
+  Trash2,
+} from "lucide-react";
 
 interface RegistrarConfig {
   registrarName: string;
@@ -32,7 +50,7 @@ export default function RegistrarConfig() {
   const [loading, setLoading] = useState(true);
   const [selectedRegistrar, setSelectedRegistrar] = useState<string>("");
   const [formData, setFormData] = useState<ConfigForm>({
-    type: "namecheap"
+    type: "namecheap",
   });
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -44,16 +62,16 @@ export default function RegistrarConfig() {
 
   const loadConfigs = async () => {
     try {
-      const response = await fetch('/api/registrar-configs');
+      const response = await fetch("/api/registrar-configs");
       const data = await response.json();
-      
+
       if (response.ok) {
         setConfigs(data.configs);
       } else {
-        throw new Error(data.message || 'Failed to load configurations');
+        throw new Error(data.message || "Failed to load configurations");
       }
     } catch (error) {
-      console.error('Failed to load registrar configs:', error);
+      console.error("Failed to load registrar configs:", error);
       toast({
         title: "Error",
         description: "Failed to load registrar configurations",
@@ -66,10 +84,12 @@ export default function RegistrarConfig() {
 
   const handleRegistrarSelect = async (registrarName: string) => {
     setSelectedRegistrar(registrarName);
-    
+
     // Load existing configuration if available
     try {
-      const response = await fetch(`/api/registrar-config/${encodeURIComponent(registrarName)}`);
+      const response = await fetch(
+        `/api/registrar-config/${encodeURIComponent(registrarName)}`,
+      );
       if (response.ok) {
         const data = await response.json();
         if (data.config) {
@@ -80,13 +100,13 @@ export default function RegistrarConfig() {
         }
       } else {
         // No existing config, reset form
-        const config = configs.find(c => c.registrarName === registrarName);
+        const config = configs.find((c) => c.registrarName === registrarName);
         setFormData({
-          type: config?.type as any || "namecheap"
+          type: (config?.type as any) || "namecheap",
         });
       }
     } catch (error) {
-      console.error('Failed to load existing config:', error);
+      console.error("Failed to load existing config:", error);
     }
   };
 
@@ -102,14 +122,14 @@ export default function RegistrarConfig() {
 
     setSaving(true);
     try {
-      const response = await fetch('/api/registrar-config', {
-        method: 'POST',
+      const response = await fetch("/api/registrar-config", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           registrarName: selectedRegistrar,
-          config: formData
+          config: formData,
         }),
       });
 
@@ -122,13 +142,16 @@ export default function RegistrarConfig() {
         });
         await loadConfigs();
       } else {
-        throw new Error(data.message || 'Failed to save configuration');
+        throw new Error(data.message || "Failed to save configuration");
       }
     } catch (error) {
-      console.error('Failed to save config:', error);
+      console.error("Failed to save config:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to save configuration',
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to save configuration",
         variant: "destructive",
       });
     } finally {
@@ -148,14 +171,14 @@ export default function RegistrarConfig() {
 
     setTesting(true);
     try {
-      const response = await fetch('/api/registrar-config/test', {
-        method: 'POST',
+      const response = await fetch("/api/registrar-config/test", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           registrarName: selectedRegistrar,
-          config: formData
+          config: formData,
         }),
       });
 
@@ -164,16 +187,17 @@ export default function RegistrarConfig() {
       if (response.ok) {
         toast({
           title: "Test Successful",
-          description: `Configuration test passed for ${selectedRegistrar}. Data source: ${data.testResult?.source || 'unknown'}`,
+          description: `Configuration test passed for ${selectedRegistrar}. Data source: ${data.testResult?.source || "unknown"}`,
         });
       } else {
-        throw new Error(data.message || 'Configuration test failed');
+        throw new Error(data.message || "Configuration test failed");
       }
     } catch (error) {
-      console.error('Failed to test config:', error);
+      console.error("Failed to test config:", error);
       toast({
         title: "Test Failed",
-        description: error instanceof Error ? error.message : 'Configuration test failed',
+        description:
+          error instanceof Error ? error.message : "Configuration test failed",
         variant: "destructive",
       });
     } finally {
@@ -197,7 +221,12 @@ export default function RegistrarConfig() {
         <CardContent className="space-y-4">
           <div>
             <Label htmlFor="type">Registrar Type</Label>
-            <Select value={configType} onValueChange={(value: any) => setFormData({...formData, type: value})}>
+            <Select
+              value={configType}
+              onValueChange={(value: any) =>
+                setFormData({ ...formData, type: value })
+              }
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select registrar type" />
               </SelectTrigger>
@@ -205,7 +234,9 @@ export default function RegistrarConfig() {
                 <SelectItem value="namecheap">Namecheap</SelectItem>
                 <SelectItem value="godaddy">GoDaddy</SelectItem>
                 <SelectItem value="cloudflare">Cloudflare</SelectItem>
-                <SelectItem value="networksolutions">Network Solutions</SelectItem>
+                <SelectItem value="networksolutions">
+                  Network Solutions
+                </SelectItem>
                 <SelectItem value="enom">Enom</SelectItem>
               </SelectContent>
             </Select>
@@ -218,7 +249,9 @@ export default function RegistrarConfig() {
                 <Input
                   id="apiUser"
                   value={formData.apiUser || ""}
-                  onChange={(e) => setFormData({...formData, apiUser: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, apiUser: e.target.value })
+                  }
                   placeholder="Your Namecheap API username"
                 />
               </div>
@@ -228,7 +261,9 @@ export default function RegistrarConfig() {
                   id="apiKey"
                   type="password"
                   value={formData.apiKey || ""}
-                  onChange={(e) => setFormData({...formData, apiKey: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, apiKey: e.target.value })
+                  }
                   placeholder="Your Namecheap API key"
                 />
               </div>
@@ -237,7 +272,9 @@ export default function RegistrarConfig() {
                 <Input
                   id="username"
                   value={formData.username || ""}
-                  onChange={(e) => setFormData({...formData, username: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, username: e.target.value })
+                  }
                   placeholder="Your Namecheap username"
                 />
               </div>
@@ -246,7 +283,9 @@ export default function RegistrarConfig() {
                 <Input
                   id="clientIp"
                   value={formData.clientIp || ""}
-                  onChange={(e) => setFormData({...formData, clientIp: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, clientIp: e.target.value })
+                  }
                   placeholder="Your server's IP address"
                 />
               </div>
@@ -261,7 +300,9 @@ export default function RegistrarConfig() {
                   id="apiKey"
                   type="password"
                   value={formData.apiKey || ""}
-                  onChange={(e) => setFormData({...formData, apiKey: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, apiKey: e.target.value })
+                  }
                   placeholder="Your GoDaddy API key"
                 />
               </div>
@@ -271,7 +312,9 @@ export default function RegistrarConfig() {
                   id="apiSecret"
                   type="password"
                   value={formData.apiSecret || ""}
-                  onChange={(e) => setFormData({...formData, apiSecret: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, apiSecret: e.target.value })
+                  }
                   placeholder="Your GoDaddy API secret"
                 />
               </div>
@@ -285,15 +328,17 @@ export default function RegistrarConfig() {
                 id="apiToken"
                 type="password"
                 value={formData.apiToken || ""}
-                onChange={(e) => setFormData({...formData, apiToken: e.target.value})}
+                onChange={(e) =>
+                  setFormData({ ...formData, apiToken: e.target.value })
+                }
                 placeholder="Your Cloudflare API token"
               />
             </div>
           )}
 
           <div className="flex gap-2">
-            <Button 
-              onClick={handleTestConfig} 
+            <Button
+              onClick={handleTestConfig}
               disabled={testing}
               variant="outline"
               className="flex items-center gap-2"
@@ -301,8 +346,8 @@ export default function RegistrarConfig() {
               <TestTube className="h-4 w-4" />
               {testing ? "Testing..." : "Test Configuration"}
             </Button>
-            <Button 
-              onClick={handleSaveConfig} 
+            <Button
+              onClick={handleSaveConfig}
               disabled={saving}
               className="flex items-center gap-2"
             >
@@ -313,8 +358,9 @@ export default function RegistrarConfig() {
 
           <Alert>
             <AlertDescription>
-              API credentials are used to fetch real-time domain data directly from your registrar. 
-              This provides more accurate and up-to-date information compared to WHOIS lookups alone.
+              API credentials are used to fetch real-time domain data directly
+              from your registrar. This provides more accurate and up-to-date
+              information compared to WHOIS lookups alone.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -325,12 +371,15 @@ export default function RegistrarConfig() {
   return (
     <div className="min-h-screen bg-background">
       <InternalHeader />
-      
+
       <div className="container mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Registrar Configuration</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Registrar Configuration
+          </h1>
           <p className="text-muted-foreground">
-            Configure registrar API access for enhanced domain monitoring with real-time data.
+            Configure registrar API access for enhanced domain monitoring with
+            real-time data.
           </p>
         </div>
 
@@ -342,27 +391,37 @@ export default function RegistrarConfig() {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="text-center py-4">Loading configurations...</div>
+                <div className="text-center py-4">
+                  Loading configurations...
+                </div>
               ) : (
                 <div className="space-y-3">
                   {configs.map((config) => (
-                    <div 
+                    <div
                       key={config.registrarName}
                       className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                        selectedRegistrar === config.registrarName 
-                          ? 'border-primary bg-primary/5' 
-                          : 'border-border hover:border-primary/50'
+                        selectedRegistrar === config.registrarName
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
                       }`}
-                      onClick={() => handleRegistrarSelect(config.registrarName)}
+                      onClick={() =>
+                        handleRegistrarSelect(config.registrarName)
+                      }
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="font-medium">{config.registrarName}</h3>
-                          <p className="text-sm text-muted-foreground capitalize">{config.type}</p>
+                          <h3 className="font-medium">
+                            {config.registrarName}
+                          </h3>
+                          <p className="text-sm text-muted-foreground capitalize">
+                            {config.type}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2">
                           {config.configured ? (
-                            <Badge variant={config.valid ? "default" : "destructive"}>
+                            <Badge
+                              variant={config.valid ? "default" : "destructive"}
+                            >
                               {config.valid ? (
                                 <>
                                   <CheckCircle className="h-3 w-3 mr-1" />
@@ -388,16 +447,17 @@ export default function RegistrarConfig() {
           </Card>
 
           {/* Configuration Form */}
-          <div>
-            {renderConfigForm()}
-          </div>
+          <div>{renderConfigForm()}</div>
         </div>
 
         <div className="mt-8">
           <Alert>
             <AlertDescription>
-              <strong>Enhanced Monitoring Benefits:</strong> Configuring registrar API access enables real-time domain data fetching, 
-              providing more accurate expiry dates, registrar information, and reducing reliance on WHOIS lookups which can be rate-limited or blocked.
+              <strong>Enhanced Monitoring Benefits:</strong> Configuring
+              registrar API access enables real-time domain data fetching,
+              providing more accurate expiry dates, registrar information, and
+              reducing reliance on WHOIS lookups which can be rate-limited or
+              blocked.
             </AlertDescription>
           </Alert>
         </div>
