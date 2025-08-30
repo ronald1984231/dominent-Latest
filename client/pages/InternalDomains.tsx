@@ -60,6 +60,7 @@ export default function InternalDomains() {
   const [addingDomain, setAddingDomain] = useState(false);
   const [bulkDomains, setBulkDomains] = useState("");
   const [addingBulkDomains, setAddingBulkDomains] = useState(false);
+  const [addDomainMode, setAddDomainMode] = useState<'single' | 'bulk'>('single');
   const [updating, setUpdating] = useState(false);
   const [availableRegistrars, setAvailableRegistrars] = useState<Registrar[]>(
     [],
