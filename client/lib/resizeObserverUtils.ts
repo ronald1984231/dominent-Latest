@@ -77,11 +77,25 @@ export function setupResizeObserverErrorHandler(): void {
     if (
       event.message?.includes("Failed to fetch") &&
       (event.filename?.includes("edge.fullstory.com") ||
-        event.error?.stack?.includes("fullstory"))
+        event.filename?.includes("fs.js") ||
+        event.error?.stack?.includes("fullstory") ||
+        event.error?.stack?.includes("edge.fullstory.com"))
     ) {
       event.preventDefault();
       event.stopPropagation();
       console.debug("FullStory fetch error suppressed globally");
+      return false;
+    }
+
+    // Suppress specific FullStory evaluation errors
+    if (
+      event.message?.includes("TypeError: Failed to fetch") &&
+      (event.filename?.includes("fs.js") ||
+       (event.lineno === 4 && event.colno === 60118))
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+      console.debug("FullStory specific error suppressed");
       return false;
     }
   });
