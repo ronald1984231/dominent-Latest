@@ -94,12 +94,19 @@ const App = () => (
   </QueryClientProvider>
 );
 
-// Fix ReactDOMClient.createRoot() warning by using singleton pattern
+// Fix ReactDOMClient.createRoot() warning by using singleton pattern with HMR support
 const rootElement = document.getElementById("root")!;
-let root: ReturnType<typeof createRoot> | null = null;
 
-if (!root) {
-  root = createRoot(rootElement);
+// Store root instance globally to persist across HMR reloads
+declare global {
+  interface Window {
+    __DOMINENT_ROOT__?: ReturnType<typeof createRoot>;
+  }
 }
 
-root.render(<App />);
+// Check if root already exists globally (survives HMR)
+if (!window.__DOMINENT_ROOT__) {
+  window.__DOMINENT_ROOT__ = createRoot(rootElement);
+}
+
+window.__DOMINENT_ROOT__.render(<App />);
