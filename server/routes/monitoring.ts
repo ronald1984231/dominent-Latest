@@ -69,9 +69,9 @@ export const createMonitoringLog: RequestHandler = async (req, res) => {
 // Get monitoring statistics
 export const getMonitoringStats: RequestHandler = async (req, res) => {
   try {
-    // Get domains from the domains module
-    const { getDomains } = await import("./domains");
-    
+    // Get domains from the correct domains-db module
+    const { getDomains } = await import("./domains-db");
+
     // Mock request/response to get domains
     let domains: any[] = [];
     const mockReq = { query: {} } as any;
@@ -82,7 +82,7 @@ export const getMonitoringStats: RequestHandler = async (req, res) => {
     } as any;
 
     getDomains(mockReq, mockRes, () => {});
-    
+
     const stats: MonitoringStats = monitoringService.getStats(domains);
     res.json(stats);
   } catch (error) {
