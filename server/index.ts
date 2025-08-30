@@ -155,6 +155,13 @@ export function createServer() {
   app.post("/api/auth/signup", signup);
   app.get("/api/auth/verify", verifyToken);
 
+  // Registrar Configuration API routes
+  app.post("/api/registrar-config", setRegistrarConfig);
+  app.get("/api/registrar-config/:registrarName", getRegistrarConfig);
+  app.get("/api/registrar-configs", getRegistrarConfigs);
+  app.delete("/api/registrar-config/:registrarName", removeRegistrarConfig);
+  app.post("/api/registrar-config/test", testRegistrarConfig);
+
   // Manual monitoring trigger for testing
   app.post("/api/test/trigger-monitoring", async (req, res) => {
     try {
