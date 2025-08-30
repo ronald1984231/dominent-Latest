@@ -84,6 +84,7 @@ const App = () => (
             <Route path="/create-account" element={<CreateAccount />} />
             <Route path="/logo-showcase" element={<LogoShowcase />} />
             <Route path="/logo-test" element={<LogoTest />} />
+            <Route path="/error-test" element={<ErrorTest />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
