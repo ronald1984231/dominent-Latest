@@ -1,7 +1,11 @@
 /**
  * Safe fetch utility with retry logic, timeout, and better error handling
+ * Includes fallback mechanisms to bypass FullStory and other third-party interference
  */
 import { useState, useCallback } from "react";
+
+// Store original fetch before any third-party libraries can interfere
+const originalFetch = window.fetch;
 
 export interface SafeFetchOptions extends RequestInit {
   timeout?: number;
