@@ -150,6 +150,7 @@ export function createServer() {
   app.delete("/api/monitoring/logs/cleanup", clearOldLogs);
   app.get("/api/monitoring/test/:domain", testDomainConnectivity);
   app.get("/api/monitoring/config", getMonitoringConfig);
+  app.post("/api/monitoring/enhanced-test/:domain", testEnhancedMonitoring);
 
   // Authentication API routes
   app.post("/api/auth/login", login);
