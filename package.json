@@ -32,6 +32,7 @@
     "pg": "^8.16.3",
     "whois": "^2.15.0",
     "whois-json": "^2.0.4",
+    "xml2js": "^0.6.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -74,6 +75,7 @@
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@types/three": "^0.176.0",
+    "@types/xml2js": "^0.4.14",
     "@vitejs/plugin-react-swc": "^4.0.0",
     "autoprefixer": "^10.4.21",
     "class-variance-authority": "^0.7.1",
