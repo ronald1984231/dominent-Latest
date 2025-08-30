@@ -18,6 +18,7 @@ import Pricing from "./pages/Pricing";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import LogoShowcase from "./pages/LogoShowcase";
+import LogoTest from "./pages/LogoTest";
 import Dashboard from "./pages/Dashboard";
 import InternalDashboard from "./pages/InternalDashboard";
 import InternalDomains from "./pages/InternalDomains";
