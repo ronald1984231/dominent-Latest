@@ -152,6 +152,25 @@ export default function ErrorTest() {
     }
   };
 
+  const testDirectUndefinedFunction = () => {
+    const timestamp = new Date().toLocaleTimeString();
+
+    setTestResults((prev) => [
+      ...prev,
+      {
+        success: true,
+        message: `🚀 Calling myUndefinedFunction() directly... This will trigger an uncaught error that Sentry should capture automatically.`,
+        timestamp,
+      },
+    ]);
+
+    // Delay to show the message first, then trigger the error
+    setTimeout(() => {
+      // Direct call as requested - this will cause an uncaught ReferenceError
+      (globalThis as any).myUndefinedFunction();
+    }, 1000);
+  };
+
   const clearResults = () => {
     setTestResults([]);
     setRootWarnings([]);
