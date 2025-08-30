@@ -24,7 +24,7 @@ export function Logo({
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
       {/* Logo Icon */}
-      <div className="relative">
+      <div className="relative logo-container">
         <svg
           className={`${sizeClasses[size]} transition-transform hover:scale-105`}
           viewBox="0 0 48 48"
