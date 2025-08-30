@@ -119,7 +119,9 @@ export default function InternalDashboard() {
             <div className="flex items-center">
               <div className="w-5 h-5 text-red-500 mr-3">⚠️</div>
               <div>
-                <h3 className="text-sm font-medium text-red-800">Failed to load dashboard data</h3>
+                <h3 className="text-sm font-medium text-red-800">
+                  Failed to load dashboard data
+                </h3>
                 <p className="text-sm text-red-700">{error}</p>
               </div>
             </div>

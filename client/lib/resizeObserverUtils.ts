@@ -91,7 +91,7 @@ export function setupResizeObserverErrorHandler(): void {
     if (
       event.message?.includes("TypeError: Failed to fetch") &&
       (event.filename?.includes("fs.js") ||
-       (event.lineno === 4 && event.colno === 60118))
+        (event.lineno === 4 && event.colno === 60118))
     ) {
       event.preventDefault();
       event.stopPropagation();
@@ -111,7 +111,7 @@ export function setupResizeObserverErrorHandler(): void {
     // Suppress FullStory-related promise rejections
     if (
       (event.reason?.message?.includes("Failed to fetch") ||
-       event.reason?.message?.includes("TypeError: Failed to fetch")) &&
+        event.reason?.message?.includes("TypeError: Failed to fetch")) &&
       (event.reason?.stack?.includes("fullstory") ||
         event.reason?.stack?.includes("edge.fullstory.com") ||
         event.reason?.stack?.includes("fs.js"))
