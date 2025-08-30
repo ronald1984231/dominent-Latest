@@ -124,36 +124,24 @@ export default function RegistrarConfig() {
 
     setSaving(true);
     try {
-      const response = await fetch("/api/registrar-config", {
+      await safeFetchJson("/api/registrar-config", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           registrarName: selectedRegistrar,
           config: formData,
         }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: `Configuration saved for ${selectedRegistrar}`,
-        });
-        await loadConfigs();
-      } else {
-        throw new Error(data.message || "Failed to save configuration");
-      }
+      toast({
+        title: "Success",
+        description: `Configuration saved for ${selectedRegistrar}`,
+      });
+      await loadConfigs();
     } catch (error) {
       console.error("Failed to save config:", error);
       toast({
         title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to save configuration",
+        description: getFetchErrorMessage(error),
         variant: "destructive",
       });
     } finally {
