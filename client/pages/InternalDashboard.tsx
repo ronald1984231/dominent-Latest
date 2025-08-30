@@ -91,11 +91,40 @@ export default function InternalDashboard() {
     loadDashboardData();
   }, []);
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <InternalHeader />
+        <div className="container mx-auto px-6 py-8">
+          <div className="flex items-center justify-center min-h-96">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading dashboard data...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <InternalHeader />
 
       <div className="container mx-auto px-6 py-8">
+        {/* Error state */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center">
+              <div className="w-5 h-5 text-red-500 mr-3">⚠️</div>
+              <div>
+                <h3 className="text-sm font-medium text-red-800">Failed to load dashboard data</h3>
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Welcome Section */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
