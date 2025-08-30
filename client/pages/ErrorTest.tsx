@@ -171,6 +171,56 @@ export default function ErrorTest() {
     }, 1000);
   };
 
+  const testSentryLogging = () => {
+    const timestamp = new Date().toLocaleTimeString();
+
+    // ✅ Correct way to log in modern Sentry (React)
+
+    // 1. Add breadcrumb (for debugging trail)
+    Sentry.addBreadcrumb({
+      message: 'User triggered test log',
+      level: 'info',
+      data: {
+        log_source: 'sentry_test',
+        timestamp: timestamp,
+        page: 'error-test'
+      }
+    });
+
+    // 2. Capture custom message
+    Sentry.captureMessage('User triggered test log from ErrorTest page', {
+      level: 'info',
+      tags: {
+        log_source: 'sentry_test',
+        test_type: 'logging'
+      },
+      extra: {
+        timestamp: timestamp,
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      }
+    });
+
+    // 3. Set user context
+    Sentry.setUser({
+      id: 'test-user',
+      username: 'test-user',
+      email: 'test@example.com'
+    });
+
+    // 4. Add custom tags
+    Sentry.setTag('test_session', timestamp);
+
+    setTestResults((prev) => [
+      ...prev,
+      {
+        success: true,
+        message: `✅ Sentry logging test completed! Sent: breadcrumb + message + user context. Check your Sentry dashboard.`,
+        timestamp,
+      },
+    ]);
+  };
+
   const clearResults = () => {
     setTestResults([]);
     setRootWarnings([]);
