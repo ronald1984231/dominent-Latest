@@ -70,7 +70,7 @@ export function Logo({
           {/* Central monitoring dot */}
           <circle cx="24" cy="24" r="2.5" fill="white" />
 
-          {/* Monitoring pulse rings */}
+          {/* Monitoring pulse rings - Fixed radius to prevent ResizeObserver issues */}
           <circle
             cx="24"
             cy="24"
@@ -78,25 +78,9 @@ export function Logo({
             stroke="white"
             strokeWidth="1"
             fill="none"
-            opacity="0.6"
-            className="animate-pulse"
-            style={{
-              animation: 'pulse-ring 2s ease-in-out infinite'
-            }}
+            opacity="0.4"
+            className="logo-pulse-ring"
           />
-
-          <style jsx>{`
-            @keyframes pulse-ring {
-              0%, 100% {
-                transform: scale(0.75);
-                opacity: 0.6;
-              }
-              50% {
-                transform: scale(1.25);
-                opacity: 0.1;
-              }
-            }
-          `}</style>
 
           {/* Gradients */}
           <defs>
