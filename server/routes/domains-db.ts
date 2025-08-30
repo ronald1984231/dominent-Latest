@@ -116,14 +116,24 @@ export const updateDomain: RequestHandler<
     // Refresh WHOIS info
     const whoisInfo = await fetchWhoisInfo(domain);
 
-    const updated = await db.domain.update({
-      where: { domain },
-      data: {
-        registrar: whoisInfo.registrar,
-        expiry_date: whoisInfo.expiryDate,
-      },
-    });
+    const sql = `
+      UPDATE domains
+      SET registrar = $1, expiry_date = $2, last_whois_check = NOW()
+      WHERE domain = $3
+      RETURNING *
+    `;
 
+    const result = await db.query(sql, [
+      whoisInfo.registrar,
+      whoisInfo.expiryDate,
+      domain
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: "Domain not found" });
+    }
+
+    const updated = result.rows[0];
     res.json({ success: true, domain: updated });
   } catch (err) {
     res.status(500).json({ success: false, error: err instanceof Error ? err.message : "Unknown error" });
