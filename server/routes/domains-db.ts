@@ -20,15 +20,21 @@ const toISODate = (v: any): string | undefined => {
 
 async function fetchWhoisInfo(domain: string) {
   try {
+    console.log(`Attempting WHOIS lookup for domain: ${domain}`);
     const data = await whois(domain);
-    return {
+    console.log(`WHOIS data received for ${domain}:`, data);
+
+    const result = {
       registrar: data.registrar || "Unknown",
       expiryDate: data.expirationDate
         ? new Date(data.expirationDate).toISOString().split("T")[0]
         : undefined,
     };
+
+    console.log(`Processed WHOIS result for ${domain}:`, result);
+    return result;
   } catch (err) {
-    console.error("WHOIS lookup failed:", err);
+    console.error(`WHOIS lookup failed for ${domain}:`, err);
     return { registrar: "Unknown", expiryDate: undefined };
   }
 }
