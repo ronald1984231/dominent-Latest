@@ -13,6 +13,12 @@ import {
   isSSLExpiringSoon,
   formatDaysUntilExpiry
 } from "../utils/domain-monitor";
+import {
+  updateDomainInfo,
+  RegistrarConfig,
+  DomainInfo,
+  validateRegistrarConfig
+} from "../utils/enhanced-domain-monitor";
 import { AlertService } from "./alert-service";
 
 // In-memory storage for demonstration (in production, use a real database)
