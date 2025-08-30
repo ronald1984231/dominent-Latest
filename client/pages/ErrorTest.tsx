@@ -117,15 +117,35 @@ export default function ErrorTest() {
   const testSentryError = () => {
     const timestamp = new Date().toLocaleTimeString();
 
+    // Add some context to the Sentry error
+    Sentry.addBreadcrumb({
+      message: 'Testing Sentry error tracking',
+      level: 'info',
+      timestamp: Date.now() / 1000,
+    });
+
     try {
       // This will trigger a ReferenceError that should be captured by Sentry
       (window as any).myUndefinedFunction();
     } catch (error) {
+      // Manually capture the error with additional context
+      Sentry.captureException(error, {
+        tags: {
+          test: 'sentry-error-test',
+          source: 'error-test-page'
+        },
+        extra: {
+          testTimestamp: timestamp,
+          userAgent: navigator.userAgent,
+          url: window.location.href
+        }
+      });
+
       setTestResults((prev) => [
         ...prev,
         {
           success: true,
-          message: `Sentry error test triggered: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          message: `✓ Sentry error test completed! Error captured: "${error instanceof Error ? error.message : 'Unknown error'}". Check your Sentry dashboard for the error report.`,
           timestamp,
         },
       ]);
