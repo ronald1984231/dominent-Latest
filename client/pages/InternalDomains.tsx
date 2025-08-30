@@ -601,7 +601,14 @@ export default function InternalDomains() {
 
                   <TabsContent value="bulk" className="mt-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Domain Names</label>
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium">Domain Names</label>
+                        {bulkDomains.trim() && (
+                          <span className="text-xs text-muted-foreground">
+                            {bulkDomains.split('\n').filter(d => d.trim().length > 0).length} domains
+                          </span>
+                        )}
+                      </div>
                       <Textarea
                         placeholder="example.com&#10;mysite.org&#10;another-domain.net"
                         value={bulkDomains}
