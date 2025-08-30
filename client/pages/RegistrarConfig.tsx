@@ -91,26 +91,24 @@ export default function RegistrarConfig() {
 
     // Load existing configuration if available
     try {
-      const response = await fetch(
-        `/api/registrar-config/${encodeURIComponent(registrarName)}`,
+      const data = await safeFetchJson<{ config: any }>(
+        `/api/registrar-config/${encodeURIComponent(registrarName)}`
       );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.config) {
-          setFormData({
-            type: data.config.type,
-            // Don't populate sensitive fields for security
-          });
-        }
-      } else {
-        // No existing config, reset form
-        const config = configs.find((c) => c.registrarName === registrarName);
+
+      if (data.config) {
         setFormData({
-          type: (config?.type as any) || "namecheap",
+          type: data.config.type,
+          // Don't populate sensitive fields for security
         });
       }
     } catch (error) {
       console.error("Failed to load existing config:", error);
+
+      // No existing config or error loading, reset form
+      const config = configs.find((c) => c.registrarName === registrarName);
+      setFormData({
+        type: (config?.type as any) || "namecheap",
+      });
     }
   };
 
