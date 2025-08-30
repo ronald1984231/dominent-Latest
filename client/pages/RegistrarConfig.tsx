@@ -61,28 +61,9 @@ export default function RegistrarConfig() {
     loadConfigs();
   }, []);
 
-  const loadConfigs = async (retryCount = 0) => {
-    const maxRetries = 3;
-
+  const loadConfigs = async () => {
     try {
-      // Add timeout to prevent hanging requests
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-      const response = await fetch("/api/registrar-configs", {
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
+      const data = await safeFetchJson<{ configs: RegistrarConfig[] }>("/api/registrar-configs");
 
       if (data.configs) {
         setConfigs(data.configs);
@@ -90,36 +71,18 @@ export default function RegistrarConfig() {
         throw new Error("Invalid response format");
       }
     } catch (error) {
-      console.error(`Failed to load registrar configs (attempt ${retryCount + 1}):`, error);
+      console.error("Failed to load registrar configs:", error);
 
-      // Retry logic for network errors
-      if (retryCount < maxRetries && (
-        error instanceof TypeError || // Network errors
-        (error instanceof Error && error.message.includes('fetch')) ||
-        (error instanceof Error && error.message.includes('AbortError'))
-      )) {
-        console.log(`Retrying in ${(retryCount + 1) * 1000}ms...`);
-        setTimeout(() => {
-          loadConfigs(retryCount + 1);
-        }, (retryCount + 1) * 1000);
-        return;
-      }
-
-      // Show error after all retries failed
       toast({
         title: "Error",
-        description: error instanceof Error ?
-          `Failed to load registrar configurations: ${error.message}` :
-          "Failed to load registrar configurations. Please check your connection.",
+        description: getFetchErrorMessage(error),
         variant: "destructive",
       });
 
       // Set empty configs as fallback
       setConfigs([]);
     } finally {
-      if (retryCount === 0) { // Only set loading false on the first attempt
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
