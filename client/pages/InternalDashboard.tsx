@@ -10,6 +10,7 @@ import {
 import { Badge } from "../components/ui/badge";
 import { Link } from "react-router-dom";
 import { safeFetchJson, getFetchErrorMessage } from "../lib/safeFetch";
+import { bypassFetchJson } from "../lib/fetchBypass";
 
 interface DashboardStats {
   totalDomains: number;
