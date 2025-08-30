@@ -17,7 +17,16 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist/spa",
   },
-  plugins: [react(), expressPlugin()],
+  plugins: [
+    react(),
+    expressPlugin(),
+    // Only include Sentry plugin in production builds
+    mode === 'production' && sentryVitePlugin({
+      org: "googlinks-llc",
+      project: "javascript-nextjs", // Note: You may want to rename this project to reflect Vite/React
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    }),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
