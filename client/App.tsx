@@ -19,6 +19,7 @@ import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import LogoShowcase from "./pages/LogoShowcase";
 import LogoTest from "./pages/LogoTest";
+import ErrorTest from "./pages/ErrorTest";
 import Dashboard from "./pages/Dashboard";
 import InternalDashboard from "./pages/InternalDashboard";
 import InternalDomains from "./pages/InternalDomains";
