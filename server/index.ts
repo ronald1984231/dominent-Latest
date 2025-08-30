@@ -1,4 +1,8 @@
 import "dotenv/config";
+// Sentry must be imported first to instrument the entire application
+import "./sentry";
+import * as Sentry from "@sentry/node";
+
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
