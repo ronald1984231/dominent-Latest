@@ -10,27 +10,70 @@ import {
 } from "@shared/internal-api";
 
 // Get dashboard statistics and data
-export const getDashboardData: RequestHandler = (req, res) => {
-  // Starting with empty dashboard data - all sample data removed
-  const stats: DashboardStats = {
-    totalDomains: 0,
-    domainsRenewalPrice: 0.00,
-    expiringDomains: 0,
-    expiringCertificates: 0,
-    onlineDomains: 0,
-    offlineDomains: 0
-  };
+export const getDashboardData: RequestHandler = async (req, res) => {
+  try {
+    // Get domains from the database
+    const { getAllDomainsForCron } = await import("./domains-db");
+    const domains = await getAllDomainsForCron();
 
-  const expiringDomains: ExpiringDomain[] = [];
-  const expiringCertificates: ExpiringCertificate[] = [];
+    // Calculate stats
+    const activeDomains = domains.filter(d => d.isActive !== false);
+    const now = new Date();
+    const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-  const response: GetDashboardResponse = {
-    stats,
-    expiringDomains,
-    expiringCertificates
-  };
+    // Find expiring domains (within 30 days)
+    const expiringDomains: ExpiringDomain[] = activeDomains
+      .filter(d => {
+        if (!d.expiry_date) return false;
+        const expiryDate = new Date(d.expiry_date);
+        return expiryDate <= thirtyDaysFromNow && expiryDate > now;
+      })
+      .map(d => ({
+        id: d.id,
+        name: d.domain,
+        registrar: d.registrar || 'Unknown',
+        expirationDate: d.expiry_date ? new Date(d.expiry_date).toLocaleDateString() : 'Unknown',
+        price: '-', // Price data not available in current schema
+        lastCheck: d.lastCheck || 'Never',
+        status: d.status || 'Unknown'
+      }));
 
-  res.json(response);
+    // Find expiring certificates (within 30 days)
+    const expiringCertificates: ExpiringCertificate[] = activeDomains
+      .filter(d => {
+        if (!d.ssl_expiry) return false;
+        const sslExpiryDate = new Date(d.ssl_expiry);
+        return sslExpiryDate <= thirtyDaysFromNow && sslExpiryDate > now;
+      })
+      .map(d => ({
+        id: `ssl-${d.id}`,
+        domain: d.domain,
+        expirationDate: d.ssl_expiry ? new Date(d.ssl_expiry).toLocaleDateString() : 'Unknown',
+        issuer: 'Auto-detected', // Issuer data not available in current schema
+        lastCheck: d.lastSslCheck ? new Date(d.lastSslCheck).toLocaleDateString() : 'Never',
+        status: d.ssl_status === 'valid' ? 'Valid' : d.ssl_status || 'Unknown'
+      }));
+
+    const stats: DashboardStats = {
+      totalDomains: domains.length,
+      domainsRenewalPrice: 0.00, // Renewal price data not available
+      expiringDomains: expiringDomains.length,
+      expiringCertificates: expiringCertificates.length,
+      onlineDomains: activeDomains.filter(d => d.status === 'Online').length,
+      offlineDomains: activeDomains.filter(d => d.status === 'Offline').length
+    };
+
+    const response: GetDashboardResponse = {
+      stats,
+      expiringDomains,
+      expiringCertificates
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    res.status(500).json({ error: 'Failed to fetch dashboard data' });
+  }
 };
 
 // Search for available domains
