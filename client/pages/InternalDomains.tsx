@@ -568,36 +568,71 @@ export default function InternalDomains() {
                   <span className="hidden sm:inline">ADD DOMAIN</span>
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="max-w-2xl">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Add New Domain</AlertDialogTitle>
+                  <AlertDialogTitle>Add Domains</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Enter the domain name you want to monitor. We'll
-                    automatically check its status, SSL certificate, and
-                    expiration date.
+                    Add one or multiple domains to monitor. We'll automatically check their status, SSL certificates, and expiration dates.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <div className="py-4">
-                  <Input
-                    placeholder="example.com"
-                    value={newDomain}
-                    onChange={(e) => setNewDomain(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleAddDomain()}
-                  />
-                </div>
+
+                <Tabs value={addDomainMode} onValueChange={(value) => setAddDomainMode(value as 'single' | 'bulk')} className="py-4">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="single">Single Domain</TabsTrigger>
+                    <TabsTrigger value="bulk">Multiple Domains</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="single" className="mt-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Domain Name</label>
+                      <Input
+                        placeholder="example.com"
+                        value={newDomain}
+                        onChange={(e) => setNewDomain(e.target.value)}
+                        onKeyPress={(e) => e.key === "Enter" && handleAddDomain()}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter a single domain name (e.g., example.com)
+                      </p>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="bulk" className="mt-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Domain Names</label>
+                      <Textarea
+                        placeholder="example.com&#10;mysite.org&#10;another-domain.net"
+                        value={bulkDomains}
+                        onChange={(e) => setBulkDomains(e.target.value)}
+                        rows={6}
+                        className="resize-none"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter one domain per line. Invalid domains will be skipped automatically.
+                      </p>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel onClick={() => {
+                    setNewDomain("");
+                    setBulkDomains("");
+                    setAddDomainMode('single');
+                  }}>
+                    Cancel
+                  </AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={handleAddDomain}
-                    disabled={addingDomain}
+                    onClick={addDomainMode === 'single' ? handleAddDomain : handleBulkAddDomains}
+                    disabled={addingDomain || addingBulkDomains}
                   >
-                    {addingDomain ? (
+                    {(addingDomain || addingBulkDomains) ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Adding...
+                        {addDomainMode === 'single' ? 'Adding...' : 'Adding Domains...'}
                       </>
                     ) : (
-                      "Add Domain"
+                      addDomainMode === 'single' ? 'Add Domain' : 'Add Domains'
                     )}
                   </AlertDialogAction>
                 </AlertDialogFooter>
