@@ -182,7 +182,7 @@ export const deleteDomain: RequestHandler<{ id: string }> = async (req, res) => 
 export const getRegistrars: RequestHandler = async (req, res) => {
   try {
     // Try to get registrars from registrars table, fallback to distinct registrars from domains
-    let sql = `SELECT * FROM registrars WHERE is_active = true ORDER BY name`;
+    let sql = `SELECT * FROM registrars ORDER BY name`;
     let results;
 
     try {
