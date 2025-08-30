@@ -115,19 +115,38 @@ export async function safeFetch(
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      let response: Response;
 
-      const response = await fetch(url, {
-        ...fetchOptions,
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-          ...fetchOptions.headers,
-        },
-      });
+      // Try original fetch first, then fallback mechanisms
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-      clearTimeout(timeoutId);
+        response = await originalFetch(url, {
+          ...fetchOptions,
+          signal: controller.signal,
+          headers: {
+            "Content-Type": "application/json",
+            ...fetchOptions.headers,
+          },
+        });
+
+        clearTimeout(timeoutId);
+      } catch (fetchError) {
+        // If original fetch fails due to third-party interference, try XMLHttpRequest
+        if (isThirdPartyInterferenceError(fetchError)) {
+          console.debug('Fetch intercepted by third-party, trying XMLHttpRequest fallback');
+          response = await fetchWithXHR(url, {
+            ...fetchOptions,
+            headers: {
+              "Content-Type": "application/json",
+              ...fetchOptions.headers,
+            },
+          });
+        } else {
+          throw fetchError;
+        }
+      }
 
       if (!response.ok) {
         throw new FetchError(
