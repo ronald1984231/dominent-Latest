@@ -69,19 +69,9 @@ export const createMonitoringLog: RequestHandler = async (req, res) => {
 // Get monitoring statistics
 export const getMonitoringStats: RequestHandler = async (req, res) => {
   try {
-    // Get domains from the correct domains-db module
-    const { getDomains } = await import("./domains-db");
-
-    // Mock request/response to get domains
-    let domains: any[] = [];
-    const mockReq = { query: {} } as any;
-    const mockRes = {
-      json: (data: any) => {
-        domains = data.domains || [];
-      }
-    } as any;
-
-    getDomains(mockReq, mockRes, () => {});
+    // Get domains from the database directly using the helper function
+    const { getAllDomainsForCron } = await import("./domains-db");
+    const domains = await getAllDomainsForCron();
 
     const stats: MonitoringStats = monitoringService.getStats(domains);
     res.json(stats);
