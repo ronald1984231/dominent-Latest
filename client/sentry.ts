@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/react";
 
 Sentry.init({
-  dsn: "https://YOUR_DSN_HERE", // Replace with your actual DSN from Sentry
+  dsn: import.meta.env.VITE_SENTRY_DSN || "https://YOUR_DSN_HERE", // Replace with your actual DSN from Sentry
   
   integrations: [
     Sentry.browserTracingIntegration(),
