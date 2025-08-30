@@ -1,7 +1,7 @@
 /**
  * Safe fetch utility with retry logic, timeout, and better error handling
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 export interface SafeFetchOptions extends RequestInit {
   timeout?: number;
@@ -13,10 +13,10 @@ export class FetchError extends Error {
   constructor(
     message: string,
     public status?: number,
-    public response?: Response
+    public response?: Response,
   ) {
     super(message);
-    this.name = 'FetchError';
+    this.name = "FetchError";
   }
 }
 
@@ -25,7 +25,7 @@ export class FetchError extends Error {
  */
 export async function safeFetch(
   url: string,
-  options: SafeFetchOptions = {}
+  options: SafeFetchOptions = {},
 ): Promise<Response> {
   const {
     timeout = 10000,
@@ -45,7 +45,7 @@ export async function safeFetch(
         ...fetchOptions,
         signal: controller.signal,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...fetchOptions.headers,
         },
       });
@@ -56,20 +56,22 @@ export async function safeFetch(
         throw new FetchError(
           `HTTP ${response.status}: ${response.statusText}`,
           response.status,
-          response
+          response,
         );
       }
 
       return response;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       // Don't retry on client errors (4xx) except 408 (timeout)
-      if (error instanceof FetchError && 
-          error.status && 
-          error.status >= 400 && 
-          error.status < 500 && 
-          error.status !== 408) {
+      if (
+        error instanceof FetchError &&
+        error.status &&
+        error.status >= 400 &&
+        error.status < 500 &&
+        error.status !== 408
+      ) {
         throw error;
       }
 
@@ -79,14 +81,19 @@ export async function safeFetch(
       }
 
       // Log retry attempt
-      console.log(`Fetch attempt ${attempt + 1} failed, retrying in ${retryDelay}ms...`, error);
-      
+      console.log(
+        `Fetch attempt ${attempt + 1} failed, retrying in ${retryDelay}ms...`,
+        error,
+      );
+
       // Wait before retrying
-      await new Promise(resolve => setTimeout(resolve, retryDelay * (attempt + 1)));
+      await new Promise((resolve) =>
+        setTimeout(resolve, retryDelay * (attempt + 1)),
+      );
     }
   }
 
-  throw lastError || new Error('Fetch failed after all retries');
+  throw lastError || new Error("Fetch failed after all retries");
 }
 
 /**
@@ -94,14 +101,14 @@ export async function safeFetch(
  */
 export async function safeFetchJson<T = any>(
   url: string,
-  options: SafeFetchOptions = {}
+  options: SafeFetchOptions = {},
 ): Promise<T> {
   const response = await safeFetch(url, options);
-  
+
   try {
     return await response.json();
   } catch (error) {
-    throw new FetchError('Failed to parse JSON response');
+    throw new FetchError("Failed to parse JSON response");
   }
 }
 
@@ -111,33 +118,33 @@ export async function safeFetchJson<T = any>(
 export function getFetchErrorMessage(error: unknown): string {
   if (error instanceof FetchError) {
     if (error.status === 404) {
-      return 'Resource not found';
+      return "Resource not found";
     }
     if (error.status === 401 || error.status === 403) {
-      return 'Access denied';
+      return "Access denied";
     }
     if (error.status === 500) {
-      return 'Server error. Please try again later.';
+      return "Server error. Please try again later.";
     }
     if (error.status && error.status >= 500) {
-      return 'Server error. Please try again later.';
+      return "Server error. Please try again later.";
     }
     return error.message;
   }
-  
-  if (error instanceof TypeError && error.message.includes('fetch')) {
-    return 'Network error. Please check your connection.';
+
+  if (error instanceof TypeError && error.message.includes("fetch")) {
+    return "Network error. Please check your connection.";
   }
-  
-  if (error instanceof Error && error.name === 'AbortError') {
-    return 'Request timeout. Please try again.';
+
+  if (error instanceof Error && error.name === "AbortError") {
+    return "Request timeout. Please try again.";
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }
-  
-  return 'An unexpected error occurred';
+
+  return "An unexpected error occurred";
 }
 
 /**
@@ -147,24 +154,25 @@ export function useSafeApiCall() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const call = useCallback(async <T>(
-    apiCall: () => Promise<T>
-  ): Promise<T | null> => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const result = await apiCall();
-      return result;
-    } catch (err) {
-      const errorMessage = getFetchErrorMessage(err);
-      setError(errorMessage);
-      console.error('API call failed:', err);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const call = useCallback(
+    async <T>(apiCall: () => Promise<T>): Promise<T | null> => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const result = await apiCall();
+        return result;
+      } catch (err) {
+        const errorMessage = getFetchErrorMessage(err);
+        setError(errorMessage);
+        console.error("API call failed:", err);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
   return { loading, error, call };
 }

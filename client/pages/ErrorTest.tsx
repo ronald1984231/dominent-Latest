@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { safeFetchJson, getFetchErrorMessage } from "../lib/safeFetch";
@@ -8,19 +13,24 @@ export default function ErrorTest() {
   const [rootWarnings, setRootWarnings] = useState<string[]>([]);
   const [fetchErrors, setFetchErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [testResults, setTestResults] = useState<{
-    success: boolean;
-    message: string;
-    timestamp: string;
-  }[]>([]);
+  const [testResults, setTestResults] = useState<
+    {
+      success: boolean;
+      message: string;
+      timestamp: string;
+    }[]
+  >([]);
 
   useEffect(() => {
     // Monitor for createRoot warnings
     const originalConsoleWarn = console.warn;
     console.warn = (...args) => {
-      const message = args.join(' ');
-      if (message.includes('createRoot')) {
-        setRootWarnings(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+      const message = args.join(" ");
+      if (message.includes("createRoot")) {
+        setRootWarnings((prev) => [
+          ...prev,
+          `${new Date().toLocaleTimeString()}: ${message}`,
+        ]);
       }
       originalConsoleWarn(...args);
     };
@@ -28,9 +38,15 @@ export default function ErrorTest() {
     // Monitor for fetch errors
     const originalConsoleError = console.error;
     console.error = (...args) => {
-      const message = args.join(' ');
-      if (message.includes('Failed to fetch') || message.includes('TypeError')) {
-        setFetchErrors(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+      const message = args.join(" ");
+      if (
+        message.includes("Failed to fetch") ||
+        message.includes("TypeError")
+      ) {
+        setFetchErrors((prev) => [
+          ...prev,
+          `${new Date().toLocaleTimeString()}: ${message}`,
+        ]);
       }
       originalConsoleError(...args);
     };
@@ -44,20 +60,26 @@ export default function ErrorTest() {
   const testRegistrarConfigsAPI = async () => {
     setIsLoading(true);
     const timestamp = new Date().toLocaleTimeString();
-    
+
     try {
       const data = await safeFetchJson("/api/registrar-configs");
-      setTestResults(prev => [...prev, {
-        success: true,
-        message: `Successfully loaded ${data.configs?.length || 0} registrar configs`,
-        timestamp
-      }]);
+      setTestResults((prev) => [
+        ...prev,
+        {
+          success: true,
+          message: `Successfully loaded ${data.configs?.length || 0} registrar configs`,
+          timestamp,
+        },
+      ]);
     } catch (error) {
-      setTestResults(prev => [...prev, {
-        success: false,
-        message: getFetchErrorMessage(error),
-        timestamp
-      }]);
+      setTestResults((prev) => [
+        ...prev,
+        {
+          success: false,
+          message: getFetchErrorMessage(error),
+          timestamp,
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -66,20 +88,26 @@ export default function ErrorTest() {
   const testFailingEndpoint = async () => {
     setIsLoading(true);
     const timestamp = new Date().toLocaleTimeString();
-    
+
     try {
       await safeFetchJson("/api/non-existent-endpoint");
-      setTestResults(prev => [...prev, {
-        success: true,
-        message: "Unexpected success on failing endpoint",
-        timestamp
-      }]);
+      setTestResults((prev) => [
+        ...prev,
+        {
+          success: true,
+          message: "Unexpected success on failing endpoint",
+          timestamp,
+        },
+      ]);
     } catch (error) {
-      setTestResults(prev => [...prev, {
-        success: true, // Expected to fail
-        message: `Expected error handled gracefully: ${getFetchErrorMessage(error)}`,
-        timestamp
-      }]);
+      setTestResults((prev) => [
+        ...prev,
+        {
+          success: true, // Expected to fail
+          message: `Expected error handled gracefully: ${getFetchErrorMessage(error)}`,
+          timestamp,
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -110,25 +138,25 @@ export default function ErrorTest() {
               <CardTitle>Test Controls</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button 
-                onClick={testRegistrarConfigsAPI} 
+              <Button
+                onClick={testRegistrarConfigsAPI}
                 disabled={isLoading}
                 className="w-full"
               >
                 {isLoading ? "Testing..." : "Test Registrar Configs API"}
               </Button>
-              
-              <Button 
-                onClick={testFailingEndpoint} 
+
+              <Button
+                onClick={testFailingEndpoint}
                 disabled={isLoading}
                 variant="outline"
                 className="w-full"
               >
                 {isLoading ? "Testing..." : "Test Failing Endpoint"}
               </Button>
-              
-              <Button 
-                onClick={clearResults} 
+
+              <Button
+                onClick={clearResults}
                 variant="destructive"
                 className="w-full"
               >
@@ -151,10 +179,14 @@ export default function ErrorTest() {
                 ) : (
                   testResults.map((result, index) => (
                     <div key={index} className="flex items-center space-x-2">
-                      <Badge variant={result.success ? "default" : "destructive"}>
+                      <Badge
+                        variant={result.success ? "default" : "destructive"}
+                      >
                         {result.success ? "✓" : "✗"}
                       </Badge>
-                      <span className="text-sm text-gray-600">{result.timestamp}</span>
+                      <span className="text-sm text-gray-600">
+                        {result.timestamp}
+                      </span>
                       <span className="text-sm">{result.message}</span>
                     </div>
                   ))
@@ -176,11 +208,16 @@ export default function ErrorTest() {
                 {rootWarnings.length === 0 ? (
                   <div className="flex items-center space-x-2">
                     <Badge variant="default">✓</Badge>
-                    <span className="text-green-600">No createRoot warnings detected</span>
+                    <span className="text-green-600">
+                      No createRoot warnings detected
+                    </span>
                   </div>
                 ) : (
                   rootWarnings.map((warning, index) => (
-                    <div key={index} className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                    <div
+                      key={index}
+                      className="text-sm text-red-600 bg-red-50 p-2 rounded"
+                    >
                       {warning}
                     </div>
                   ))
@@ -202,11 +239,16 @@ export default function ErrorTest() {
                 {fetchErrors.length === 0 ? (
                   <div className="flex items-center space-x-2">
                     <Badge variant="default">✓</Badge>
-                    <span className="text-green-600">No unhandled fetch errors</span>
+                    <span className="text-green-600">
+                      No unhandled fetch errors
+                    </span>
                   </div>
                 ) : (
                   fetchErrors.map((error, index) => (
-                    <div key={index} className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                    <div
+                      key={index}
+                      className="text-sm text-red-600 bg-red-50 p-2 rounded"
+                    >
                       {error}
                     </div>
                   ))
@@ -224,38 +266,49 @@ export default function ErrorTest() {
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="text-center">
-                <div className={`w-4 h-4 rounded-full mx-auto mb-2 ${
-                  rootWarnings.length === 0 ? 'bg-green-500' : 'bg-red-500'
-                }`}></div>
+                <div
+                  className={`w-4 h-4 rounded-full mx-auto mb-2 ${
+                    rootWarnings.length === 0 ? "bg-green-500" : "bg-red-500"
+                  }`}
+                ></div>
                 <div className="text-sm">
                   <div className="font-medium">CreateRoot Fix</div>
                   <div className="text-gray-600">
-                    {rootWarnings.length === 0 ? 'Working' : 'Issues Detected'}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="text-center">
-                <div className={`w-4 h-4 rounded-full mx-auto mb-2 ${
-                  fetchErrors.length === 0 ? 'bg-green-500' : 'bg-red-500'
-                }`}></div>
-                <div className="text-sm">
-                  <div className="font-medium">Fetch Error Handling</div>
-                  <div className="text-gray-600">
-                    {fetchErrors.length === 0 ? 'Working' : 'Issues Detected'}
+                    {rootWarnings.length === 0 ? "Working" : "Issues Detected"}
                   </div>
                 </div>
               </div>
 
               <div className="text-center">
-                <div className={`w-4 h-4 rounded-full mx-auto mb-2 ${
-                  testResults.filter(r => !r.success).length === 0 ? 'bg-green-500' : 'bg-yellow-500'
-                }`}></div>
+                <div
+                  className={`w-4 h-4 rounded-full mx-auto mb-2 ${
+                    fetchErrors.length === 0 ? "bg-green-500" : "bg-red-500"
+                  }`}
+                ></div>
+                <div className="text-sm">
+                  <div className="font-medium">Fetch Error Handling</div>
+                  <div className="text-gray-600">
+                    {fetchErrors.length === 0 ? "Working" : "Issues Detected"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <div
+                  className={`w-4 h-4 rounded-full mx-auto mb-2 ${
+                    testResults.filter((r) => !r.success).length === 0
+                      ? "bg-green-500"
+                      : "bg-yellow-500"
+                  }`}
+                ></div>
                 <div className="text-sm">
                   <div className="font-medium">API Tests</div>
                   <div className="text-gray-600">
-                    {testResults.length === 0 ? 'Not Tested' : 
-                     testResults.filter(r => !r.success).length === 0 ? 'All Passed' : 'Some Failed'}
+                    {testResults.length === 0
+                      ? "Not Tested"
+                      : testResults.filter((r) => !r.success).length === 0
+                        ? "All Passed"
+                        : "Some Failed"}
                   </div>
                 </div>
               </div>

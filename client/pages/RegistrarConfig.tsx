@@ -63,7 +63,9 @@ export default function RegistrarConfig() {
 
   const loadConfigs = async () => {
     try {
-      const data = await safeFetchJson<{ configs: RegistrarConfig[] }>("/api/registrar-configs");
+      const data = await safeFetchJson<{ configs: RegistrarConfig[] }>(
+        "/api/registrar-configs",
+      );
 
       if (data.configs) {
         setConfigs(data.configs);
@@ -92,7 +94,7 @@ export default function RegistrarConfig() {
     // Load existing configuration if available
     try {
       const data = await safeFetchJson<{ config: any }>(
-        `/api/registrar-config/${encodeURIComponent(registrarName)}`
+        `/api/registrar-config/${encodeURIComponent(registrarName)}`,
       );
 
       if (data.config) {
@@ -161,13 +163,16 @@ export default function RegistrarConfig() {
 
     setTesting(true);
     try {
-      const data = await safeFetchJson<{ testResult?: { source: string } }>("/api/registrar-config/test", {
-        method: "POST",
-        body: JSON.stringify({
-          registrarName: selectedRegistrar,
-          config: formData,
-        }),
-      });
+      const data = await safeFetchJson<{ testResult?: { source: string } }>(
+        "/api/registrar-config/test",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            registrarName: selectedRegistrar,
+            config: formData,
+          }),
+        },
+      );
 
       toast({
         title: "Test Successful",

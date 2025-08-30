@@ -74,9 +74,11 @@ export function setupResizeObserverErrorHandler(): void {
     }
 
     // Suppress FullStory-related fetch errors that don't affect app functionality
-    if (event.message?.includes("Failed to fetch") &&
-        (event.filename?.includes("edge.fullstory.com") ||
-         event.error?.stack?.includes("fullstory"))) {
+    if (
+      event.message?.includes("Failed to fetch") &&
+      (event.filename?.includes("edge.fullstory.com") ||
+        event.error?.stack?.includes("fullstory"))
+    ) {
       event.preventDefault();
       event.stopPropagation();
       console.debug("FullStory fetch error suppressed globally");
@@ -93,9 +95,11 @@ export function setupResizeObserverErrorHandler(): void {
     }
 
     // Suppress FullStory-related promise rejections
-    if (event.reason?.message?.includes("Failed to fetch") &&
-        (event.reason?.stack?.includes("fullstory") ||
-         event.reason?.stack?.includes("edge.fullstory.com"))) {
+    if (
+      event.reason?.message?.includes("Failed to fetch") &&
+      (event.reason?.stack?.includes("fullstory") ||
+        event.reason?.stack?.includes("edge.fullstory.com"))
+    ) {
       event.preventDefault();
       console.debug("FullStory fetch promise rejection suppressed");
       return false;
