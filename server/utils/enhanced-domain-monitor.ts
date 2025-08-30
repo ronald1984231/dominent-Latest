@@ -94,44 +94,77 @@ async function getFromRegistrarAPI(domain: string, registrarConfig: RegistrarCon
 }
 
 /**
- * Enhanced WHOIS lookup using whois-json
+ * Enhanced WHOIS lookup using whois-json with fallback to basic whois
  */
 async function getFromWhois(domain: string): Promise<Partial<DomainInfo> | null> {
+  console.log(`🔍 Starting WHOIS lookup for ${domain}`);
+
   try {
     const data = await whois(domain);
-    
+    console.log(`📋 WHOIS data received for ${domain}:`, JSON.stringify(data, null, 2));
+
     let registrar = "Unknown";
     let domain_expiry = null;
-    
-    // Extract registrar information
-    if (data.registrar) {
-      registrar = data.registrar;
-    } else if (data.registrarName) {
-      registrar = data.registrarName;
-    } else if (data.sponsoringRegistrar) {
-      registrar = data.sponsoringRegistrar;
-    }
-    
-    // Extract expiry date
-    if (data.expirationDate) {
-      const expiry = new Date(data.expirationDate);
-      if (!isNaN(expiry.getTime())) {
-        domain_expiry = expiry.toISOString().split('T')[0];
-      }
-    } else if (data.registryExpiryDate) {
-      const expiry = new Date(data.registryExpiryDate);
-      if (!isNaN(expiry.getTime())) {
-        domain_expiry = expiry.toISOString().split('T')[0];
+
+    // Extract registrar information with more comprehensive search
+    const registrarFields = [
+      'registrar', 'registrarName', 'sponsoringRegistrar',
+      'registrarOrganization', 'registrar_name', 'registrarIanaId'
+    ];
+
+    for (const field of registrarFields) {
+      if (data[field] && typeof data[field] === 'string') {
+        registrar = data[field];
+        break;
       }
     }
-    
-    return {
+
+    // Extract expiry date with more comprehensive search
+    const expiryFields = [
+      'expirationDate', 'registryExpiryDate', 'expiry_date',
+      'expires', 'expiration_time', 'registrar_registration_expiration_date'
+    ];
+
+    for (const field of expiryFields) {
+      if (data[field]) {
+        const expiry = new Date(data[field]);
+        if (!isNaN(expiry.getTime())) {
+          domain_expiry = expiry.toISOString().split('T')[0];
+          console.log(`📅 Found expiry date for ${domain}: ${domain_expiry} (from field: ${field})`);
+          break;
+        }
+      }
+    }
+
+    const result = {
       registrar: cleanRegistrarName(registrar),
       domain_expiry,
-      source: 'whois'
+      source: 'whois' as const
     };
+
+    console.log(`✅ WHOIS result for ${domain}:`, result);
+    return result;
   } catch (err) {
-    console.error(`WHOIS error for ${domain}:`, err);
+    console.error(`❌ WHOIS error for ${domain}:`, err);
+
+    // Try fallback with basic whois package
+    try {
+      console.log(`🔄 Trying fallback WHOIS for ${domain}`);
+      const { getWhois } = await import("./domain-monitor");
+      const fallbackResult = await getWhois(domain);
+
+      if (fallbackResult.expiry_date) {
+        console.log(`✅ Fallback WHOIS succeeded for ${domain}`);
+        return {
+          registrar: fallbackResult.registrar || "Unknown",
+          domain_expiry: fallbackResult.expiry_date,
+          source: 'whois' as const
+        };
+      }
+    } catch (fallbackErr) {
+      console.error(`❌ Fallback WHOIS also failed for ${domain}:`, fallbackErr);
+    }
+
     return null;
   }
 }
