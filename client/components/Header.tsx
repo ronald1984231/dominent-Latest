@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
+import { Logo } from "./Logo";
 
 export function Header() {
   const location = useLocation();
@@ -13,8 +14,8 @@ export function Header() {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-foreground">
-            DOMINENT
+          <Link to="/" className="hover:opacity-80 transition-opacity">
+            <Logo size="md" />
           </Link>
 
           {/* Navigation */}
