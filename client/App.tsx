@@ -1,5 +1,7 @@
 import "./global.css";
 
+import * as Sentry from "@sentry/react";
+
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -8,6 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 import { setupResizeObserverErrorHandler } from "./lib/resizeObserverUtils";
+import "./sentry"; // Initialize Sentry
 
 // Setup global ResizeObserver error handling
 setupResizeObserverErrorHandler();
