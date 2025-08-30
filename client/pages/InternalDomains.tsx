@@ -30,14 +30,22 @@ import {
   GetDomainsResponse,
   AddDomainRequest,
   DomainSearchQuery,
-  DomainMonitoringResponse
+  DomainMonitoringResponse,
 } from "@shared/domain-api";
 import {
   Registrar,
   RegistrarImportRequest,
-  RegistrarImportResponse
+  RegistrarImportResponse,
 } from "@shared/internal-api";
-import { Loader2, Plus, Download, RefreshCw, Settings, ExternalLink, Trash2 } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  Download,
+  RefreshCw,
+  Settings,
+  ExternalLink,
+  Trash2,
+} from "lucide-react";
 
 export default function InternalDomains() {
   const [domains, setDomains] = useState<Domain[]>([]);
@@ -53,8 +61,11 @@ export default function InternalDomains() {
   const [bulkDomains, setBulkDomains] = useState("");
   const [addingBulkDomains, setAddingBulkDomains] = useState(false);
   const [updating, setUpdating] = useState(false);
-  const [availableRegistrars, setAvailableRegistrars] = useState<Registrar[]>([]);
-  const [selectedRegistrarForImport, setSelectedRegistrarForImport] = useState("");
+  const [availableRegistrars, setAvailableRegistrars] = useState<Registrar[]>(
+    [],
+  );
+  const [selectedRegistrarForImport, setSelectedRegistrarForImport] =
+    useState("");
   const [importing, setImporting] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const { toast } = useToast();
@@ -72,8 +83,9 @@ export default function InternalDomains() {
         registrar: selectedRegistrar !== "all" ? selectedRegistrar : undefined,
         status: selectedStatus !== "all" ? selectedStatus : undefined,
         sslStatus: selectedSSLStatus !== "all" ? selectedSSLStatus : undefined,
-        expiryStatus: selectedExpiryStatus !== "all" ? selectedExpiryStatus : undefined,
-        limit: 100
+        expiryStatus:
+          selectedExpiryStatus !== "all" ? selectedExpiryStatus : undefined,
+        limit: 100,
       };
 
       const params = new URLSearchParams();
@@ -91,7 +103,10 @@ export default function InternalDomains() {
 
       if (!response.ok || !data || !Array.isArray((data as any).domains)) {
         setDomains([]);
-        throw new Error((data as any)?.error || `Failed to fetch domains (${response.status})`);
+        throw new Error(
+          (data as any)?.error ||
+            `Failed to fetch domains (${response.status})`,
+        );
       }
 
       setDomains((data as GetDomainsResponse).domains);
@@ -111,14 +126,26 @@ export default function InternalDomains() {
     try {
       const response = await fetch("/api/registrars");
       let data: any = null;
-      try { data = await response.clone().json(); } catch { data = null; }
+      try {
+        data = await response.clone().json();
+      } catch {
+        data = null;
+      }
       setRegistrars(Array.isArray(data?.registrars) ? data.registrars : []);
 
       // Also load available registrars for import
       const registrarsResponse = await fetch("/api/internal/registrars");
       let registrarsData: any = null;
-      try { registrarsData = await registrarsResponse.clone().json(); } catch { registrarsData = null; }
-      setAvailableRegistrars(Array.isArray(registrarsData?.registrars) ? registrarsData.registrars : []);
+      try {
+        registrarsData = await registrarsResponse.clone().json();
+      } catch {
+        registrarsData = null;
+      }
+      setAvailableRegistrars(
+        Array.isArray(registrarsData?.registrars)
+          ? registrarsData.registrars
+          : [],
+      );
     } catch (error) {
       console.error("Failed to load registrars:", error);
     }
@@ -135,10 +162,14 @@ export default function InternalDomains() {
     }
 
     const domainList = bulkDomains
-      .split('\n')
-      .map(domain => domain.trim())
-      .filter(domain => domain.length > 0)
-      .filter(domain => /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(domain));
+      .split("\n")
+      .map((domain) => domain.trim())
+      .filter((domain) => domain.length > 0)
+      .filter((domain) =>
+        /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(
+          domain,
+        ),
+      );
 
     if (domainList.length === 0) {
       toast({
@@ -176,13 +207,13 @@ export default function InternalDomains() {
               return { success: true, domain };
             } else {
               failedCount++;
-              failedDomains.push(`${domain}: ${data.error || 'Unknown error'}`);
+              failedDomains.push(`${domain}: ${data.error || "Unknown error"}`);
               return { success: false, domain, error: data.error };
             }
           } catch (error) {
             failedCount++;
             failedDomains.push(`${domain}: Network error`);
-            return { success: false, domain, error: 'Network error' };
+            return { success: false, domain, error: "Network error" };
           }
         });
 
@@ -190,7 +221,7 @@ export default function InternalDomains() {
 
         // Add delay between batches
         if (i + batchSize < domainList.length) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
 
@@ -212,7 +243,6 @@ export default function InternalDomains() {
         setBulkDomains("");
         loadDomains();
       }
-
     } catch (error) {
       toast({
         title: "Error",
@@ -326,7 +356,9 @@ export default function InternalDomains() {
 
             // Check if response is ok before trying to read body
             if (!response.ok) {
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+              throw new Error(
+                `HTTP ${response.status}: ${response.statusText}`,
+              );
             }
 
             // Clone the response to avoid "body stream already read" error
@@ -339,7 +371,10 @@ export default function InternalDomains() {
             } catch (jsonError) {
               // If JSON parsing fails, try to get text instead
               const text = await response.text();
-              console.warn(`Failed to parse JSON for ${domain.domain}, got text:`, text);
+              console.warn(
+                `Failed to parse JSON for ${domain.domain}, got text:`,
+                text,
+              );
               successCount++;
               return { success: true };
             }
@@ -355,7 +390,7 @@ export default function InternalDomains() {
 
         // Add small delay between batches
         if (batches.indexOf(batch) < batches.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
 
@@ -376,7 +411,6 @@ export default function InternalDomains() {
       setTimeout(() => {
         loadDomains();
       }, 1000);
-
     } catch (error) {
       console.error("Update all domains error:", error);
       toast({
@@ -402,7 +436,7 @@ export default function InternalDomains() {
     setImporting(true);
     try {
       const request: RegistrarImportRequest = {
-        registrarId: selectedRegistrarForImport
+        registrarId: selectedRegistrarForImport,
       };
 
       const response = await fetch("/api/internal/registrars/import", {
@@ -416,7 +450,7 @@ export default function InternalDomains() {
       if (data.success) {
         toast({
           title: "Import Successful",
-          description: `Imported ${data.importedCount} domains from ${data.registrarName}. ${data.failedCount > 0 ? `${data.failedCount} domains failed to import.` : ''}`,
+          description: `Imported ${data.importedCount} domains from ${data.registrarName}. ${data.failedCount > 0 ? `${data.failedCount} domains failed to import.` : ""}`,
         });
 
         if (data.errors.length > 0) {
@@ -429,7 +463,10 @@ export default function InternalDomains() {
       } else {
         toast({
           title: "Import Failed",
-          description: data.errors.length > 0 ? data.errors[0] : "Failed to import domains.",
+          description:
+            data.errors.length > 0
+              ? data.errors[0]
+              : "Failed to import domains.",
           variant: "destructive",
         });
       }
@@ -450,36 +487,39 @@ export default function InternalDomains() {
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'online': return 'default';
-      case 'offline': return 'destructive';
-      default: return 'secondary';
+      case "online":
+        return "default";
+      case "offline":
+        return "destructive";
+      default:
+        return "secondary";
     }
   };
 
   const getExpiryVariant = (dateStr: string | undefined) => {
-    if (!dateStr) return 'secondary';
+    if (!dateStr) return "secondary";
     const date = new Date(dateStr);
     const now = new Date();
     const diffTime = date.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays < 0) return 'destructive'; // Expired
-    if (diffDays <= 7) return 'destructive'; // Expiring very soon
-    if (diffDays <= 30) return 'destructive'; // Expiring soon
-    return 'default'; // Valid
+    if (diffDays < 0) return "destructive"; // Expired
+    if (diffDays <= 7) return "destructive"; // Expiring very soon
+    if (diffDays <= 30) return "destructive"; // Expiring soon
+    return "default"; // Valid
   };
 
   const formatDate = (dateStr: string | undefined) => {
-    if (!dateStr) return 'Unknown';
+    if (!dateStr) return "Unknown";
     const date = new Date(dateStr);
     const now = new Date();
     const diffTime = date.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
-      return 'Expired';
+      return "Expired";
     } else if (diffDays === 0) {
-      return 'Expires today';
+      return "Expires today";
     } else if (diffDays <= 30) {
       return `${diffDays} days`;
     } else {
@@ -487,26 +527,30 @@ export default function InternalDomains() {
     }
   };
 
-  const formatExpiryDate = (expiryDate: string | undefined, domain?: Domain) => {
+  const formatExpiryDate = (
+    expiryDate: string | undefined,
+    domain?: Domain,
+  ) => {
     // If expiry_date exists, show YYYY-MM-DD format
     if (expiryDate) {
       return expiryDate; // Already in YYYY-MM-DD format from WHOIS
     }
 
     // Fallback to "Unknown" - the WHOIS raw will be shown below
-    return 'Unknown';
+    return "Unknown";
   };
-
 
   return (
     <div className="min-h-screen bg-background">
       <InternalHeader />
-      
+
       <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Domains</h1>
-          
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            Domains
+          </h1>
+
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:space-x-3">
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -520,7 +564,9 @@ export default function InternalDomains() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Add New Domain</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Enter the domain name you want to monitor. We'll automatically check its status, SSL certificate, and expiration date.
+                    Enter the domain name you want to monitor. We'll
+                    automatically check its status, SSL certificate, and
+                    expiration date.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <div className="py-4">
@@ -528,12 +574,15 @@ export default function InternalDomains() {
                     placeholder="example.com"
                     value={newDomain}
                     onChange={(e) => setNewDomain(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleAddDomain()}
+                    onKeyPress={(e) => e.key === "Enter" && handleAddDomain()}
                   />
                 </div>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleAddDomain} disabled={addingDomain}>
+                  <AlertDialogAction
+                    onClick={handleAddDomain}
+                    disabled={addingDomain}
+                  >
                     {addingDomain ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -546,37 +595,59 @@ export default function InternalDomains() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            
-            <AlertDialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+
+            <AlertDialog
+              open={showImportDialog}
+              onOpenChange={setShowImportDialog}
+            >
               <AlertDialogTrigger asChild>
-                <Button variant="outline" className="w-full sm:w-auto flex items-center justify-center space-x-2">
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto flex items-center justify-center space-x-2"
+                >
                   <Download className="w-4 h-4" />
                   <span className="sm:hidden">IMPORT</span>
-                  <span className="hidden sm:inline">IMPORT FROM REGISTRAR</span>
+                  <span className="hidden sm:inline">
+                    IMPORT FROM REGISTRAR
+                  </span>
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Import Domains from Registrar</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    Import Domains from Registrar
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Select a registrar to import all your domains. This will fetch domain information including expiry dates, auto-renewal settings, and nameservers using the registrar's API.
+                    Select a registrar to import all your domains. This will
+                    fetch domain information including expiry dates,
+                    auto-renewal settings, and nameservers using the registrar's
+                    API.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <div className="py-4">
-                  <Select value={selectedRegistrarForImport} onValueChange={setSelectedRegistrarForImport}>
+                  <Select
+                    value={selectedRegistrarForImport}
+                    onValueChange={setSelectedRegistrarForImport}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a registrar" />
                     </SelectTrigger>
                     <SelectContent>
-                      {availableRegistrars.map(registrar => (
+                      {availableRegistrars.map((registrar) => (
                         <SelectItem key={registrar.id} value={registrar.id}>
                           <div className="flex items-center justify-between w-full">
                             <span>{registrar.name}</span>
                             <div className="flex items-center space-x-2">
-                              <span className="text-xs text-muted-foreground">{registrar.label}</span>
-                              <div className={`w-2 h-2 rounded-full ${
-                                registrar.apiStatus === 'Connected' ? 'bg-green-500' : 'bg-red-500'
-                              }`}></div>
+                              <span className="text-xs text-muted-foreground">
+                                {registrar.label}
+                              </span>
+                              <div
+                                className={`w-2 h-2 rounded-full ${
+                                  registrar.apiStatus === "Connected"
+                                    ? "bg-green-500"
+                                    : "bg-red-500"
+                                }`}
+                              ></div>
                             </div>
                           </div>
                         </SelectItem>
@@ -585,8 +656,12 @@ export default function InternalDomains() {
                   </Select>
                   {availableRegistrars.length === 0 && (
                     <p className="text-sm text-muted-foreground mt-2">
-                      No registrars configured. Please add a registrar first in the{" "}
-                      <Link to="/internal/registrars" className="text-primary hover:underline">
+                      No registrars configured. Please add a registrar first in
+                      the{" "}
+                      <Link
+                        to="/internal/registrars"
+                        className="text-primary hover:underline"
+                      >
                         Registrars page
                       </Link>
                       .
@@ -611,7 +686,7 @@ export default function InternalDomains() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            
+
             <Button
               variant="outline"
               className="w-full sm:w-auto flex items-center justify-center space-x-2"
@@ -626,7 +701,7 @@ export default function InternalDomains() {
               <span className="sm:hidden">UPDATE</span>
               <span className="hidden sm:inline">UPDATE DOMAINS</span>
             </Button>
-            
+
             <Button variant="outline" size="icon" className="w-full sm:w-auto">
               <Settings className="h-4 w-4" />
             </Button>
@@ -636,15 +711,20 @@ export default function InternalDomains() {
         {/* Filters and Search */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Filters:</span>
-            
-            <Select value={selectedRegistrar} onValueChange={setSelectedRegistrar}>
+            <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+              Filters:
+            </span>
+
+            <Select
+              value={selectedRegistrar}
+              onValueChange={setSelectedRegistrar}
+            >
               <SelectTrigger className="w-full sm:w-48">
                 <SelectValue placeholder="Registrar" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Registrars</SelectItem>
-                {registrars.map(registrar => (
+                {registrars.map((registrar) => (
                   <SelectItem key={registrar} value={registrar}>
                     {registrar}
                   </SelectItem>
@@ -664,7 +744,10 @@ export default function InternalDomains() {
               </SelectContent>
             </Select>
 
-            <Select value={selectedSSLStatus} onValueChange={setSelectedSSLStatus}>
+            <Select
+              value={selectedSSLStatus}
+              onValueChange={setSelectedSSLStatus}
+            >
               <SelectTrigger className="w-full sm:w-32">
                 <SelectValue placeholder="SSL" />
               </SelectTrigger>
@@ -676,7 +759,10 @@ export default function InternalDomains() {
               </SelectContent>
             </Select>
 
-            <Select value={selectedExpiryStatus} onValueChange={setSelectedExpiryStatus}>
+            <Select
+              value={selectedExpiryStatus}
+              onValueChange={setSelectedExpiryStatus}
+            >
               <SelectTrigger className="w-full sm:w-32">
                 <SelectValue placeholder="Expiry" />
               </SelectTrigger>
@@ -688,13 +774,13 @@ export default function InternalDomains() {
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <Input
               placeholder="Search domains or registrars..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
               className="w-full sm:w-80"
             />
             <Button
@@ -737,35 +823,50 @@ export default function InternalDomains() {
                 {/* Table Rows */}
                 {domains.length === 0 ? (
                   <div className="text-center py-12">
-                    <p className="text-muted-foreground">No domains found. Try adjusting your search criteria or add a new domain.</p>
+                    <p className="text-muted-foreground">
+                      No domains found. Try adjusting your search criteria or
+                      add a new domain.
+                    </p>
                   </div>
                 ) : (
                   domains.map((domain, index) => (
-                    <div key={domain.id} className={`grid grid-cols-9 gap-4 p-6 hover:bg-muted/30 transition-colors ${index !== domains.length - 1 ? 'border-b' : ''}`}>
+                    <div
+                      key={domain.id}
+                      className={`grid grid-cols-9 gap-4 p-6 hover:bg-muted/30 transition-colors ${index !== domains.length - 1 ? "border-b" : ""}`}
+                    >
                       <div className="col-span-2">
                         <div className="flex items-center space-x-3">
                           <div className="w-5 h-5 bg-gray-300 rounded"></div>
                           <div>
-                            <Link 
+                            <Link
                               to={`/internal/domains/${domain.id}`}
                               className="font-medium text-foreground hover:text-primary transition-colors"
                             >
                               {domain.domain}
                             </Link>
-                            <div className="text-sm text-muted-foreground">{domain.subdomain}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {domain.subdomain}
+                            </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="flex flex-col">
-                        <span className="text-foreground text-sm">{domain.registrar || 'Unknown'}</span>
+                        <span className="text-foreground text-sm">
+                          {domain.registrar || "Unknown"}
+                        </span>
                         <span className="text-xs text-success">Connected</span>
                       </div>
 
                       <div>
                         <div className="flex flex-col">
                           {domain.expiry_date ? (
-                            <Badge variant={getExpiryVariant(domain.expiry_date) as any} className="text-xs font-medium">
+                            <Badge
+                              variant={
+                                getExpiryVariant(domain.expiry_date) as any
+                              }
+                              className="text-xs font-medium"
+                            >
                               {formatExpiryDate(domain.expiry_date, domain)}
                             </Badge>
                           ) : (
@@ -776,17 +877,16 @@ export default function InternalDomains() {
 
                           {/* Show WHOIS information */}
                           <div className="text-xs text-muted-foreground mt-1">
-                            {domain.expiry_date ? (
-                              domain.lastWhoisCheck ?
-                                `Verified: ${new Date(domain.lastWhoisCheck).toLocaleDateString()}` :
-                                'WHOIS: Not verified'
-                            ) : (
-                              domain.expirationDate && domain.expirationDate !== 'Unknown' ?
-                                `Raw WHOIS: ${domain.expirationDate}` :
-                                domain.lastWhoisCheck ?
-                                  `Checked: ${new Date(domain.lastWhoisCheck).toLocaleDateString()}` :
-                                  'WHOIS: Not checked'
-                            )}
+                            {domain.expiry_date
+                              ? domain.lastWhoisCheck
+                                ? `Verified: ${new Date(domain.lastWhoisCheck).toLocaleDateString()}`
+                                : "WHOIS: Not verified"
+                              : domain.expirationDate &&
+                                  domain.expirationDate !== "Unknown"
+                                ? `Raw WHOIS: ${domain.expirationDate}`
+                                : domain.lastWhoisCheck
+                                  ? `Checked: ${new Date(domain.lastWhoisCheck).toLocaleDateString()}`
+                                  : "WHOIS: Not checked"}
                           </div>
                         </div>
                       </div>
@@ -812,15 +912,25 @@ export default function InternalDomains() {
 
                       <div className="col-span-2 flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <div className={`w-2 h-2 rounded-full ${
-                            domain.status === 'Online' ? 'bg-green-500' : 
-                            domain.status === 'Offline' ? 'bg-red-500' : 'bg-gray-400'
-                          }`}></div>
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              domain.status === "Online"
+                                ? "bg-green-500"
+                                : domain.status === "Offline"
+                                  ? "bg-red-500"
+                                  : "bg-gray-400"
+                            }`}
+                          ></div>
                           <div>
-                            <Badge variant={getStatusBadgeVariant(domain.status)} className="text-xs">
+                            <Badge
+                              variant={getStatusBadgeVariant(domain.status)}
+                              className="text-xs"
+                            >
                               {domain.status}
                             </Badge>
-                            <div className="text-xs text-muted-foreground">{domain.lastCheck}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {domain.lastCheck}
+                            </div>
                           </div>
                         </div>
                         <div className="text-xs text-muted-foreground">
@@ -829,19 +939,19 @@ export default function InternalDomains() {
                       </div>
 
                       <div className="flex items-center space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          asChild
-                        >
+                        <Button variant="ghost" size="sm" asChild>
                           <Link to={`/internal/domains/${domain.id}`}>
                             <ExternalLink className="w-4 h-4" />
                           </Link>
                         </Button>
-                        
+
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </AlertDialogTrigger>
@@ -849,13 +959,16 @@ export default function InternalDomains() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete Domain</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete {domain.domain}? This action cannot be undone.
+                                Are you sure you want to delete {domain.domain}?
+                                This action cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction 
-                                onClick={() => handleDeleteDomain(domain.id, domain.domain)}
+                              <AlertDialogAction
+                                onClick={() =>
+                                  handleDeleteDomain(domain.id, domain.domain)
+                                }
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
                                 Delete
@@ -875,7 +988,7 @@ export default function InternalDomains() {
         {/* Summary */}
         {domains.length > 0 && (
           <div className="mt-6 text-sm text-muted-foreground">
-            Showing {domains.length} domain{domains.length !== 1 ? 's' : ''}
+            Showing {domains.length} domain{domains.length !== 1 ? "s" : ""}
           </div>
         )}
       </div>
