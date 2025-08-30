@@ -107,7 +107,7 @@ export const addDomain: RequestHandler = (req, res) => {
   setTimeout(async () => {
     try {
       const { monitoringService } = await import("../services/monitoring-service");
-      const updateData = await monitoringService.monitorDomain(newDomain);
+      const updateData = await monitoringService.enhancedMonitorDomain(newDomain);
 
       // Update the domain with monitoring results
       const domainIndex = domains.findIndex(d => d.id === newDomain.id);
