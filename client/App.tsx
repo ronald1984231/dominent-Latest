@@ -28,6 +28,7 @@ import RegistrarOverview from "./pages/RegistrarOverview";
 import RegistrarAPISettings from "./pages/RegistrarAPISettings";
 import RegistrarDomains from "./pages/RegistrarDomains";
 import RegistrarMonthlyReports from "./pages/RegistrarMonthlyReports";
+import RegistrarConfig from "./pages/RegistrarConfig";
 
 const queryClient = new QueryClient();
 
