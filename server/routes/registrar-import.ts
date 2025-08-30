@@ -76,7 +76,7 @@ const callPorkbunAPI = async (apiKey: string, secretKey: string): Promise<Regist
 };
 
 // ---------------- Import Handler ----------------
-export const importRegistrarDomains: RequestHandler<
+export const importDomainsFromRegistrar: RequestHandler<
   {}, RegistrarImportResponse, RegistrarImportRequest
 > = async (req, res) => {
   try {
@@ -105,5 +105,24 @@ export const importRegistrarDomains: RequestHandler<
     res.json({ success: true, domains });
   } catch (err) {
     res.status(500).json({ success: false, error: err instanceof Error ? err.message : "Unknown error" });
+  }
+};
+
+// ---------------- Error Logs Handler ----------------
+export const getErrorLogs: RequestHandler = async (req, res) => {
+  try {
+    // This is a placeholder implementation for error logs
+    // You can implement actual error logging/retrieval here
+    const logs = {
+      errors: [],
+      warnings: [],
+      info: "Error logging not fully implemented yet"
+    };
+
+    res.json(logs);
+  } catch (err) {
+    res.status(500).json({
+      error: err instanceof Error ? err.message : "Failed to retrieve error logs"
+    });
   }
 };
