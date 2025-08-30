@@ -68,6 +68,13 @@ import {
   importDomainsFromRegistrar,
   getErrorLogs
 } from "./routes/registrar-import";
+import {
+  setRegistrarConfig,
+  getRegistrarConfig,
+  getRegistrarConfigs,
+  removeRegistrarConfig,
+  testRegistrarConfig
+} from "./routes/registrar-config";
 import { cronService } from "./services/cron-service";
 
 export function createServer() {
