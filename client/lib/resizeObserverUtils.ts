@@ -65,10 +65,21 @@ export function debouncedResizeObserver(
 export function setupResizeObserverErrorHandler(): void {
   // Handle unhandled errors
   window.addEventListener("error", (event) => {
+    // Suppress ResizeObserver loop errors
     if (event.message?.includes("ResizeObserver loop")) {
       event.preventDefault();
       event.stopPropagation();
       console.debug("ResizeObserver loop error suppressed globally");
+      return false;
+    }
+
+    // Suppress FullStory-related fetch errors that don't affect app functionality
+    if (event.message?.includes("Failed to fetch") &&
+        (event.filename?.includes("edge.fullstory.com") ||
+         event.error?.stack?.includes("fullstory"))) {
+      event.preventDefault();
+      event.stopPropagation();
+      console.debug("FullStory fetch error suppressed globally");
       return false;
     }
   });
@@ -78,6 +89,15 @@ export function setupResizeObserverErrorHandler(): void {
     if (event.reason?.message?.includes("ResizeObserver loop")) {
       event.preventDefault();
       console.debug("ResizeObserver loop promise rejection suppressed");
+      return false;
+    }
+
+    // Suppress FullStory-related promise rejections
+    if (event.reason?.message?.includes("Failed to fetch") &&
+        (event.reason?.stack?.includes("fullstory") ||
+         event.reason?.stack?.includes("edge.fullstory.com"))) {
+      event.preventDefault();
+      console.debug("FullStory fetch promise rejection suppressed");
       return false;
     }
   });
