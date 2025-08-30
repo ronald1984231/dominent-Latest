@@ -74,25 +74,29 @@ export function Logo({
           <circle
             cx="24"
             cy="24"
-            r="6"
+            r="8"
             stroke="white"
             strokeWidth="1"
             fill="none"
             opacity="0.6"
-          >
-            <animate
-              attributeName="r"
-              values="6;10;6"
-              dur="2s"
-              repeatCount="indefinite"
-            />
-            <animate
-              attributeName="opacity"
-              values="0.6;0.1;0.6"
-              dur="2s"
-              repeatCount="indefinite"
-            />
-          </circle>
+            className="animate-pulse"
+            style={{
+              animation: 'pulse-ring 2s ease-in-out infinite'
+            }}
+          />
+
+          <style jsx>{`
+            @keyframes pulse-ring {
+              0%, 100% {
+                transform: scale(0.75);
+                opacity: 0.6;
+              }
+              50% {
+                transform: scale(1.25);
+                opacity: 0.1;
+              }
+            }
+          `}</style>
 
           {/* Gradients */}
           <defs>
