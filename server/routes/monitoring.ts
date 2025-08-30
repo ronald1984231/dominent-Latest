@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { monitoringService } from "../services/monitoring-service";
+import { testDomainMonitoring } from "../utils/enhanced-domain-monitor";
 import { cronService } from "../services/cron-service";
 import { checkDomain } from "../utils/domain-monitor";
 import { 
