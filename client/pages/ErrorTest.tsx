@@ -223,6 +223,15 @@ export default function ErrorTest() {
               </Button>
 
               <Button
+                onClick={testDirectUndefinedFunction}
+                disabled={isLoading}
+                variant="destructive"
+                className="w-full bg-red-600 hover:bg-red-700"
+              >
+                🚨 myUndefinedFunction() Test
+              </Button>
+
+              <Button
                 onClick={clearResults}
                 variant="destructive"
                 className="w-full"
