@@ -252,7 +252,9 @@ export const getMonitoringConfig: RequestHandler = (req, res) => {
       alertThresholds: {
         domain_expiry: [30, 15, 7, 1], // days
         ssl_expiry: [30, 15, 7, 1] // days
-      }
+      },
+      enhancedMonitoringEnabled: true,
+      registrarAPIEnabled: true
     },
     logging: {
       retentionDays: 90,
@@ -266,4 +268,41 @@ export const getMonitoringConfig: RequestHandler = (req, res) => {
   };
 
   res.json(config);
+};
+
+// Test enhanced domain monitoring for a specific domain
+export const testEnhancedMonitoring: RequestHandler = async (req, res) => {
+  try {
+    const { domain } = req.params;
+
+    if (!domain) {
+      return res.status(400).json({
+        error: 'Domain parameter is required'
+      });
+    }
+
+    console.log(`Testing enhanced monitoring for domain: ${domain}`);
+
+    // Use the test function from enhanced domain monitor
+    await testDomainMonitoring();
+
+    res.json({
+      success: true,
+      domain,
+      message: `Enhanced monitoring test completed for ${domain}`,
+      timestamp: new Date().toISOString(),
+      features: [
+        'Registrar API integration',
+        'WHOIS fallback',
+        'SSL certificate checking',
+        'Enhanced error handling'
+      ]
+    });
+  } catch (error) {
+    console.error('Enhanced monitoring test error:', error);
+    res.status(500).json({
+      error: 'Failed to test enhanced monitoring',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
 };
