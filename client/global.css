@@ -118,16 +118,25 @@
 .logo-pulse-ring {
   animation: logo-pulse 2s ease-in-out infinite;
   transform-origin: center;
+  contain: layout style paint;
 }
 
 .hero-pulse-ring-1 {
   animation: logo-pulse 3s ease-in-out infinite;
   transform-origin: center;
+  contain: layout style paint;
 }
 
 .hero-pulse-ring-2 {
   animation: logo-pulse 2s ease-in-out infinite 0.5s;
   transform-origin: center;
+  contain: layout style paint;
+}
+
+/* Logo container isolation */
+.logo-container {
+  contain: layout style paint;
+  isolation: isolate;
 }
 
 @keyframes logo-pulse {
