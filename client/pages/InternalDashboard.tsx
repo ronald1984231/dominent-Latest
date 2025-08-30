@@ -57,6 +57,9 @@ export default function InternalDashboard() {
     // Load complete dashboard data
     const loadDashboardData = async () => {
       try {
+        setLoading(true);
+        setError(null);
+
         const dashboardData = await safeFetchJson<{
           stats: DashboardStats;
           expiringDomains: ExpiringDomain[];
@@ -68,8 +71,20 @@ export default function InternalDashboard() {
         setExpiringCertificates(dashboardData.expiringCertificates || []);
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
-        // Don't show error toast on dashboard as it's not critical
-        // User will see empty state instead
+        setError(getFetchErrorMessage(error));
+        // Set default stats as fallback
+        setStats({
+          totalDomains: 0,
+          domainsRenewalPrice: 0.0,
+          expiringDomains: 0,
+          expiringCertificates: 0,
+          onlineDomains: 0,
+          offlineDomains: 0,
+        });
+        setExpiringDomains([]);
+        setExpiringCertificates([]);
+      } finally {
+        setLoading(false);
       }
     };
 
