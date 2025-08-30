@@ -145,10 +145,18 @@ export const deleteDomain: RequestHandler<{ id: string }> = async (req, res) => 
   try {
     const { id } = req.params;
 
-    await db.domain.update({
-      where: { id },
-      data: { is_active: false },
-    });
+    const sql = `
+      UPDATE domains
+      SET is_active = false
+      WHERE id = $1
+      RETURNING domain
+    `;
+
+    const result = await db.query(sql, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: "Domain not found" });
+    }
 
     res.json({ success: true, message: "Domain deleted successfully" });
   } catch (err) {
