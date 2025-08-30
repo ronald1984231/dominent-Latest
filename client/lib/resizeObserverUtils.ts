@@ -1,6 +1,7 @@
 /**
  * Utility functions to handle ResizeObserver errors gracefully
  */
+import React from 'react';
 
 /**
  * Wraps a ResizeObserver callback to catch and suppress loop errors
