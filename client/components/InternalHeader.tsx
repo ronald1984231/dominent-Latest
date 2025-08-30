@@ -12,6 +12,7 @@ export function InternalHeader() {
     { name: "Dashboard", path: "/dashboard" },
     { name: "Domains", path: "/internal/domains" },
     { name: "My Registrars", path: "/internal/registrars" },
+    { name: "Registrar Config", path: "/internal/registrar-config" },
     { name: "Domains Watchlist", path: "/internal/watchlist" },
     { name: "Projects", path: "/internal/projects" },
     { name: "Notifications", path: "/internal/notifications" },
