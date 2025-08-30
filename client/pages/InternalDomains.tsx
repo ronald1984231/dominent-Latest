@@ -846,22 +846,10 @@ export default function InternalDomains() {
                       </div>
 
                       <div>
-                        <div className={`text-sm font-medium ${getSSLStatusColor(domain.ssl_expiry)}`}>
-                          {getSSLStatus(domain.ssl_expiry)}
-                        </div>
-                        {domain.ssl_expiry ? (
-                          <div className="text-xs text-muted-foreground">
-                            SSL expires: {domain.ssl_expiry}
-                          </div>
-                        ) : domain.lastSslCheck ? (
-                          <div className="text-xs text-muted-foreground">
-                            Last checked: {new Date(domain.lastSslCheck).toLocaleDateString()}
-                          </div>
-                        ) : (
-                          <div className="text-xs text-muted-foreground">
-                            Not checked
-                          </div>
-                        )}
+                        <SSLStatusCompact
+                          sslExpiry={domain.ssl_expiry}
+                          lastSslCheck={domain.lastSslCheck}
+                        />
                       </div>
 
                       <div>
