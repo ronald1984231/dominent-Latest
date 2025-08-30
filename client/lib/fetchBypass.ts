@@ -19,8 +19,7 @@ export function bypassFetch(url: string, options: {
 }> {
   return new Promise((resolve, reject) => {
     // Create XMLHttpRequest in a way that third parties can't intercept
-    const xhr = Object.create(XMLHttpRequest.prototype);
-    XMLHttpRequest.call(xhr);
+    const xhr = new XMLHttpRequest();
     
     const method = options.method || 'GET';
     
