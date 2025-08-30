@@ -20,6 +20,7 @@ import CreateAccount from "./pages/CreateAccount";
 import LogoShowcase from "./pages/LogoShowcase";
 import LogoTest from "./pages/LogoTest";
 import ErrorTest from "./pages/ErrorTest";
+import DashboardTest from "./pages/DashboardTest";
 import Dashboard from "./pages/Dashboard";
 import InternalDashboard from "./pages/InternalDashboard";
 import InternalDomains from "./pages/InternalDomains";
