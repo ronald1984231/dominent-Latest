@@ -25,6 +25,79 @@ export class FetchError extends Error {
 }
 
 /**
+ * XMLHttpRequest fallback for when fetch is intercepted by third-party scripts
+ */
+function fetchWithXHR(url: string, options: RequestInit = {}): Promise<Response> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const method = options.method || 'GET';
+
+    xhr.open(method, url);
+
+    // Set headers
+    if (options.headers) {
+      const headers = options.headers as Record<string, string>;
+      Object.entries(headers).forEach(([key, value]) => {
+        xhr.setRequestHeader(key, value);
+      });
+    }
+
+    // Handle timeout
+    xhr.timeout = 10000; // 10 second default timeout
+
+    xhr.onload = () => {
+      // Create a Response-like object
+      const response = {
+        ok: xhr.status >= 200 && xhr.status < 300,
+        status: xhr.status,
+        statusText: xhr.statusText,
+        headers: new Headers(),
+        json: async () => {
+          try {
+            return JSON.parse(xhr.responseText);
+          } catch (e) {
+            throw new Error('Failed to parse JSON response');
+          }
+        },
+        text: async () => xhr.responseText,
+      } as Response;
+
+      resolve(response);
+    };
+
+    xhr.onerror = () => {
+      reject(new FetchError(`XMLHttpRequest failed for ${url}`, xhr.status));
+    };
+
+    xhr.ontimeout = () => {
+      reject(new FetchError(`XMLHttpRequest timeout for ${url}`));
+    };
+
+    // Send request
+    xhr.send(options.body as string);
+  });
+}
+
+/**
+ * Detect if an error is caused by FullStory or similar third-party interference
+ */
+function isThirdPartyInterferenceError(error: unknown): boolean {
+  if (error instanceof Error) {
+    const stack = error.stack || '';
+    const message = error.message || '';
+
+    return (
+      message.includes('Failed to fetch') &&
+      (stack.includes('fullstory') ||
+       stack.includes('edge.fullstory.com') ||
+       stack.includes('fs.js') ||
+       stack.includes('eval at messageHandler'))
+    );
+  }
+  return false;
+}
+
+/**
  * Safe fetch function with automatic retries and error handling
  */
 export async function safeFetch(
