@@ -57,7 +57,8 @@ import {
   getMonitoringStatus,
   clearOldLogs,
   testDomainConnectivity,
-  getMonitoringConfig
+  getMonitoringConfig,
+  testEnhancedMonitoring
 } from "./routes/monitoring";
 import {
   login,
