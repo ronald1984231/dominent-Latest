@@ -55,15 +55,19 @@ export default function InternalDashboard() {
     // Load complete dashboard data
     const loadDashboardData = async () => {
       try {
-        const response = await fetch("/api/internal/dashboard");
-        if (response.ok) {
-          const dashboardData = await response.json();
-          setStats(dashboardData.stats);
-          setExpiringDomains(dashboardData.expiringDomains || []);
-          setExpiringCertificates(dashboardData.expiringCertificates || []);
-        }
+        const dashboardData = await safeFetchJson<{
+          stats: DashboardStats;
+          expiringDomains: ExpiringDomain[];
+          expiringCertificates: ExpiringCertificate[];
+        }>("/api/internal/dashboard");
+
+        setStats(dashboardData.stats);
+        setExpiringDomains(dashboardData.expiringDomains || []);
+        setExpiringCertificates(dashboardData.expiringCertificates || []);
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
+        // Don't show error toast on dashboard as it's not critical
+        // User will see empty state instead
       }
     };
 
