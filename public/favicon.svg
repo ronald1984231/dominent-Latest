@@ -1,0 +1,31 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="16" cy="16" r="15" fill="url(#gradient1)" stroke="url(#gradient2)" stroke-width="1"/>
+  
+  <!-- Globe/Domain Icon -->
+  <circle cx="16" cy="16" r="9" stroke="white" stroke-width="1" fill="none"/>
+  
+  <!-- Longitude lines -->
+  <path d="M7 16C7 16 11 9 16 9C21 9 25 16 25 16C25 16 21 23 16 23C11 23 7 16 7 16Z" stroke="white" stroke-width="0.8" fill="none"/>
+  
+  <!-- Latitude lines -->
+  <path d="M16 7C16 7 9 11 9 16C9 21 16 25 16 25C16 25 23 21 23 16C23 11 16 7 16 7Z" stroke="white" stroke-width="0.8" fill="none"/>
+  
+  <!-- Central monitoring dot -->
+  <circle cx="16" cy="16" r="1.5" fill="white"/>
+  
+  <!-- Monitoring pulse ring -->
+  <circle cx="16" cy="16" r="4" stroke="white" stroke-width="0.5" fill="none" opacity="0.6"/>
+
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1E40AF"/>
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+</svg>
