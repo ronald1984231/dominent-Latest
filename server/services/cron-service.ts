@@ -164,7 +164,7 @@ export class CronService {
     }
 
     try {
-      const updateData = await monitoringService.monitorDomain(domain);
+      const updateData = await monitoringService.enhancedMonitorDomain(domain);
       
       // In a real implementation, you would update the database here
       // For now, we'll just update the in-memory domains array
