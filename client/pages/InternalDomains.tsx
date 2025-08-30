@@ -852,13 +852,15 @@ export default function InternalDomains() {
                         />
                       </div>
 
-                      <div>
+                      <div className="text-center">
                         {domain.ssl_expiry ? (
-                          <Badge variant={getSSLExpiryVariant(domain.ssl_expiry) as any} className="text-xs font-medium">
-                            {formatSSLExpiry(domain.ssl_expiry)}
-                          </Badge>
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(domain.ssl_expiry).toLocaleDateString()}
+                          </div>
                         ) : (
-                          <span className="text-xs text-muted-foreground">Unknown</span>
+                          <div className="text-xs text-muted-foreground">
+                            No certificate
+                          </div>
                         )}
                       </div>
 
