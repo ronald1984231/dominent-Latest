@@ -60,25 +60,65 @@ export default function RegistrarConfig() {
     loadConfigs();
   }, []);
 
-  const loadConfigs = async () => {
+  const loadConfigs = async (retryCount = 0) => {
+    const maxRetries = 3;
+
     try {
-      const response = await fetch("/api/registrar-configs");
+      // Add timeout to prevent hanging requests
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch("/api/registrar-configs", {
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const data = await response.json();
 
-      if (response.ok) {
+      if (data.configs) {
         setConfigs(data.configs);
       } else {
-        throw new Error(data.message || "Failed to load configurations");
+        throw new Error("Invalid response format");
       }
     } catch (error) {
-      console.error("Failed to load registrar configs:", error);
+      console.error(`Failed to load registrar configs (attempt ${retryCount + 1}):`, error);
+
+      // Retry logic for network errors
+      if (retryCount < maxRetries && (
+        error instanceof TypeError || // Network errors
+        (error instanceof Error && error.message.includes('fetch')) ||
+        (error instanceof Error && error.message.includes('AbortError'))
+      )) {
+        console.log(`Retrying in ${(retryCount + 1) * 1000}ms...`);
+        setTimeout(() => {
+          loadConfigs(retryCount + 1);
+        }, (retryCount + 1) * 1000);
+        return;
+      }
+
+      // Show error after all retries failed
       toast({
         title: "Error",
-        description: "Failed to load registrar configurations",
+        description: error instanceof Error ?
+          `Failed to load registrar configurations: ${error.message}` :
+          "Failed to load registrar configurations. Please check your connection.",
         variant: "destructive",
       });
+
+      // Set empty configs as fallback
+      setConfigs([]);
     } finally {
-      setLoading(false);
+      if (retryCount === 0) { // Only set loading false on the first attempt
+        setLoading(false);
+      }
     }
   };
 
