@@ -110,9 +110,11 @@ export function setupResizeObserverErrorHandler(): void {
 
     // Suppress FullStory-related promise rejections
     if (
-      event.reason?.message?.includes("Failed to fetch") &&
+      (event.reason?.message?.includes("Failed to fetch") ||
+       event.reason?.message?.includes("TypeError: Failed to fetch")) &&
       (event.reason?.stack?.includes("fullstory") ||
-        event.reason?.stack?.includes("edge.fullstory.com"))
+        event.reason?.stack?.includes("edge.fullstory.com") ||
+        event.reason?.stack?.includes("fs.js"))
     ) {
       event.preventDefault();
       console.debug("FullStory fetch promise rejection suppressed");
