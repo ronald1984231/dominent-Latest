@@ -71,7 +71,7 @@ export default function InternalDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">👤</span>
+              <span className="text-white font-bold text-lg">���</span>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">Welcome Ronald Stone</h1>
@@ -125,7 +125,7 @@ export default function InternalDashboard() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Expiring Domains</p>
-                  <p className="text-3xl font-bold text-foreground">{stats.expiringDomains}</p>
+                  <p className="text-3xl font-bold text-foreground">{stats.expiringDomains + stats.expiringCertificates}</p>
                 </div>
               </div>
             </CardContent>
