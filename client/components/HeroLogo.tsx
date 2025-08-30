@@ -53,52 +53,28 @@ export function HeroLogo({ className = "" }: HeroLogoProps) {
           {/* Central monitoring dot */}
           <circle cx="48" cy="48" r="4" fill="white" />
 
-          {/* Multiple monitoring pulse rings */}
+          {/* Multiple monitoring pulse rings - Fixed radius to prevent ResizeObserver issues */}
+          <circle
+            cx="48"
+            cy="48"
+            r="16"
+            stroke="white"
+            strokeWidth="1.5"
+            fill="none"
+            opacity="0.4"
+            className="hero-pulse-ring-1"
+          />
+
           <circle
             cx="48"
             cy="48"
             r="12"
             stroke="white"
-            strokeWidth="1.5"
-            fill="none"
-            opacity="0.7"
-          >
-            <animate
-              attributeName="r"
-              values="12;20;12"
-              dur="3s"
-              repeatCount="indefinite"
-            />
-            <animate
-              attributeName="opacity"
-              values="0.7;0.1;0.7"
-              dur="3s"
-              repeatCount="indefinite"
-            />
-          </circle>
-
-          <circle
-            cx="48"
-            cy="48"
-            r="8"
-            stroke="white"
             strokeWidth="1"
             fill="none"
-            opacity="0.5"
-          >
-            <animate
-              attributeName="r"
-              values="8;16;8"
-              dur="2s"
-              repeatCount="indefinite"
-            />
-            <animate
-              attributeName="opacity"
-              values="0.5;0.1;0.5"
-              dur="2s"
-              repeatCount="indefinite"
-            />
-          </circle>
+            opacity="0.4"
+            className="hero-pulse-ring-2"
+          />
 
           {/* Enhanced Gradients and Effects */}
           <defs>
