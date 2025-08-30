@@ -1,6 +1,11 @@
 import { Logo, LogoMini } from "../components/Logo";
 import { HeroLogo } from "../components/HeroLogo";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 
 export default function LogoShowcase() {
   return (
@@ -20,7 +25,9 @@ export default function LogoShowcase() {
           <Card>
             <CardHeader>
               <CardTitle>Hero Logo</CardTitle>
-              <p className="text-gray-600">Large version for landing pages and special occasions</p>
+              <p className="text-gray-600">
+                Large version for landing pages and special occasions
+              </p>
             </CardHeader>
             <CardContent className="flex justify-center py-12 bg-gradient-to-br from-blue-50 to-white">
               <HeroLogo />
@@ -31,7 +38,9 @@ export default function LogoShowcase() {
           <Card>
             <CardHeader>
               <CardTitle>Standard Logo Sizes</CardTitle>
-              <p className="text-gray-600">Different sizes for headers and navigation</p>
+              <p className="text-gray-600">
+                Different sizes for headers and navigation
+              </p>
             </CardHeader>
             <CardContent className="space-y-8">
               <div className="grid md:grid-cols-3 gap-8">
@@ -61,7 +70,9 @@ export default function LogoShowcase() {
           <Card>
             <CardHeader>
               <CardTitle>Icon Only Versions</CardTitle>
-              <p className="text-gray-600">For tight spaces or mobile applications</p>
+              <p className="text-gray-600">
+                For tight spaces or mobile applications
+              </p>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-4 gap-8">
@@ -97,24 +108,32 @@ export default function LogoShowcase() {
           <Card>
             <CardHeader>
               <CardTitle>Background Variations</CardTitle>
-              <p className="text-gray-600">How the logo appears on different backgrounds</p>
+              <p className="text-gray-600">
+                How the logo appears on different backgrounds
+              </p>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-3 gap-8">
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold mb-4">Light Background</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Light Background
+                  </h3>
                   <div className="flex justify-center p-8 bg-white rounded-lg border">
                     <Logo size="md" />
                   </div>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold mb-4">Gray Background</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Gray Background
+                  </h3>
                   <div className="flex justify-center p-8 bg-gray-100 rounded-lg border">
                     <Logo size="md" />
                   </div>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold mb-4">Dark Background</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Dark Background
+                  </h3>
                   <div className="flex justify-center p-8 bg-gray-900 rounded-lg border">
                     <Logo size="md" className="text-white" />
                   </div>
@@ -131,7 +150,9 @@ export default function LogoShowcase() {
             <CardContent className="prose prose-gray max-w-none">
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-lg font-semibold text-green-600 mb-3">✅ Do:</h3>
+                  <h3 className="text-lg font-semibold text-green-600 mb-3">
+                    ✅ Do:
+                  </h3>
                   <ul className="space-y-2 text-gray-700">
                     <li>Use the full logo for headers and main navigation</li>
                     <li>Use the icon-only version in tight spaces</li>
@@ -141,13 +162,20 @@ export default function LogoShowcase() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-red-600 mb-3">❌ Don't:</h3>
+                  <h3 className="text-lg font-semibold text-red-600 mb-3">
+                    ❌ Don't:
+                  </h3>
                   <ul className="space-y-2 text-gray-700">
                     <li>Stretch or distort the logo</li>
                     <li>Change the colors arbitrarily</li>
                     <li>Place on busy backgrounds</li>
-                    <li>Use extremely small sizes where text becomes unreadable</li>
-                    <li>Separate the icon from the text unless using the icon-only version</li>
+                    <li>
+                      Use extremely small sizes where text becomes unreadable
+                    </li>
+                    <li>
+                      Separate the icon from the text unless using the icon-only
+                      version
+                    </li>
                   </ul>
                 </div>
               </div>

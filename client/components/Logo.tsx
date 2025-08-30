@@ -1,96 +1,95 @@
 interface LogoProps {
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   showText?: boolean;
 }
 
-export function Logo({ className = "", size = 'md', showText = true }: LogoProps) {
+export function Logo({
+  className = "",
+  size = "md",
+  showText = true,
+}: LogoProps) {
   const sizeClasses = {
-    sm: 'h-8 w-8',
-    md: 'h-10 w-10', 
-    lg: 'h-12 w-12'
+    sm: "h-8 w-8",
+    md: "h-10 w-10",
+    lg: "h-12 w-12",
   };
 
   const textSizeClasses = {
-    sm: 'text-lg',
-    md: 'text-xl',
-    lg: 'text-2xl'
+    sm: "text-lg",
+    md: "text-xl",
+    lg: "text-2xl",
   };
 
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
       {/* Logo Icon */}
       <div className="relative">
-        <svg 
+        <svg
           className={`${sizeClasses[size]} transition-transform hover:scale-105`}
-          viewBox="0 0 48 48" 
-          fill="none" 
+          viewBox="0 0 48 48"
+          fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           {/* Background Circle */}
-          <circle 
-            cx="24" 
-            cy="24" 
-            r="22" 
-            fill="url(#gradient1)" 
-            stroke="url(#gradient2)" 
+          <circle
+            cx="24"
+            cy="24"
+            r="22"
+            fill="url(#gradient1)"
+            stroke="url(#gradient2)"
             strokeWidth="2"
           />
-          
+
           {/* Globe/Domain Icon */}
-          <circle 
-            cx="24" 
-            cy="24" 
-            r="14" 
-            stroke="white" 
-            strokeWidth="1.5" 
+          <circle
+            cx="24"
+            cy="24"
+            r="14"
+            stroke="white"
+            strokeWidth="1.5"
             fill="none"
           />
-          
+
           {/* Longitude lines */}
-          <path 
-            d="M10 24C10 24 16 14 24 14C32 14 38 24 38 24C38 24 32 34 24 34C16 34 10 24 10 24Z" 
-            stroke="white" 
-            strokeWidth="1.2" 
+          <path
+            d="M10 24C10 24 16 14 24 14C32 14 38 24 38 24C38 24 32 34 24 34C16 34 10 24 10 24Z"
+            stroke="white"
+            strokeWidth="1.2"
             fill="none"
           />
-          
+
           {/* Latitude lines */}
-          <path 
-            d="M24 10C24 10 14 16 14 24C14 32 24 38 24 38C24 38 34 32 34 24C34 16 24 10 24 10Z" 
-            stroke="white" 
-            strokeWidth="1.2" 
+          <path
+            d="M24 10C24 10 14 16 14 24C14 32 24 38 24 38C24 38 34 32 34 24C34 16 24 10 24 10Z"
+            stroke="white"
+            strokeWidth="1.2"
             fill="none"
           />
-          
+
           {/* Central monitoring dot */}
-          <circle 
-            cx="24" 
-            cy="24" 
-            r="2.5" 
-            fill="white"
-          />
-          
+          <circle cx="24" cy="24" r="2.5" fill="white" />
+
           {/* Monitoring pulse rings */}
-          <circle 
-            cx="24" 
-            cy="24" 
-            r="6" 
-            stroke="white" 
-            strokeWidth="1" 
-            fill="none" 
+          <circle
+            cx="24"
+            cy="24"
+            r="6"
+            stroke="white"
+            strokeWidth="1"
+            fill="none"
             opacity="0.6"
           >
-            <animate 
-              attributeName="r" 
-              values="6;10;6" 
-              dur="2s" 
+            <animate
+              attributeName="r"
+              values="6;10;6"
+              dur="2s"
               repeatCount="indefinite"
             />
-            <animate 
-              attributeName="opacity" 
-              values="0.6;0.1;0.6" 
-              dur="2s" 
+            <animate
+              attributeName="opacity"
+              values="0.6;0.1;0.6"
+              dur="2s"
               repeatCount="indefinite"
             />
           </circle>
@@ -111,7 +110,9 @@ export function Logo({ className = "", size = 'md', showText = true }: LogoProps
 
       {/* Logo Text */}
       {showText && (
-        <span className={`font-bold text-gray-900 tracking-tight ${textSizeClasses[size]}`}>
+        <span
+          className={`font-bold text-gray-900 tracking-tight ${textSizeClasses[size]}`}
+        >
           <span className="text-blue-600">DOMI</span>
           <span className="text-gray-900">NENT</span>
         </span>
