@@ -7,6 +7,17 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
+
+// Suppress ResizeObserver loop errors - these are benign and don't affect functionality
+const resizeObserverErrorHandler = (e: ErrorEvent) => {
+  if (e.message === 'ResizeObserver loop completed with undelivered notifications.') {
+    e.stopImmediatePropagation();
+    return false;
+  }
+  return true;
+};
+
+window.addEventListener('error', resizeObserverErrorHandler);
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import DomainsSearch from "./pages/DomainsSearch";
