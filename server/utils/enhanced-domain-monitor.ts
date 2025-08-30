@@ -293,7 +293,9 @@ async function getSSLExpiry(domain: string): Promise<{ ssl_expiry: Date | null; 
 export async function updateDomainInfo(domain: string, registrarConfig?: RegistrarConfig): Promise<DomainInfo> {
   const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
   const errors: string[] = [];
-  
+
+  console.log(`🚀 Starting enhanced domain monitoring for: ${cleanDomain}`);
+
   let domainInfo: Partial<DomainInfo> = {
     domain: cleanDomain,
     registrar: "Unknown",
@@ -304,59 +306,71 @@ export async function updateDomainInfo(domain: string, registrarConfig?: Registr
 
   // STEP 1: Try Registrar API first (highest priority)
   if (registrarConfig) {
-    console.log(`Attempting registrar API lookup for ${cleanDomain} using ${registrarConfig.type}`);
+    console.log(`🔧 Attempting registrar API lookup for ${cleanDomain} using ${registrarConfig.type}`);
     try {
       const apiResult = await getFromRegistrarAPI(cleanDomain, registrarConfig);
       if (apiResult) {
         domainInfo = { ...domainInfo, ...apiResult };
-        console.log(`✅ Registrar API data retrieved for ${cleanDomain}`);
+        console.log(`✅ Registrar API data retrieved for ${cleanDomain}:`, apiResult);
       } else {
-        errors.push('Registrar API returned no data');
+        const errorMsg = 'Registrar API returned no data';
+        console.log(`⚠️ ${errorMsg} for ${cleanDomain}`);
+        errors.push(errorMsg);
       }
     } catch (error) {
       const errorMsg = `Registrar API failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      console.error(errorMsg);
+      console.error(`❌ ${errorMsg} for ${cleanDomain}`);
       errors.push(errorMsg);
     }
+  } else {
+    console.log(`ℹ️ No registrar API configuration provided for ${cleanDomain}, skipping API lookup`);
   }
 
   // STEP 2: Fallback to WHOIS if API didn't provide complete data
   if (!domainInfo.domain_expiry || domainInfo.registrar === "Unknown") {
-    console.log(`Attempting WHOIS lookup for ${cleanDomain}`);
+    console.log(`🔍 Attempting WHOIS lookup for ${cleanDomain} (API data incomplete)`);
     try {
       const whoisResult = await getFromWhois(cleanDomain);
       if (whoisResult) {
+        console.log(`📋 WHOIS result for ${cleanDomain}:`, whoisResult);
+
         // Only override if we don't have better data from API
         if (!domainInfo.domain_expiry && whoisResult.domain_expiry) {
           domainInfo.domain_expiry = whoisResult.domain_expiry;
+          console.log(`📅 Updated expiry date from WHOIS: ${whoisResult.domain_expiry}`);
         }
         if (domainInfo.registrar === "Unknown" && whoisResult.registrar) {
           domainInfo.registrar = whoisResult.registrar;
+          console.log(`🏢 Updated registrar from WHOIS: ${whoisResult.registrar}`);
         }
         if (domainInfo.source === 'unknown') {
           domainInfo.source = 'whois';
         }
-        console.log(`✅ WHOIS data retrieved for ${cleanDomain}`);
+        console.log(`✅ WHOIS data applied for ${cleanDomain}`);
       } else {
-        errors.push('WHOIS lookup returned no data');
+        const errorMsg = 'WHOIS lookup returned no data';
+        console.log(`⚠️ ${errorMsg} for ${cleanDomain}`);
+        errors.push(errorMsg);
       }
     } catch (error) {
       const errorMsg = `WHOIS lookup failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      console.error(errorMsg);
+      console.error(`❌ ${errorMsg} for ${cleanDomain}`);
       errors.push(errorMsg);
     }
+  } else {
+    console.log(`ℹ️ Skipping WHOIS for ${cleanDomain} (API provided complete data)`);
   }
 
   // STEP 3: SSL certificate check (independent of domain data)
-  console.log(`Checking SSL certificate for ${cleanDomain}`);
+  console.log(`🔒 Checking SSL certificate for ${cleanDomain}`);
   try {
     const sslResult = await getSSLExpiry(cleanDomain);
     domainInfo.ssl_expiry = sslResult.ssl_expiry ? sslResult.ssl_expiry.toISOString().split('T')[0] : null;
     domainInfo.ssl_status = sslResult.ssl_status;
-    console.log(`✅ SSL data retrieved for ${cleanDomain}: status=${sslResult.ssl_status}`);
+    console.log(`✅ SSL data retrieved for ${cleanDomain}: expiry=${domainInfo.ssl_expiry}, status=${sslResult.ssl_status}`);
   } catch (error) {
     const errorMsg = `SSL check failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
-    console.error(errorMsg);
+    console.error(`❌ ${errorMsg} for ${cleanDomain}`);
     errors.push(errorMsg);
     domainInfo.ssl_expiry = null;
     domainInfo.ssl_status = 'unknown';
@@ -369,7 +383,7 @@ export async function updateDomainInfo(domain: string, registrarConfig?: Registr
     domainInfo.status = "Error";
   }
 
-  return {
+  const finalResult = {
     domain: cleanDomain,
     registrar: domainInfo.registrar || "Unknown",
     domain_expiry: domainInfo.domain_expiry,
@@ -379,6 +393,9 @@ export async function updateDomainInfo(domain: string, registrarConfig?: Registr
     source: domainInfo.source || 'unknown',
     errors: errors.length > 0 ? errors : undefined
   };
+
+  console.log(`🏁 Final enhanced monitoring result for ${cleanDomain}:`, finalResult);
+  return finalResult;
 }
 
 /**
