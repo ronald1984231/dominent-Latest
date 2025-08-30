@@ -1,26 +1,31 @@
 import { Logo } from "../components/Logo";
 import { HeroLogo } from "../components/HeroLogo";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { useEffect, useState } from "react";
 
 export default function LogoTest() {
   const [errorCount, setErrorCount] = useState(0);
-  const [lastError, setLastError] = useState<string>('');
+  const [lastError, setLastError] = useState<string>("");
 
   useEffect(() => {
     // Monitor for ResizeObserver errors
     const errorHandler = (event: ErrorEvent) => {
-      if (event.message.includes('ResizeObserver')) {
-        setErrorCount(prev => prev + 1);
+      if (event.message.includes("ResizeObserver")) {
+        setErrorCount((prev) => prev + 1);
         setLastError(event.message);
-        console.log('ResizeObserver error detected:', event.message);
+        console.log("ResizeObserver error detected:", event.message);
       }
     };
 
-    window.addEventListener('error', errorHandler);
-    
+    window.addEventListener("error", errorHandler);
+
     return () => {
-      window.removeEventListener('error', errorHandler);
+      window.removeEventListener("error", errorHandler);
     };
   }, []);
 
@@ -34,11 +39,13 @@ export default function LogoTest() {
           <p className="text-xl text-gray-600">
             Testing logo animations without ResizeObserver errors
           </p>
-          
+
           {/* Error Monitor */}
           <div className="mt-6 p-4 bg-white rounded-lg border">
             <div className="flex items-center space-x-4">
-              <div className={`w-3 h-3 rounded-full ${errorCount === 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <div
+                className={`w-3 h-3 rounded-full ${errorCount === 0 ? "bg-green-500" : "bg-red-500"}`}
+              ></div>
               <span className="font-medium">
                 ResizeObserver Errors: {errorCount}
               </span>
@@ -56,12 +63,17 @@ export default function LogoTest() {
           <Card>
             <CardHeader>
               <CardTitle>Standard Logo Animations</CardTitle>
-              <p className="text-gray-600">Multiple instances to test for conflicts</p>
+              <p className="text-gray-600">
+                Multiple instances to test for conflicts
+              </p>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-4 gap-8">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="text-center p-6 bg-white rounded-lg border">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="text-center p-6 bg-white rounded-lg border"
+                  >
                     <Logo size="md" />
                     <p className="mt-2 text-sm text-gray-600">Instance {i}</p>
                   </div>
@@ -85,7 +97,9 @@ export default function LogoTest() {
           <Card>
             <CardHeader>
               <CardTitle>Mixed Logo Sizes</CardTitle>
-              <p className="text-gray-600">Testing different sizes simultaneously</p>
+              <p className="text-gray-600">
+                Testing different sizes simultaneously
+              </p>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-center space-x-8">
@@ -109,7 +123,9 @@ export default function LogoTest() {
           <Card>
             <CardHeader>
               <CardTitle>Rapid Re-render Test</CardTitle>
-              <p className="text-gray-600">Logos that mount/unmount frequently</p>
+              <p className="text-gray-600">
+                Logos that mount/unmount frequently
+              </p>
             </CardHeader>
             <CardContent>
               <RapidRenderTest />
@@ -127,7 +143,7 @@ function RapidRenderTest() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setShowLogos(prev => !prev);
+      setShowLogos((prev) => !prev);
     }, 1000);
 
     return () => clearInterval(interval);

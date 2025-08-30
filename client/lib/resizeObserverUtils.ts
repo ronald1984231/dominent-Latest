@@ -1,21 +1,27 @@
 /**
  * Utility functions to handle ResizeObserver errors gracefully
  */
-import React from 'react';
+import React from "react";
 
 /**
  * Wraps a ResizeObserver callback to catch and suppress loop errors
  */
 export function safeResizeObserverCallback<T extends ResizeObserverEntry[]>(
-  callback: (entries: T, observer: ResizeObserver) => void
+  callback: (entries: T, observer: ResizeObserver) => void,
 ) {
   return (entries: T, observer: ResizeObserver) => {
     try {
       callback(entries, observer);
     } catch (error) {
       // Suppress ResizeObserver loop errors
-      if (error instanceof Error && error.message.includes('ResizeObserver loop')) {
-        console.debug('ResizeObserver loop detected and suppressed:', error.message);
+      if (
+        error instanceof Error &&
+        error.message.includes("ResizeObserver loop")
+      ) {
+        console.debug(
+          "ResizeObserver loop detected and suppressed:",
+          error.message,
+        );
         return;
       }
       // Re-throw other errors
@@ -28,7 +34,7 @@ export function safeResizeObserverCallback<T extends ResizeObserverEntry[]>(
  * Creates a ResizeObserver with error handling
  */
 export function createSafeResizeObserver(
-  callback: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void
+  callback: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void,
 ): ResizeObserver {
   return new ResizeObserver(safeResizeObserverCallback(callback));
 }
@@ -38,15 +44,15 @@ export function createSafeResizeObserver(
  */
 export function debouncedResizeObserver(
   callback: (entries: ResizeObserverEntry[], observer: ResizeObserver) => void,
-  delay: number = 16 // ~60fps
+  delay: number = 16, // ~60fps
 ): ResizeObserver {
   let timeoutId: number | undefined;
-  
+
   return new ResizeObserver((entries, observer) => {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
-    
+
     timeoutId = window.setTimeout(() => {
       safeResizeObserverCallback(callback)(entries, observer);
     }, delay);
@@ -58,20 +64,20 @@ export function debouncedResizeObserver(
  */
 export function setupResizeObserverErrorHandler(): void {
   // Handle unhandled errors
-  window.addEventListener('error', (event) => {
-    if (event.message?.includes('ResizeObserver loop')) {
+  window.addEventListener("error", (event) => {
+    if (event.message?.includes("ResizeObserver loop")) {
       event.preventDefault();
       event.stopPropagation();
-      console.debug('ResizeObserver loop error suppressed globally');
+      console.debug("ResizeObserver loop error suppressed globally");
       return false;
     }
   });
 
   // Handle unhandled promise rejections
-  window.addEventListener('unhandledrejection', (event) => {
-    if (event.reason?.message?.includes('ResizeObserver loop')) {
+  window.addEventListener("unhandledrejection", (event) => {
+    if (event.reason?.message?.includes("ResizeObserver loop")) {
       event.preventDefault();
-      console.debug('ResizeObserver loop promise rejection suppressed');
+      console.debug("ResizeObserver loop promise rejection suppressed");
       return false;
     }
   });
@@ -82,13 +88,13 @@ export function setupResizeObserverErrorHandler(): void {
  */
 export function useSafeResizeObserver(
   callback: (entries: ResizeObserverEntry[]) => void,
-  dependencies: React.DependencyList = []
+  dependencies: React.DependencyList = [],
 ): React.RefObject<ResizeObserver | null> {
   const observerRef = React.useRef<ResizeObserver | null>(null);
-  
+
   React.useEffect(() => {
     observerRef.current = createSafeResizeObserver(callback);
-    
+
     return () => {
       if (observerRef.current) {
         observerRef.current.disconnect();
@@ -96,6 +102,6 @@ export function useSafeResizeObserver(
       }
     };
   }, dependencies);
-  
+
   return observerRef;
 }
