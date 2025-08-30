@@ -282,6 +282,15 @@ export default function ErrorTest() {
               </Button>
 
               <Button
+                onClick={testSentryLogging}
+                disabled={isLoading}
+                variant="outline"
+                className="w-full border-blue-500 text-blue-600 hover:bg-blue-50"
+              >
+                📋 Test Sentry Logging
+              </Button>
+
+              <Button
                 onClick={clearResults}
                 variant="destructive"
                 className="w-full"
