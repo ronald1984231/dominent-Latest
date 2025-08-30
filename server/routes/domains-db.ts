@@ -85,16 +85,21 @@ export const addDomain: RequestHandler<
     // WHOIS lookup
     const whoisInfo = await fetchWhoisInfo(domain);
 
-    const saved = await db.domain.create({
-      data: {
-        domain,
-        registrar: whoisInfo.registrar,
-        expiry_date: whoisInfo.expiryDate,
-        status: "Active",
-        is_active: true,
-      },
-    });
+    const sql = `
+      INSERT INTO domains (domain, registrar, expiry_date, status, is_active, created_at)
+      VALUES ($1, $2, $3, $4, $5, NOW())
+      RETURNING *
+    `;
 
+    const result = await db.query(sql, [
+      domain,
+      whoisInfo.registrar,
+      whoisInfo.expiryDate,
+      "Active",
+      true
+    ]);
+
+    const saved = result.rows[0];
     res.json({ success: true, domain: saved });
   } catch (err) {
     res.status(500).json({ success: false, error: err instanceof Error ? err.message : "Unknown error" });
