@@ -161,33 +161,23 @@ export default function RegistrarConfig() {
 
     setTesting(true);
     try {
-      const response = await fetch("/api/registrar-config/test", {
+      const data = await safeFetchJson<{ testResult?: { source: string } }>("/api/registrar-config/test", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           registrarName: selectedRegistrar,
           config: formData,
         }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast({
-          title: "Test Successful",
-          description: `Configuration test passed for ${selectedRegistrar}. Data source: ${data.testResult?.source || "unknown"}`,
-        });
-      } else {
-        throw new Error(data.message || "Configuration test failed");
-      }
+      toast({
+        title: "Test Successful",
+        description: `Configuration test passed for ${selectedRegistrar}. Data source: ${data.testResult?.source || "unknown"}`,
+      });
     } catch (error) {
       console.error("Failed to test config:", error);
       toast({
         title: "Test Failed",
-        description:
-          error instanceof Error ? error.message : "Configuration test failed",
+        description: getFetchErrorMessage(error),
         variant: "destructive",
       });
     } finally {
