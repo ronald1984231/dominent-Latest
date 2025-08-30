@@ -169,8 +169,24 @@ export const deleteDomain: RequestHandler<{ id: string }> = async (req, res) => 
 // Get Registrars (basic placeholder, adjust if you have a real registrar DB table)
 export const getRegistrars: RequestHandler = async (req, res) => {
   try {
-    const results = await db.registrar.findMany();
-    res.json({ success: true, registrars: results });
+    // Try to get registrars from registrars table, fallback to distinct registrars from domains
+    let sql = `SELECT * FROM registrars WHERE is_active = true ORDER BY name`;
+    let results;
+
+    try {
+      results = await db.query(sql, []);
+    } catch (tableError) {
+      // Fallback: get unique registrars from domains table
+      sql = `
+        SELECT DISTINCT registrar as name, registrar as id
+        FROM domains
+        WHERE is_active = true AND registrar IS NOT NULL AND registrar != 'Unknown'
+        ORDER BY registrar
+      `;
+      results = await db.query(sql, []);
+    }
+
+    res.json({ success: true, registrars: results.rows });
   } catch (err) {
     res.status(500).json({ success: false, error: err instanceof Error ? err.message : "Unknown error" });
   }
