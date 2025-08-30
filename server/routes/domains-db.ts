@@ -269,7 +269,7 @@ export const triggerDomainMonitoring: RequestHandler = async (req, res) => {
 
     // Use real monitoring service
     const { monitoringService } = await import("../services/monitoring-service");
-    const monitoringUpdate = await monitoringService.monitorDomain(domain);
+    const monitoringUpdate = await monitoringService.enhancedMonitorDomain(domain);
 
     // Apply the monitoring updates to the domain
     await db.query(`
