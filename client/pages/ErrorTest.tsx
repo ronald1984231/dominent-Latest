@@ -113,6 +113,24 @@ export default function ErrorTest() {
     }
   };
 
+  const testSentryError = () => {
+    const timestamp = new Date().toLocaleTimeString();
+
+    try {
+      // This will trigger a ReferenceError that should be captured by Sentry
+      (window as any).myUndefinedFunction();
+    } catch (error) {
+      setTestResults((prev) => [
+        ...prev,
+        {
+          success: true,
+          message: `Sentry error test triggered: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          timestamp,
+        },
+      ]);
+    }
+  };
+
   const clearResults = () => {
     setTestResults([]);
     setRootWarnings([]);
