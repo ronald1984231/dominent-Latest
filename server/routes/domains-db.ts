@@ -82,26 +82,38 @@ export const addDomain: RequestHandler<
   try {
     const { domain } = req.body;
 
+    // Check if domain already exists
+    const existingDomain = await db.query('SELECT id FROM domains WHERE domain = $1', [domain]);
+    if (existingDomain.rows.length > 0) {
+      return res.status(400).json({ success: false, error: "Domain already exists" });
+    }
+
     // WHOIS lookup
     const whoisInfo = await fetchWhoisInfo(domain);
 
+    // Generate unique ID
+    const domainId = Date.now().toString();
+
     const sql = `
-      INSERT INTO domains (domain, registrar, expiry_date, status, is_active, created_at)
-      VALUES ($1, $2, $3, $4, $5, NOW())
+      INSERT INTO domains (id, domain, subdomain, registrar, expiry_date, status, is_active, created_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
       RETURNING *
     `;
 
     const result = await db.query(sql, [
+      domainId,
       domain,
+      domain, // subdomain same as domain for now
       whoisInfo.registrar,
       whoisInfo.expiryDate,
-      "Active",
+      "Online", // Changed from "Active" to match expected values
       true
     ]);
 
     const saved = result.rows[0];
     res.json({ success: true, domain: saved });
   } catch (err) {
+    console.error("Error adding domain:", err);
     res.status(500).json({ success: false, error: err instanceof Error ? err.message : "Unknown error" });
   }
 };
