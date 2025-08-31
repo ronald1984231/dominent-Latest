@@ -51,22 +51,46 @@ export default function MSWToggle() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 bg-white border border-gray-200 rounded-lg p-3 shadow-lg">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-sm font-medium">MSW</span>
-        <Badge variant={isMocking ? "default" : "secondary"}>
-          {isMocking ? "ON" : "OFF"}
-        </Badge>
-      </div>
-      <Button
-        size="sm"
-        variant={isMocking ? "destructive" : "default"}
-        onClick={toggleMocking}
-        disabled={isLoading}
-        className="w-full"
-      >
-        {isLoading ? "..." : isMocking ? "Disable Mocking" : "Enable Mocking"}
-      </Button>
-    </div>
+    <Card className="fixed bottom-4 right-4 z-50 w-64 shadow-lg">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <span>MSW Mock Service</span>
+          <Badge variant={isMocking ? "default" : "secondary"}>
+            {isMocking ? "ON" : "OFF"}
+          </Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <Button
+          size="sm"
+          variant={isMocking ? "destructive" : "default"}
+          onClick={toggleMocking}
+          disabled={isLoading}
+          className="w-full"
+        >
+          {isLoading ? "..." : isMocking ? "Disable Mocking" : "Enable Mocking"}
+        </Button>
+
+        {isMocking && (
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Test Scenario:</label>
+            <Select value={currentScenario} onValueChange={switchScenario}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">✅ Success (Default)</SelectItem>
+                <SelectItem value="registrarImportError">❌ Registrar API Down</SelectItem>
+                <SelectItem value="domainsFetchError">❌ Database Error</SelectItem>
+                <SelectItem value="addDomainError">❌ Domain Add Failed</SelectItem>
+                <SelectItem value="networkTimeout">⏱️ Network Timeout</SelectItem>
+                <SelectItem value="unauthorizedError">🔒 Unauthorized</SelectItem>
+                <SelectItem value="rateLimitError">🚦 Rate Limited</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
