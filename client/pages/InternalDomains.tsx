@@ -114,7 +114,7 @@ export default function InternalDomains() {
       console.error("Failed to load domains:", error);
       toast({
         title: "Error",
-        description: "Failed to load domains. Please try again.",
+        description: getFetchErrorMessage(error),
         variant: "destructive",
       });
     } finally {
