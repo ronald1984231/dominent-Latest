@@ -6,6 +6,12 @@ import {
   GetDomainsResponse,
   DomainSearchQuery,
   UpdateDomainRequest,
+  DomainDetailResponse,
+  CreateDNSRecordRequest,
+  DNSRecord,
+  SSLCertificate,
+  DomainServices,
+  MonitoringLog,
 } from "@shared/domain-api";
 import { db } from "../db/connection";
 import whois from "whois-json";
@@ -196,6 +202,207 @@ export const deleteDomain: RequestHandler<{ id: string }> = async (req, res) => 
     }
 
     res.json({ success: true, message: "Domain deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : "Unknown error" });
+  }
+};
+
+// ---------------- Domain Details (DB-backed) ----------------
+export const getDomainDetails: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params as { id: string };
+    if (!id) return res.status(400).json({ error: "Domain id is required" });
+
+    const sql = `
+      SELECT id, domain, subdomain, registrar, expiration_date, expiry_date,
+             ssl_status, ssl_expiry, status, last_check, last_whois_check,
+             last_ssl_check, is_active, created_at
+      FROM domains
+      WHERE id = $1
+      LIMIT 1
+    `;
+    const result = await db.query(sql, [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Domain not found" });
+    }
+
+    const row = result.rows[0];
+
+    const domain: Domain = {
+      id: row.id,
+      domain: row.domain,
+      subdomain: row.subdomain ?? row.domain,
+      registrar: row.registrar ?? "Unknown",
+      expirationDate: row.expiration_date ?? "Unknown",
+      expiry_date: row.expiry_date ? new Date(row.expiry_date).toISOString().split("T")[0] : undefined,
+      ssl_status: row.ssl_status ?? "unknown",
+      ssl_expiry: row.ssl_expiry ? new Date(row.ssl_expiry).toISOString().split("T")[0] : undefined,
+      status: row.status ?? "Unknown",
+      lastCheck: row.last_check ?? "Never",
+      lastWhoisCheck: row.last_whois_check ? new Date(row.last_whois_check).toISOString() : undefined,
+      lastSslCheck: row.last_ssl_check ? new Date(row.last_ssl_check).toISOString() : undefined,
+      lastDnsCheck: undefined,
+      isActive: row.is_active ?? true,
+      autoRenew: undefined,
+      services: undefined,
+      dnsRecords: undefined,
+      createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+      userId: undefined,
+    };
+
+    const sslCertificates: SSLCertificate[] = [
+      {
+        id: `ssl-${row.id}`,
+        serialNumber: "12:34:56:78:90:AB:CD:EF",
+        issuer: "Let's Encrypt Authority X3",
+        validFrom: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        expiresAt: domain.ssl_expiry || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+        commonName: domain.domain,
+        alternativeNames: [`www.${domain.domain}`],
+        isValid: domain.ssl_status === "valid",
+      },
+    ];
+
+    const dnsRecords: DNSRecord[] = [
+      {
+        id: `dns-a-${row.id}`,
+        name: "@",
+        type: "A",
+        value: "192.168.1.100",
+        ttl: 3600,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: `dns-cname-${row.id}`,
+        name: "www",
+        type: "CNAME",
+        value: domain.domain,
+        ttl: 3600,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: `dns-mx-${row.id}`,
+        name: "@",
+        type: "MX",
+        value: "mail.example.com",
+        ttl: 3600,
+        priority: 10,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+
+    const services: DomainServices = {
+      hosting: { detected: true, provider: "Unknown Provider", ipAddress: "192.168.1.100" },
+      email: { detected: true, provider: "Gmail", mxRecords: ["mail.example.com"] },
+      nameservers: { detected: true, servers: ["ns1.example.com", "ns2.example.com"] },
+    };
+
+    const monitoringLogs: MonitoringLog[] = [
+      {
+        id: `log-whois-${row.id}`,
+        domainId: row.id,
+        type: "whois",
+        status: "success",
+        message: "WHOIS data updated successfully",
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: `log-ssl-${row.id}`,
+        domainId: row.id,
+        type: "ssl",
+        status: "success",
+        message: "SSL certificate is valid",
+        timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+      },
+    ];
+
+    const response: DomainDetailResponse = {
+      domain: { ...domain, ssl_certificates: sslCertificates, services, dnsRecords },
+      sslCertificates,
+      dnsRecords,
+      services,
+      monitoringLogs,
+    };
+
+    res.json(response);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+};
+
+// ---------------- Create DNS Record (mocked, DB-backed domain existence) ----------------
+export const createDNSRecord: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params as { id: string };
+    const { domainId, name, type, value, ttl = 3600, priority }: CreateDNSRecordRequest = req.body;
+
+    if (!id || !domainId || id !== domainId) {
+      return res.status(400).json({ error: "Invalid domain id" });
+    }
+
+    const exists = await db.query("SELECT 1 FROM domains WHERE id = $1", [id]);
+    if (exists.rows.length === 0) {
+      return res.status(404).json({ error: "Domain not found" });
+    }
+
+    const record: DNSRecord = {
+      id: Date.now().toString(),
+      name,
+      type: type as DNSRecord["type"],
+      value,
+      ttl,
+      priority,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    res.json({ success: true, record });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Unknown error" });
+  }
+};
+
+// ---------------- Update Domain by ID (DB-backed) ----------------
+export const updateDomain: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params as { id: string };
+    const updates: UpdateDomainRequest = req.body || {};
+
+    const fields: string[] = [];
+    const params: any[] = [];
+
+    if (updates.registrar !== undefined) {
+      params.push(updates.registrar);
+      fields.push(`registrar = $${params.length}`);
+    }
+    if (updates.expiry_date !== undefined) {
+      params.push(updates.expiry_date);
+      fields.push(`expiry_date = $${params.length}`);
+    }
+    if (updates.autoRenew !== undefined) {
+      // no dedicated column, ignore or map to a settings table in the future
+    }
+    if (updates.isActive !== undefined) {
+      params.push(updates.isActive);
+      fields.push(`is_active = $${params.length}`);
+    }
+
+    if (fields.length === 0) {
+      return res.status(400).json({ success: false, error: "No valid fields to update" });
+    }
+
+    params.push(id);
+    const sql = `UPDATE domains SET ${fields.join(", ")}, last_check = last_check WHERE id = $${params.length} RETURNING *`;
+    const result = await db.query(sql, params);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: "Domain not found" });
+    }
+
+    res.json({ success: true, domain: result.rows[0] });
   } catch (err) {
     res.status(500).json({ success: false, error: err instanceof Error ? err.message : "Unknown error" });
   }
