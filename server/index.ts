@@ -13,7 +13,7 @@ import {
   getRegistrars,
   triggerDomainMonitoring,
 } from "./routes/domains-db";
-import { checkDomain } from "./routes/domains";
+import { checkDomain, searchDomain } from "./routes/domains";
 import {
   getDomainDetails,
   updateDomain,
