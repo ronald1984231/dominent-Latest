@@ -121,6 +121,7 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </SentryRoutes>
         </BrowserRouter>
+        <MSWToggle />
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
