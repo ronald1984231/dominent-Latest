@@ -884,6 +884,7 @@ export default function InternalDomains() {
                   domains.map((domain, index) => (
                     <div
                       key={domain.id}
+                      data-testid="domain-row"
                       className={`grid grid-cols-9 gap-4 p-6 hover:bg-muted/30 transition-colors ${index !== domains.length - 1 ? "border-b" : ""}`}
                     >
                       <div className="col-span-2">
