@@ -76,42 +76,39 @@ export default function DomainDetail() {
 
   const loadDomainDetails = async () => {
     if (!id) return;
-    
+
     try {
       setLoading(true);
-      const response = await fetch(`/api/domains/${id}`);
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          toast({
-            title: "Domain not found",
-            description: "The requested domain could not be found.",
-            variant: "destructive",
-          });
-          navigate("/internal/domains");
-          return;
-        }
-        throw new Error("Failed to load domain details");
-      }
-      
-      const data: DomainDetailResponse = await response.json();
-      
+      const data: DomainDetailResponse = await safeFetchJson(`/api/domains/${id}`);
+
       setDomain(data.domain);
       setSslCertificates(data.sslCertificates);
       setServices(data.services);
       setMonitoringLogs(data.monitoringLogs);
-      
+
       // Simulate DNS loading
       setTimeout(() => {
         setDnsRecords(data.dnsRecords);
         setLoadingDNS(false);
       }, 2000);
-      
+
     } catch (error) {
       console.error("Failed to load domain details:", error);
+
+      // Handle 404 specifically
+      if (error instanceof Error && error.message.includes('404')) {
+        toast({
+          title: "Domain not found",
+          description: "The requested domain could not be found.",
+          variant: "destructive",
+        });
+        navigate("/internal/domains");
+        return;
+      }
+
       toast({
         title: "Error",
-        description: "Failed to load domain details. Please try again.",
+        description: getFetchErrorMessage(error),
         variant: "destructive",
       });
     } finally {
