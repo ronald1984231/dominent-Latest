@@ -115,8 +115,11 @@ export async function getRegistrarConfig(
         config: sanitizedConfig,
       });
     } else {
-      res.status(404).json({
+      // Return 200 with success: false for missing configs (not an error condition)
+      res.json({
         success: false,
+        registrarName,
+        config: null,
         message: `No configuration found for registrar: ${registrarName}`,
       });
     }
