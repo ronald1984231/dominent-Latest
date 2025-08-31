@@ -71,13 +71,14 @@ export default function DomainsSearch() {
       const cleanDomain = searchTerm.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '');
       const baseDomain = cleanDomain.replace(/\.(com|net|org|info|io|co)$/i, '');
 
-      const response = await safeFetchJson(`/api/domains/search?q=${encodeURIComponent(baseDomain)}`);
+      const response = await safeFetchJson(`/api/domains/search?q=${encodeURIComponent(baseDomain)}`) as SearchResponse;
 
       if (response.success) {
         setSearchResults({
           domain: response.domain,
           available: response.available,
-          price: response.price
+          price: response.price,
+          alternatives: response.alternatives || []
         });
       } else {
         throw new Error(response.error || 'Search failed');
