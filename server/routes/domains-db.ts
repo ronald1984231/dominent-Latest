@@ -149,8 +149,8 @@ export const addDomain: RequestHandler<
   }
 };
 
-// ---------------- Update Domain ----------------
-export const updateDomain: RequestHandler<
+// ---------------- Update Domain (by domain name - legacy) ----------------
+export const updateDomainByDomain: RequestHandler<
   {}, AddDomainResponse, UpdateDomainRequest
 > = async (req, res) => {
   try {
