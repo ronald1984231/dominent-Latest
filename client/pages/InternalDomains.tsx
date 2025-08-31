@@ -681,7 +681,7 @@ export default function InternalDomains() {
                     value={selectedRegistrarForImport}
                     onValueChange={setSelectedRegistrarForImport}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger data-testid="registrar-select">
                       <SelectValue placeholder="Select a registrar" />
                     </SelectTrigger>
                     <SelectContent>
