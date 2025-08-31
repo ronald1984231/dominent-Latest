@@ -36,16 +36,53 @@ describe("Dominent SaaS – Registrar & Domain Tests (Mocked)", () => {
   it("should handle registrar import flow", () => {
     // Open import dialog
     cy.contains("IMPORT FROM REGISTRAR").click();
-    
+
     // Select a registrar (assuming mock registrars are available)
     cy.get("[data-testid='registrar-select']").click();
     cy.contains("Namecheap").click();
-    
+
     // Click import
     cy.contains("Import Domains").click();
-    
+
     // Should show success message (mocked)
     cy.contains("Successfully imported domains from registrar").should("be.visible");
+  });
+
+  it("should handle registrar import error scenarios", () => {
+    // Switch to error scenario
+    cy.window().then((win) => {
+      (win as any).switchToErrorScenario?.('registrarImportError');
+    });
+
+    // Open import dialog
+    cy.contains("IMPORT FROM REGISTRAR").click();
+
+    // Select a registrar
+    cy.get("[data-testid='registrar-select']").click();
+    cy.contains("Namecheap").click();
+
+    // Click import
+    cy.contains("Import Domains").click();
+
+    // Should show error message
+    cy.contains("Registrar API down").should("be.visible");
+    cy.contains("Failed to import domains").should("be.visible");
+  });
+
+  it("should handle network timeout during import", () => {
+    // Switch to timeout scenario
+    cy.window().then((win) => {
+      (win as any).switchToErrorScenario?.('networkTimeout');
+    });
+
+    // Open import dialog and attempt import
+    cy.contains("IMPORT FROM REGISTRAR").click();
+    cy.get("[data-testid='registrar-select']").click();
+    cy.contains("GoDaddy").click();
+    cy.contains("Import Domains").click();
+
+    // Should show timeout error
+    cy.contains("Request timeout").should("be.visible");
   });
 
   it("should filter domains by search term", () => {
