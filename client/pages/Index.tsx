@@ -1,487 +1,684 @@
 import { Header } from "../components/Header";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Link } from "react-router-dom";
+import { 
+  CheckCircle, 
+  Shield, 
+  Globe, 
+  Monitor, 
+  Users, 
+  Bell, 
+  Download, 
+  Plus,
+  ArrowRight,
+  Clock,
+  Search,
+  FileText,
+  Mail,
+  Slack,
+  Webhook
+} from "lucide-react";
 
 export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero Section */}
+      {/* Hero Section with Dashboard Preview */}
       <section className="relative py-20 bg-gradient-to-br from-blue-50 via-white to-cyan-50 overflow-hidden">
         <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
         <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <Badge
-              variant="secondary"
-              className="bg-blue-100 text-blue-700 border-blue-200 px-4 py-2"
-            >
-              🚀 Domain monitoring made simple
-            </Badge>
-
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight">
-              Never lose a domain
-              <span className="text-blue-600"> again</span>
-            </h1>
-
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Monitor domain expirations, SSL certificates, DNS changes, and
-              WHOIS data across multiple registrars. Get real-time alerts and
-              never let important domains slip through the cracks.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-              <Button
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 text-lg"
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Content */}
+            <div className="space-y-8">
+              <Badge
+                variant="secondary"
+                className="bg-green-100 text-green-700 border-green-200 px-4 py-2"
               >
-                <Link to="/dashboard" className="flex items-center">
-                  Start Free Trial
-                  <svg
-                    className="ml-2 h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7l5 5m0 0l-5 5m5-5H6"
-                    />
-                  </svg>
+                🚀 The new way to monitor your domains
+              </Badge>
+
+              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
+                The new way to monitor
+                <span className="text-blue-600"> your domains</span>
+              </h1>
+
+              <p className="text-xl text-gray-600 leading-relaxed">
+                DOMINENT monitors domains and SSL certificates expiration, 
+                nameservers, DNS Records, domain availability, sales and 
+                purchases seamlessly across your stack.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  size="lg"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-4 text-lg"
+                  asChild
+                >
+                  <Link to="/internal/domains">
+                    Start Free Trial
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="font-semibold px-8 py-4 text-lg"
+                  asChild
+                >
+                  <Link to="/pricing">View Pricing</Link>
+                </Button>
+              </div>
+
+              <div className="flex items-center space-x-8 text-sm text-gray-500">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <span>No credit card required</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <span>14-day free trial</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - Dashboard Preview */}
+            <div className="relative">
+              <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+                {/* Browser Header */}
+                <div className="bg-gray-900 px-4 py-3 flex items-center space-x-3">
+                  <div className="flex space-x-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  </div>
+                  <div className="flex-1 text-center">
+                    <span className="text-gray-400 text-sm">DOMINENT</span>
+                  </div>
+                </div>
+
+                {/* Dashboard Content */}
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold">Domains</h3>
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Domain
+                    </Button>
+                  </div>
+
+                  {/* Stats Cards */}
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="bg-blue-50 p-3 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-blue-600">247</div>
+                      <div className="text-xs text-gray-600">Total Domains</div>
+                    </div>
+                    <div className="bg-green-50 p-3 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-green-600">235</div>
+                      <div className="text-xs text-gray-600">Active</div>
+                    </div>
+                    <div className="bg-red-50 p-3 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-red-600">12</div>
+                      <div className="text-xs text-gray-600">Expiring</div>
+                    </div>
+                  </div>
+
+                  {/* Domain List */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm font-medium">example.com</span>
+                      </div>
+                      <Badge variant="outline" className="text-xs">Active</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span className="text-sm font-medium">mydomain.net</span>
+                      </div>
+                      <Badge variant="destructive" className="text-xs">7 days</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm font-medium">testsite.org</span>
+                      </div>
+                      <Badge variant="outline" className="text-xs">Active</Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trusted By Section */}
+      <section className="py-16 bg-white border-b border-gray-100">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-8">
+            <p className="text-gray-500 text-sm font-medium tracking-wider uppercase mb-6">
+              Works with popular domain registrars
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-orange-500 rounded"></div>
+                <span className="font-semibold text-gray-700">Namecheap</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-green-500 rounded-full"></div>
+                <span className="font-semibold text-gray-700">GoDaddy</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-blue-500 rounded"></div>
+                <span className="font-semibold text-gray-700">Cloudflare</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-purple-500 rounded"></div>
+                <span className="font-semibold text-gray-700">Porkbun</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-red-500 rounded"></div>
+                <span className="font-semibold text-gray-700">Enom</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Monitor All Domains Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Monitor all your domains, in one solution
+          </h2>
+          <div className="mt-16">
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden max-w-4xl mx-auto">
+              <div className="p-8">
+                <div className="space-y-6">
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-semibold">Domains</h3>
+                    <div className="flex items-center space-x-4">
+                      <Input placeholder="Filter registrars..." className="w-48" />
+                      <Button className="bg-blue-600 hover:bg-blue-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Domain
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-5 gap-4">
+                    <div className="text-center p-4 bg-gray-50 rounded-lg">
+                      <div className="text-2xl font-bold text-gray-900">247</div>
+                      <div className="text-sm text-gray-600">All</div>
+                    </div>
+                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">235</div>
+                      <div className="text-sm text-gray-600">Active</div>
+                    </div>
+                    <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                      <div className="text-2xl font-bold text-yellow-600">8</div>
+                      <div className="text-sm text-gray-600">Expiring</div>
+                    </div>
+                    <div className="text-center p-4 bg-red-50 rounded-lg">
+                      <div className="text-2xl font-bold text-red-600">4</div>
+                      <div className="text-sm text-gray-600">Expired</div>
+                    </div>
+                    <div className="text-center p-4 bg-blue-50 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">12</div>
+                      <div className="text-sm text-gray-600">SSL Issues</div>
+                    </div>
+                  </div>
+
+                  {/* Domain Table Header */}
+                  <div className="grid grid-cols-5 gap-4 text-sm font-medium text-gray-500 border-b pb-2">
+                    <div>DOMAIN</div>
+                    <div>REGISTRAR</div>
+                    <div>EXPIRY</div>
+                    <div>SSL</div>
+                    <div>STATUS</div>
+                  </div>
+
+                  {/* Domain Rows */}
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-5 gap-4 items-center py-3 border-b border-gray-100">
+                      <div className="font-medium">example.com</div>
+                      <div className="text-gray-600">Namecheap</div>
+                      <div>
+                        <Badge variant="outline">Jan 15, 2026</Badge>
+                      </div>
+                      <div>
+                        <Badge className="bg-green-100 text-green-700">Valid</Badge>
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="text-green-600">Online</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-5 gap-4 items-center py-3 border-b border-gray-100">
+                      <div className="font-medium">mydomain.net</div>
+                      <div className="text-gray-600">GoDaddy</div>
+                      <div>
+                        <Badge variant="destructive">7 days</Badge>
+                      </div>
+                      <div>
+                        <Badge className="bg-yellow-100 text-yellow-700">Expiring</Badge>
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                          <span className="text-yellow-600">Warning</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-5 gap-4 items-center py-3">
+                      <div className="font-medium">testsite.org</div>
+                      <div className="text-gray-600">Cloudflare</div>
+                      <div>
+                        <Badge variant="outline">Dec 31, 2025</Badge>
+                      </div>
+                      <div>
+                        <Badge className="bg-green-100 text-green-700">Valid</Badge>
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="text-green-600">Online</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Setup in 2 Minutes Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Content */}
+            <div className="space-y-6">
+              <div className="text-blue-600 font-semibold">Setup in 2 minutes</div>
+              <h2 className="text-4xl font-bold text-gray-900">
+                Import all your domains
+              </h2>
+              <p className="text-lg text-gray-600">
+                Import your domains from your registrars via API,
+                upload a CSV file, or add them manually. Everything can be
+                done in two minutes.
+              </p>
+              <Button className="bg-blue-600 hover:bg-blue-700" asChild>
+                <Link to="/internal/domains/add">
+                  <Download className="w-4 h-4 mr-2" />
+                  Import Domains
                 </Link>
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="font-semibold px-8 py-4 text-lg"
-              >
-                <Link to="/documentation">View Demo</Link>
+            </div>
+
+            {/* Right side - Import Interface */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+              <h3 className="text-xl font-semibold mb-6">Add Domains</h3>
+              <Tabs defaultValue="api" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="api">API Import</TabsTrigger>
+                  <TabsTrigger value="csv">CSV Upload</TabsTrigger>
+                  <TabsTrigger value="manual">Manual</TabsTrigger>
+                </TabsList>
+                <TabsContent value="api" className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Select Registrar</label>
+                    <select className="w-full mt-1 p-2 border border-gray-300 rounded-md">
+                      <option>GoDaddy</option>
+                      <option>Namecheap</option>
+                      <option>Cloudflare</option>
+                    </select>
+                  </div>
+                  <Button className="w-full bg-green-600 hover:bg-green-700">
+                    Connect & Import
+                  </Button>
+                </TabsContent>
+                <TabsContent value="csv" className="space-y-4">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600">
+                      Drop your CSV file here or click to browse
+                    </p>
+                  </div>
+                  <Button className="w-full bg-green-600 hover:bg-green-700">
+                    Upload & Import
+                  </Button>
+                </TabsContent>
+                <TabsContent value="manual" className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Domain Name</label>
+                    <Input placeholder="example.com" className="mt-1" />
+                  </div>
+                  <Button className="w-full bg-green-600 hover:bg-green-700">
+                    Add Domain
+                  </Button>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Easily Manage Domains Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - DNS Interface */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+              <h3 className="text-xl font-semibold mb-6">DNS Management</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="font-medium">example.com</span>
+                  </div>
+                  <Button size="sm" variant="outline">
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="grid grid-cols-4 gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div>Name</div>
+                    <div>Type</div>
+                    <div>Value</div>
+                    <div>TTL</div>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2 py-2 text-sm">
+                    <div>@</div>
+                    <div><Badge variant="outline">A</Badge></div>
+                    <div className="text-gray-600">192.168.1.1</div>
+                    <div className="text-gray-600">3600</div>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2 py-2 text-sm">
+                    <div>www</div>
+                    <div><Badge variant="outline">CNAME</Badge></div>
+                    <div className="text-gray-600">example.com</div>
+                    <div className="text-gray-600">3600</div>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2 py-2 text-sm">
+                    <div>mail</div>
+                    <div><Badge variant="outline">MX</Badge></div>
+                    <div className="text-gray-600">mail.example.com</div>
+                    <div className="text-gray-600">3600</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - Content */}
+            <div className="space-y-6">
+              <div className="text-orange-600 font-semibold">Easily manage your domains</div>
+              <h2 className="text-4xl font-bold text-gray-900">
+                Manage your domains information and DNS Records
+              </h2>
+              <p className="text-lg text-gray-600">
+                Manage your DNS Records never been easier. 
+                You can have a simple and clean dashboard to 
+                manage all your domains information.
+              </p>
+              <Button className="bg-orange-600 hover:bg-orange-700" asChild>
+                <Link to="/internal/domains">
+                  Manage Domains
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Monitor Sales Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Content */}
+            <div className="space-y-6">
+              <div className="text-green-600 font-semibold">Monitor your sales and purchases</div>
+              <h2 className="text-4xl font-bold text-gray-900">
+                Not only expiration monitoring
+              </h2>
+              <p className="text-lg text-gray-600">
+                Domain analytics help to your business. You can 
+                see your domain value, track sales and also your 
+                profit.
+              </p>
+              <Button className="bg-green-600 hover:bg-green-700" asChild>
+                <Link to="/internal/monitoring">
+                  View Analytics
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
               </Button>
             </div>
 
-            <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
-              <div className="flex items-center space-x-2">
-                <svg
-                  className="h-5 w-5 text-green-500"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span>14-day free trial</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <svg
-                  className="h-5 w-5 text-green-500"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span>No credit card required</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <svg
-                  className="h-5 w-5 text-green-500"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span>Setup in 2 minutes</span>
+            {/* Right side - Sales Dashboard */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+              <h3 className="text-xl font-semibold mb-6">Sales</h3>
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">$12,500</div>
+                    <div className="text-sm text-gray-600">Total Revenue</div>
+                  </div>
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">23</div>
+                    <div className="text-sm text-gray-600">Domains Sold</div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-3">Recent sales</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <div className="font-medium">techstartup.com</div>
+                        <div className="text-sm text-gray-600">Sold 2 days ago</div>
+                      </div>
+                      <div className="text-green-600 font-semibold">$2,500</div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <div className="font-medium">myapp.net</div>
+                        <div className="text-sm text-gray-600">Sold 1 week ago</div>
+                      </div>
+                      <div className="text-green-600 font-semibold">$850</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-3">Recent purchases</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <div className="font-medium">newproject.org</div>
+                        <div className="text-sm text-gray-600">Purchased yesterday</div>
+                      </div>
+                      <div className="text-red-600 font-semibold">$45</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Everything you need to manage domains
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive domain monitoring and management tools designed for
-              businesses, agencies, and domain professionals.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Domain Expiry Monitoring */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-red-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.866-.833-2.636 0L4.178 14.5c-.77.833.192 2.5 1.732 2.5z"
-                    />
-                  </svg>
-                </div>
-                <CardTitle className="text-xl">Domain Expiry Alerts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Never miss domain renewals with automated alerts at 30, 15, 7,
-                  and 1 day intervals. Custom notification schedules available.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* SSL Certificate Monitoring */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                    />
-                  </svg>
-                </div>
-                <CardTitle className="text-xl">
-                  SSL Certificate Tracking
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Monitor SSL certificate expiration dates, validity status, and
-                  issuer information. Automatic HTTPS security checks.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Multi-Registrar Support */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                    />
-                  </svg>
-                </div>
-                <CardTitle className="text-xl">
-                  Multi-Registrar Integration
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Connect with GoDaddy, Namecheap, Cloudflare, and other major
-                  registrars. Import domains automatically via API.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* DNS Monitoring */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-purple-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9"
-                    />
-                  </svg>
-                </div>
-                <CardTitle className="text-xl">
-                  DNS & WHOIS Monitoring
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Track DNS record changes, nameserver updates, and WHOIS data
-                  modifications. Real-time change detection.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Team Collaboration */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-yellow-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                </div>
-                <CardTitle className="text-xl">Team Collaboration</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Organize domains into projects, assign team members, and
-                  manage permissions. Perfect for agencies and enterprises.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Advanced Alerts */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-indigo-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 17h5l-5 5v-5zM12 17h-7a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v5M9 9l3 3m0 0l3-3m-3 3V3"
-                    />
-                  </svg>
-                </div>
-                <CardTitle className="text-xl">Smart Notifications</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
-                  Email, Slack, webhook integrations. Custom alert rules and
-                  escalation policies. Never miss critical events.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
+      {/* Domain Availability Section */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              How it works
-            </h2>
-            <p className="text-xl text-gray-600">
-              Get started in minutes, not hours
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
-                1
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Search Interface */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+              <h3 className="text-xl font-semibold mb-6">Domain Search</h3>
+              <div className="space-y-4">
+                <div className="flex space-x-2">
+                  <Input placeholder="Search domain..." className="flex-1" />
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    <Search className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div>
+                  <div className="text-sm font-medium text-gray-700 mb-3">Save your favorite domains</div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <div className="font-medium">myidea.com</div>
+                        <div className="text-sm text-gray-600">
+                          <span className="text-red-600">●</span> Not available
+                        </div>
+                      </div>
+                      <Button size="sm" variant="outline">Watch</Button>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <div className="font-medium">myidea.net</div>
+                        <div className="text-sm text-gray-600">
+                          <span className="text-green-600">●</span> Available - $12.99
+                        </div>
+                      </div>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700">Buy</Button>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <div className="font-medium">myidea.org</div>
+                        <div className="text-sm text-gray-600">
+                          <span className="text-green-600">●</span> Available - $14.99
+                        </div>
+                      </div>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700">Buy</Button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Add Your Domains
-              </h3>
-              <p className="text-gray-600">
-                Import domains manually, upload CSV files, or connect your
-                registrar accounts for automatic synchronization.
-              </p>
             </div>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
-                2
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Configure Monitoring
-              </h3>
-              <p className="text-gray-600">
-                Set up monitoring rules, notification preferences, and alert
-                schedules. Customize for your specific needs.
+            {/* Right side - Content */}
+            <div className="space-y-6">
+              <div className="text-blue-600 font-semibold">Monitor domain availability</div>
+              <h2 className="text-4xl font-bold text-gray-900">
+                Save your favorite domains
+              </h2>
+              <p className="text-lg text-gray-600">
+                Search for your next favorite domain and save it 
+                if it's available. If not you can save it and we will 
+                let you know when it becomes available.
               </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
-                3
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Stay Informed
-              </h3>
-              <p className="text-gray-600">
-                Receive timely alerts, view comprehensive dashboards, and take
-                action before issues become problems.
-              </p>
+              <Button className="bg-blue-600 hover:bg-blue-700" asChild>
+                <Link to="/domains-search">
+                  Search Domains
+                  <Search className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Dashboard Preview */}
+      {/* Notifications Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Beautiful, intuitive dashboard
-            </h2>
-            <p className="text-xl text-gray-600">
-              Everything you need at a glance
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden max-w-6xl mx-auto">
-            <div className="bg-gray-900 px-6 py-4 flex items-center space-x-3">
-              <div className="flex space-x-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              </div>
-              <div className="flex-1 text-center">
-                <span className="text-gray-400 text-sm">
-                  DOMINENT Dashboard
-                </span>
-              </div>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Content */}
+            <div className="space-y-6">
+              <div className="text-purple-600 font-semibold">Powerful notifications under control</div>
+              <h2 className="text-4xl font-bold text-gray-900">
+                Choose when to get notified
+              </h2>
+              <p className="text-lg text-gray-600">
+                Easily manage your notifications and choose when
+                to get notified. No more unwanted emails or
+                notifications.
+              </p>
+              <Button className="bg-purple-600 hover:bg-purple-700" asChild>
+                <Link to="/internal/notifications">
+                  Configure Notifications
+                  <Bell className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
             </div>
 
-            <div className="p-8">
-              <div className="grid md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-blue-50 p-6 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-blue-600 font-medium">
-                      Total Domains
-                    </span>
-                    <svg
-                      className="w-5 h-5 text-blue-600"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+            {/* Right side - Notifications Interface */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+              <h3 className="text-xl font-semibold mb-6">Notifications</h3>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-medium mb-3">Notification Channels</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Mail className="w-5 h-5 text-blue-600" />
+                        <span>Email Notifications</span>
+                      </div>
+                      <div className="w-10 h-6 bg-green-500 rounded-full flex items-center justify-end pr-1">
+                        <div className="w-4 h-4 bg-white rounded-full"></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Slack className="w-5 h-5 text-green-600" />
+                        <span>Slack Integration</span>
+                      </div>
+                      <div className="w-10 h-6 bg-green-500 rounded-full flex items-center justify-end pr-1">
+                        <div className="w-4 h-4 bg-white rounded-full"></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Webhook className="w-5 h-5 text-purple-600" />
+                        <span>Webhooks</span>
+                      </div>
+                      <div className="w-10 h-6 bg-gray-300 rounded-full flex items-center pl-1">
+                        <div className="w-4 h-4 bg-white rounded-full"></div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-3xl font-bold text-gray-900">247</div>
                 </div>
 
-                <div className="bg-red-50 p-6 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-red-600 font-medium">
-                      Expiring Soon
-                    </span>
-                    <svg
-                      className="w-5 h-5 text-red-600"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <div className="text-3xl font-bold text-gray-900">12</div>
-                </div>
-
-                <div className="bg-green-50 p-6 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-green-600 font-medium">
-                      SSL Valid
-                    </span>
-                    <svg
-                      className="w-5 h-5 text-green-600"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <div className="text-3xl font-bold text-gray-900">235</div>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="font-semibold text-gray-900 mb-4">
-                  Recent Activity
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between py-2">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-900">
-                        example.com SSL renewed
-                      </span>
+                <div>
+                  <h4 className="font-medium mb-3">Alert Schedule</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span>30 days before expiration</span>
+                      <div className="w-4 h-4 bg-green-500 rounded"></div>
                     </div>
-                    <span className="text-gray-500 text-sm">2 minutes ago</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                      <span className="text-gray-900">
-                        testsite.org expires in 7 days
-                      </span>
+                    <div className="flex items-center justify-between text-sm">
+                      <span>15 days before expiration</span>
+                      <div className="w-4 h-4 bg-green-500 rounded"></div>
                     </div>
-                    <span className="text-gray-500 text-sm">1 hour ago</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-gray-900">
-                        New domain added: newproject.net
-                      </span>
+                    <div className="flex items-center justify-between text-sm">
+                      <span>7 days before expiration</span>
+                      <div className="w-4 h-4 bg-green-500 rounded"></div>
                     </div>
-                    <span className="text-gray-500 text-sm">3 hours ago</span>
+                    <div className="flex items-center justify-between text-sm">
+                      <span>1 day before expiration</span>
+                      <div className="w-4 h-4 bg-green-500 rounded"></div>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span>SSL certificate expiring</span>
+                      <div className="w-4 h-4 bg-green-500 rounded"></div>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span>DNS changes detected</span>
+                      <div className="w-4 h-4 bg-gray-300 rounded"></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -490,70 +687,117 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Registrars Section */}
+      {/* Customer Access Section */}
       <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Works with your favorite registrars
-          </h2>
-          <p className="text-xl text-gray-600 mb-12">
-            Connect with major domain registrars for seamless integration
-          </p>
+        <div className="container mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Customer Interface */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+              <h3 className="text-xl font-semibold mb-6">Customers</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                      JD
+                    </div>
+                    <div>
+                      <div className="font-medium">John Doe</div>
+                      <div className="text-sm text-gray-600">john@example.com</div>
+                    </div>
+                  </div>
+                  <Badge variant="outline">5 domains</Badge>
+                </div>
+                
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                      SM
+                    </div>
+                    <div>
+                      <div className="font-medium">Sarah Miller</div>
+                      <div className="text-sm text-gray-600">sarah@company.com</div>
+                    </div>
+                  </div>
+                  <Badge variant="outline">12 domains</Badge>
+                </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center opacity-60">
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="text-lg font-bold text-gray-800">GoDaddy</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="text-lg font-bold text-gray-800">Namecheap</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="text-lg font-bold text-gray-800">Cloudflare</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="text-lg font-bold text-gray-800">
-                Network Solutions
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                      MW
+                    </div>
+                    <div>
+                      <div className="font-medium">Mike Wilson</div>
+                      <div className="text-sm text-gray-600">mike@startup.io</div>
+                    </div>
+                  </div>
+                  <Badge variant="outline">3 domains</Badge>
+                </div>
+
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Customer
+                </Button>
               </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="text-lg font-bold text-gray-800">Enom</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="text-lg font-bold text-gray-800">MarkMonitor</div>
+
+            {/* Right side - Content */}
+            <div className="space-y-6">
+              <div className="text-cyan-600 font-semibold">Customer access</div>
+              <h2 className="text-4xl font-bold text-gray-900">
+                Give your customers access to their domains
+              </h2>
+              <p className="text-lg text-gray-600">
+                You can give access to your customers to see only 
+                their domains and their information. Now you,
+                can in DOMINENT.
+              </p>
+              <Button className="bg-cyan-600 hover:bg-cyan-700" asChild>
+                <Link to="/internal/projects">
+                  Manage Customers
+                  <Users className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-blue-600">
+      {/* Final CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-white mb-4">
-            Ready to never lose a domain again?
+            Ready to monitor your domains?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses protecting their digital assets with
-            DOMINENT's comprehensive domain monitoring.
+            Dominate your field by DOMINENT, your business, monitoring, alerting and everything. New 
+            domain experience a better landscape. Get started now 🔥
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
             <Button
               size="lg"
-              className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-4 text-lg"
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-4 text-lg"
+              asChild
             >
-              <Link to="/dashboard">Start Free Trial</Link>
+              <Link to="/internal/domains">
+                Start Free Trial
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
+              asChild
             >
               <Link to="/pricing">View Pricing</Link>
             </Button>
           </div>
 
           <p className="text-blue-200 text-sm mt-6">
-            14-day free trial • No credit card required • Cancel anytime
+            🔒 Free trial setup in our first install
+            👍 No credit card required
           </p>
         </div>
       </section>
