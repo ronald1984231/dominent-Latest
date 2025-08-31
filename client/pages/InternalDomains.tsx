@@ -429,7 +429,7 @@ export default function InternalDomains() {
         registrarId: selectedRegistrarForImport,
       };
 
-      const response = await fetch("/api/internal/registrars/import", {
+      const response = await safeFetch("/api/internal/registrars/import", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
