@@ -245,13 +245,13 @@ export default function DomainsSearch() {
       )}
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-cyan-400 via-cyan-300 to-cyan-200">
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-white mb-4">
             Ready to monitor your domains?
           </h2>
-          <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
-            Domexus it's used by startups, web agencies, freelancers, developers and many more. Your
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            DOMINENT is used by startups, web agencies, freelancers, developers and many more. Your
             domains deserve a better treatment! Get started now 🔥
           </p>
 
@@ -262,15 +262,23 @@ export default function DomainsSearch() {
               asChild
             >
               <Link to="/internal/domains">
-                Start free trial
+                Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <div className="text-sm text-gray-600">
-              <div>⏰ 14 day free trial</div>
-              <div>💳 No credit card required</div>
-            </div>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
+              asChild
+            >
+              <Link to="/pricing">View Pricing</Link>
+            </Button>
           </div>
+
+          <p className="text-blue-200 text-sm mt-6">
+            14-day free trial • No credit card required • Cancel anytime
+          </p>
         </div>
       </section>
 
