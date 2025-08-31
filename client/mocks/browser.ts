@@ -15,6 +15,12 @@ export const startMocking = async () => {
         url: "/mockServiceWorker.js" // Default MSW service worker location
       }
     });
+
+    // Expose utilities to window for Cypress testing
+    (window as any).switchToErrorScenario = switchToErrorScenario;
+    (window as any).switchToSuccessScenario = switchToSuccessScenario;
+    (window as any).resetToDefaultHandlers = resetToDefaultHandlers;
+
     console.log("🎭 MSW: Mock Service Worker started");
     return worker;
   }
