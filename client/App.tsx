@@ -47,7 +47,28 @@ const queryClient = new QueryClient();
 
 const SentryRoutes = Sentry.withSentryRouting(Routes);
 
-const App = () => (
+const App = () => {
+  // Initialize MSW for Cypress tests and development
+  useEffect(() => {
+    const initMSW = async () => {
+      // Enable MSW in Cypress environment or when explicitly enabled
+      const shouldEnableMSW = (window as any).Cypress ||
+                             import.meta.env.VITE_ENABLE_MOCKING === 'true';
+
+      if (shouldEnableMSW) {
+        try {
+          const { enableMocking } = await import("./mocks");
+          await enableMocking();
+        } catch (error) {
+          console.warn('Failed to initialize MSW:', error);
+        }
+      }
+    };
+
+    initMSW();
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
@@ -102,7 +123,8 @@ const App = () => (
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 // Fix ReactDOMClient.createRoot() warning by using singleton pattern with HMR support
 const rootElement = document.getElementById("root")!;
