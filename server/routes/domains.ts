@@ -149,6 +149,34 @@ export const addDomain: RequestHandler = (req, res) => {
   res.json(response);
 };
 
+// Search for domain availability
+export const searchDomain: RequestHandler = (req, res) => {
+  const query = req.query.q as string;
+
+  if (!query) {
+    return res.status(400).json({ error: "Query parameter required" });
+  }
+
+  // Simulate domain availability check (in real implementation, would use domain API)
+  const isAvailable = Math.random() > 0.3; // 70% chance of being available
+
+  const searchResponse = {
+    success: true,
+    domain: query.toLowerCase(),
+    available: isAvailable,
+    price: "$12.99",
+    alternatives: [
+      { extension: ".com", available: true, price: "$12.99" },
+      { extension: ".net", available: true, price: "$14.99" },
+      { extension: ".org", available: true, price: "$13.99" },
+      { extension: ".io", available: false, price: null },
+      { extension: ".co", available: true, price: "$24.99" }
+    ]
+  };
+
+  res.json(searchResponse);
+};
+
 // Check domain status and information
 export const checkDomain: RequestHandler = (req, res) => {
   const { domain } = req.params;
