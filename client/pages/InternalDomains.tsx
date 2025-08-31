@@ -893,6 +893,7 @@ export default function InternalDomains() {
                           <div>
                             <Link
                               to={`/internal/domains/${domain.id}`}
+                              data-testid="domain-name"
                               className="font-medium text-foreground hover:text-primary transition-colors"
                             >
                               {domain.domain}
@@ -905,7 +906,7 @@ export default function InternalDomains() {
                       </div>
 
                       <div className="flex flex-col">
-                        <span className="text-foreground text-sm">
+                        <span data-testid="domain-registrar" className="text-foreground text-sm">
                           {domain.registrar || "Unknown"}
                         </span>
                         <span className="text-xs text-success">Connected</span>
@@ -915,6 +916,7 @@ export default function InternalDomains() {
                         <div className="flex flex-col">
                           {domain.expiry_date ? (
                             <Badge
+                              data-testid="domain-expiry"
                               variant={
                                 getExpiryVariant(domain.expiry_date) as any
                               }
