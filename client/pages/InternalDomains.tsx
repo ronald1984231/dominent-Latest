@@ -182,7 +182,7 @@ export default function InternalDomains() {
         const promises = batch.map(async (domain) => {
           try {
             const request: AddDomainRequest = { domain: domain.toLowerCase() };
-            const response = await fetch("/api/domains", {
+            const response = await safeFetch("/api/domains", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(request),
@@ -200,8 +200,8 @@ export default function InternalDomains() {
             }
           } catch (error) {
             failedCount++;
-            failedDomains.push(`${domain}: Network error`);
-            return { success: false, domain, error: "Network error" };
+            failedDomains.push(`${domain}: ${getFetchErrorMessage(error)}`);
+            return { success: false, domain, error: getFetchErrorMessage(error) };
           }
         });
 
