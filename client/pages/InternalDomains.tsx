@@ -102,23 +102,14 @@ export default function InternalDomains() {
         if (value !== undefined) params.append(key, value.toString());
       });
 
-      const response = await fetch(`/api/domains?${params}`);
-      let data: Partial<GetDomainsResponse> = {};
-      try {
-        data = await response.json();
-      } catch {
-        // Non-JSON response; treat as failure
-      }
+      const data = await safeFetchJson<GetDomainsResponse>(`/api/domains?${params}`);
 
-      if (!response.ok || !data || !Array.isArray((data as any).domains)) {
+      if (!data || !Array.isArray(data.domains)) {
         setDomains([]);
-        throw new Error(
-          (data as any)?.error ||
-            `Failed to fetch domains (${response.status})`,
-        );
+        throw new Error("Invalid response format");
       }
 
-      setDomains((data as GetDomainsResponse).domains);
+      setDomains(data.domains);
     } catch (error) {
       console.error("Failed to load domains:", error);
       toast({
