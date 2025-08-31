@@ -81,8 +81,15 @@ import { cronService } from "./services/cron-service";
 export function createServer() {
   const app = express();
 
-  // Sentry request handler must be first
-  app.use(Sentry.requestHandler());
+  // Attach Sentry request middleware if available
+  const anySentry: any = Sentry as any;
+  if (typeof anySentry.requestHandler === "function") {
+    app.use(anySentry.requestHandler());
+  } else if (anySentry.Handlers?.requestHandler) {
+    app.use(anySentry.Handlers.requestHandler());
+  } else if (typeof anySentry.expressRequestMiddleware === "function") {
+    app.use(anySentry.expressRequestMiddleware());
+  }
 
   // Middleware
   app.use(cors());
@@ -185,8 +192,14 @@ export function createServer() {
     }
   });
 
-  // Sentry error handler must be before other error handlers
-  app.use(Sentry.errorHandler());
+  // Attach Sentry error middleware if available
+  if (typeof anySentry.errorHandler === "function") {
+    app.use(anySentry.errorHandler());
+  } else if (anySentry.Handlers?.errorHandler) {
+    app.use(anySentry.Handlers.errorHandler());
+  } else if (typeof anySentry.expressErrorHandler === "function") {
+    app.use(anySentry.expressErrorHandler());
+  }
 
   // Start cron service for automated monitoring
   cronService.start();
