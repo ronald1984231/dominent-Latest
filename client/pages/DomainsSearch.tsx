@@ -43,22 +43,40 @@ const TLD_EXTENSIONS = [
 
 export default function DomainsSearch() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<{domain: string, available: boolean} | null>(null);
+  const [searchResults, setSearchResults] = useState<{domain: string, available: boolean, price?: string} | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const { toast } = useToast();
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
-    
+
     setIsSearching(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setSearchResults({
-        domain: searchTerm.toLowerCase().replace(/\.(com|net|org|info)$/i, ''),
-        available: true // For demo purposes, always show as available
+
+    try {
+      const cleanDomain = searchTerm.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '');
+      const baseDomain = cleanDomain.replace(/\.(com|net|org|info|io|co)$/i, '');
+
+      const response = await safeFetchJson(`/api/domains/search?q=${encodeURIComponent(baseDomain)}`);
+
+      if (response.success) {
+        setSearchResults({
+          domain: response.domain,
+          available: response.available,
+          price: response.price
+        });
+      } else {
+        throw new Error(response.error || 'Search failed');
+      }
+    } catch (error) {
+      console.error('Domain search failed:', error);
+      toast({
+        title: "Search Error",
+        description: getFetchErrorMessage(error),
+        variant: "destructive",
       });
+    } finally {
       setIsSearching(false);
-    }, 1000);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
