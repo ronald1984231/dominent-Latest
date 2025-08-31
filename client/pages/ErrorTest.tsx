@@ -167,7 +167,7 @@ export default function ErrorTest() {
     // Delay to show the message first, then trigger the error
     setTimeout(() => {
       // Direct call as requested - this will cause an uncaught ReferenceError
-      (globalThis as any).myUndefinedFunction();
+      (myUndefinedFunction as any)();
     }, 1000);
   };
 
