@@ -160,7 +160,7 @@ export default function MyRegistrars() {
         requestData.apiSecret = newRegistrar.credentials.api_secret;
       }
 
-      const response = await fetch('/api/internal/registrars', {
+      const response = await safeFetch('/api/internal/registrars', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -197,7 +197,7 @@ export default function MyRegistrars() {
       console.error('Error adding registrar:', error);
       toast({
         title: "Error",
-        description: "Network error. Please try again.",
+        description: getFetchErrorMessage(error),
         variant: "destructive"
       });
     }
