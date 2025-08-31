@@ -5,7 +5,9 @@ import { Input } from "../components/ui/input";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Link } from "react-router-dom";
-import { Search, CheckCircle, ArrowRight } from "lucide-react";
+import { Search, CheckCircle, ArrowRight, XCircle } from "lucide-react";
+import { safeFetchJson, getFetchErrorMessage } from "../lib/safeFetch";
+import { useToast } from "../hooks/use-toast";
 
 const TLD_EXTENSIONS = [
   { extension: '.com', price: '$12.99', available: true },
