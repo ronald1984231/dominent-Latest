@@ -59,7 +59,7 @@ export default function MyRegistrars() {
 
   const handleDeleteRegistrar = async (registrarId: string, registrarName: string) => {
     try {
-      const response = await fetch(`/api/internal/registrars/${registrarId}`, {
+      const response = await safeFetch(`/api/internal/registrars/${registrarId}`, {
         method: 'DELETE'
       });
 
@@ -81,7 +81,7 @@ export default function MyRegistrars() {
       console.error('Error deleting registrar:', error);
       toast({
         title: "Error",
-        description: "Network error. Please try again.",
+        description: getFetchErrorMessage(error),
         variant: "destructive"
       });
     }
