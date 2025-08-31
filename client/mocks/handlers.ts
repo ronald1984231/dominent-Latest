@@ -68,6 +68,114 @@ export const handlers = [
     });
   }),
 
+  // Mock get single domain details
+  http.get("/api/domains/:id", ({ params }) => {
+    const domainId = params.id as string;
+
+    // Find domain by ID or use first domain as fallback
+    const domain = fakeDomains.find(d => d.domain === domainId) || fakeDomains[0];
+
+    return HttpResponse.json({
+      domain: {
+        id: domainId,
+        domain: domain.domain,
+        registrar: domain.registrar,
+        expiry_date: domain.expiryDate,
+        ssl_expiry: "2025-06-15",
+        ssl_status: "valid",
+        status: domain.status,
+        autoRenew: true,
+        lastCheck: "Just now",
+        lastWhoisCheck: new Date().toISOString(),
+        lastSslCheck: new Date().toISOString()
+      },
+      sslCertificates: [
+        {
+          id: "ssl-1",
+          serialNumber: "12:34:56:78:90:AB:CD:EF",
+          issuer: "Let's Encrypt Authority X3",
+          validFrom: "2024-01-01T00:00:00Z",
+          expiresAt: "2025-06-15T23:59:59Z",
+          commonName: domain.domain,
+          alternativeNames: [`www.${domain.domain}`],
+          isValid: true
+        }
+      ],
+      dnsRecords: [
+        {
+          id: "dns-1",
+          name: "@",
+          type: "A",
+          value: "192.168.1.100",
+          ttl: 3600,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: "dns-2",
+          name: "www",
+          type: "CNAME",
+          value: domain.domain,
+          ttl: 3600,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ],
+      services: {
+        hosting: {
+          detected: true,
+          provider: "Mock Hosting Provider",
+          ipAddress: "192.168.1.100"
+        },
+        email: {
+          detected: true,
+          provider: "Gmail",
+          mxRecords: ["mail.example.com"]
+        },
+        nameservers: {
+          detected: true,
+          servers: ["ns1.example.com", "ns2.example.com"]
+        }
+      },
+      monitoringLogs: [
+        {
+          id: "log-1",
+          domainId: domainId,
+          type: "whois",
+          status: "success",
+          message: "WHOIS data updated successfully",
+          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+        }
+      ]
+    });
+  }),
+
+  // Mock domain monitoring
+  http.post("/api/domains/:id/monitor", ({ params }) => {
+    return HttpResponse.json({
+      success: true,
+      message: "Domain monitoring completed successfully"
+    });
+  }),
+
+  // Mock DNS record creation
+  http.post("/api/domains/:id/dns", async ({ request }) => {
+    const body = await request.json() as any;
+    return HttpResponse.json({
+      success: true,
+      record: {
+        id: Date.now().toString(),
+        name: body.name,
+        type: body.type,
+        value: body.value,
+        ttl: body.ttl,
+        priority: body.priority,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    });
+  }),
+
   // Mock dashboard data
   http.get("/api/dashboard", () => {
     return HttpResponse.json({
