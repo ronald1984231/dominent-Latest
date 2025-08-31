@@ -61,11 +61,43 @@ export const errorHandlers = {
   // Rate limit exceeded
   rateLimitError: http.post("/api/registrar/import", () => {
     return HttpResponse.json(
-      { 
-        success: false, 
-        error: "Rate limit exceeded. Please try again later." 
+      {
+        success: false,
+        error: "Rate limit exceeded. Please try again later."
       },
       { status: 429 }
+    );
+  }),
+
+  // Domain detail not found
+  domainDetailNotFound: http.get("/api/domains/:id", () => {
+    return HttpResponse.json(
+      {
+        error: "Domain not found"
+      },
+      { status: 404 }
+    );
+  }),
+
+  // Domain monitoring error
+  domainMonitoringError: http.post("/api/domains/:id/monitor", () => {
+    return HttpResponse.json(
+      {
+        success: false,
+        error: "Monitoring service temporarily unavailable"
+      },
+      { status: 503 }
+    );
+  }),
+
+  // DNS record creation failure
+  dnsRecordError: http.post("/api/domains/:id/dns", () => {
+    return HttpResponse.json(
+      {
+        success: false,
+        error: "Failed to create DNS record. Invalid configuration."
+      },
+      { status: 400 }
     );
   })
 };
