@@ -1,8 +1,11 @@
 describe("Dominent SaaS – Registrar & Domain Tests (Mocked)", () => {
-  const baseUrl = "http://localhost:8080";
-
   beforeEach(() => {
-    cy.visit(`${baseUrl}/internal/domains`);
+    // Enable MSW mocking for this test
+    cy.window().then((win) => {
+      (win as any).VITE_ENABLE_MOCKING = 'true';
+    });
+
+    cy.visit("/internal/domains");
   });
 
   it("should show domains from mock API", () => {
