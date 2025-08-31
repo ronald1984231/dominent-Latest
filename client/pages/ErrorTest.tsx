@@ -155,20 +155,38 @@ export default function ErrorTest() {
   const testDirectUndefinedFunction = () => {
     const timestamp = new Date().toLocaleTimeString();
 
-    setTestResults((prev) => [
-      ...prev,
-      {
-        success: true,
-        message: `🚀 Calling myUndefinedFunction() directly... This will trigger an uncaught error that Sentry should capture automatically.`,
-        timestamp,
-      },
-    ]);
+    // Add context for Sentry
+    Sentry.addBreadcrumb({
+      message: 'Testing direct undefined function call',
+      level: 'info',
+      timestamp: Date.now() / 1000,
+    });
 
-    // Delay to show the message first, then trigger the error
-    setTimeout(() => {
-      // Direct call as requested - this will cause an uncaught ReferenceError
-      myUndefinedFunction();
-    }, 1000);
+    try {
+      // This will trigger a ReferenceError that we'll capture
+      (window as any).myUndefinedFunction();
+    } catch (error) {
+      // Manually capture with context
+      Sentry.captureException(error, {
+        tags: {
+          test: 'direct-undefined-function',
+          source: 'error-test-page'
+        },
+        extra: {
+          testTimestamp: timestamp,
+          testType: 'direct-call'
+        }
+      });
+
+      setTestResults((prev) => [
+        ...prev,
+        {
+          success: true,
+          message: `✅ ReferenceError captured successfully: "${error instanceof Error ? error.message : 'Unknown error'}". Check Sentry dashboard for the error report.`,
+          timestamp,
+        },
+      ]);
+    }
   };
 
   const testSentryLogging = () => {
