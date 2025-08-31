@@ -94,12 +94,12 @@ export default function DomainsSearch() {
       <Header />
       
       {/* Hero Search Section */}
-      <section className="relative py-20 bg-gradient-to-br from-blue-50 via-white to-cyan-50 overflow-hidden">
+      <section className="relative py-20 pb-[400px] bg-gradient-to-br from-blue-50 via-white to-cyan-50 overflow-hidden">
         <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="text-center space-y-8">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-              Search your next domains
+              Search your next domain
             </h1>
 
             {/* Search Input */}
