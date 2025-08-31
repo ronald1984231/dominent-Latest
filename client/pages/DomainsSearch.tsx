@@ -172,9 +172,12 @@ export default function DomainsSearch() {
 
       {/* Other TLDs Section */}
       {searchResults && (
-        <section className="py-16 bg-gray-50">
+        <section className="py-20 bg-white">
           <div className="container mx-auto px-6 max-w-6xl">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Other TLDs</h2>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Other TLDs</h2>
+              <p className="text-xl text-gray-600">Explore alternative domain extensions for your project</p>
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Name Column */}
