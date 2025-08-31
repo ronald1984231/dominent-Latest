@@ -124,23 +124,11 @@ export default function InternalDomains() {
 
   const loadRegistrars = async () => {
     try {
-      const response = await fetch("/api/registrars");
-      let data: any = null;
-      try {
-        data = await response.clone().json();
-      } catch {
-        data = null;
-      }
+      const data = await safeFetchJson("/api/registrars");
       setRegistrars(Array.isArray(data?.registrars) ? data.registrars : []);
 
       // Also load available registrars for import
-      const registrarsResponse = await fetch("/api/internal/registrars");
-      let registrarsData: any = null;
-      try {
-        registrarsData = await registrarsResponse.clone().json();
-      } catch {
-        registrarsData = null;
-      }
+      const registrarsData = await safeFetchJson("/api/internal/registrars");
       setAvailableRegistrars(
         Array.isArray(registrarsData?.registrars)
           ? registrarsData.registrars
