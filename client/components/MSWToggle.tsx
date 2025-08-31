@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 export default function MSWToggle() {
   const [isMocking, setIsMocking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentScenario, setCurrentScenario] = useState<string>("default");
 
   // Only show in development
   if (import.meta.env.PROD) {
@@ -27,6 +30,23 @@ export default function MSWToggle() {
       console.error("Failed to toggle MSW:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const switchScenario = async (scenario: string) => {
+    if (!isMocking) return;
+
+    try {
+      if (scenario === "default") {
+        const { resetToDefaultHandlers } = await import("../mocks/browser");
+        resetToDefaultHandlers();
+      } else {
+        const { switchToErrorScenario } = await import("../mocks/browser");
+        switchToErrorScenario(scenario as any);
+      }
+      setCurrentScenario(scenario);
+    } catch (error) {
+      console.error("Failed to switch MSW scenario:", error);
     }
   };
 
