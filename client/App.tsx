@@ -42,6 +42,7 @@ import RegistrarAPISettings from "./pages/RegistrarAPISettings";
 import RegistrarDomains from "./pages/RegistrarDomains";
 import RegistrarMonthlyReports from "./pages/RegistrarMonthlyReports";
 import RegistrarConfig from "./pages/RegistrarConfig";
+import MSWToggle from "./components/MSWToggle";
 
 const queryClient = new QueryClient();
 
