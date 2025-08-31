@@ -283,21 +283,51 @@ export default function DomainsSearch() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 bg-white border-t border-gray-200">
+      <footer className="py-16 bg-gray-900 text-white">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-6 text-sm text-gray-600">
-              <Link to="#" className="hover:text-gray-900">Twitter</Link>
-              <Link to="#" className="hover:text-gray-900">Terms</Link>
-              <Link to="#" className="hover:text-gray-900">Privacy Policy</Link>
-              <Link to="/documentation" className="hover:text-gray-900">Documentation ↗</Link>
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">DOMINENT</h3>
+              <p className="text-gray-400 text-sm">
+                The most comprehensive domain monitoring solution for businesses and agencies.
+              </p>
             </div>
-            <div className="text-sm text-gray-500">
-              © 2024 DOMINENT - All rights reserved.
-              <br className="md:hidden" />
-              <span className="md:ml-2">
-                Proudly developed with ❤️ and Next.js
-              </span>
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <div className="space-y-2 text-sm">
+                <Link to="/pricing" className="block text-gray-400 hover:text-white">Pricing</Link>
+                <Link to="/documentation" className="block text-gray-400 hover:text-white">Documentation</Link>
+                <Link to="/internal/domains" className="block text-gray-400 hover:text-white">Dashboard</Link>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <div className="space-y-2 text-sm">
+                <Link to="#" className="block text-gray-400 hover:text-white">About</Link>
+                <Link to="#" className="block text-gray-400 hover:text-white">Contact</Link>
+                <Link to="#" className="block text-gray-400 hover:text-white">Support</Link>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <div className="space-y-2 text-sm">
+                <Link to="#" className="block text-gray-400 hover:text-white">Privacy Policy</Link>
+                <Link to="#" className="block text-gray-400 hover:text-white">Terms of Service</Link>
+                <Link to="#" className="block text-gray-400 hover:text-white">Cookie Policy</Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+              <div className="text-sm text-gray-400">
+                © 2024 DOMINENT. All rights reserved.
+              </div>
+              <div className="flex items-center space-x-6 text-sm">
+                <Link to="#" className="text-gray-400 hover:text-white">Twitter</Link>
+                <Link to="#" className="text-gray-400 hover:text-white">LinkedIn</Link>
+                <Link to="#" className="text-gray-400 hover:text-white">GitHub</Link>
+              </div>
             </div>
           </div>
         </div>
