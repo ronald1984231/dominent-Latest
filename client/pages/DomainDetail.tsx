@@ -172,14 +172,14 @@ export default function DomainDetail() {
     
     try {
       setUpdating(true);
-      const response = await fetch(`/api/domains/${id}/monitor`, {
+      const response = await safeFetch(`/api/domains/${id}/monitor`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({}),
       });
-      
+
       if (response.ok) {
         toast({
           title: "Success",
@@ -192,7 +192,7 @@ export default function DomainDetail() {
     } catch (error) {
       toast({
         title: "Error",
-        description: `Failed to check ${serviceType}. Please try again.`,
+        description: getFetchErrorMessage(error),
         variant: "destructive",
       });
     } finally {
