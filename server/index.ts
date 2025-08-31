@@ -107,6 +107,7 @@ export function createServer() {
   // Domain monitoring API routes
   app.get("/api/domains", getDomains);
   app.post("/api/domains", addDomain);
+  app.get("/api/domains/search", searchDomain);
   app.get("/api/domains/check/:domain", checkDomain);
   app.get("/api/domains/:id", getDomainDetails);
   app.put("/api/domains/:id", updateDomain);
