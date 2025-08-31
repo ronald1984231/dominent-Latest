@@ -41,9 +41,24 @@ const TLD_EXTENSIONS = [
   { extension: '.reviews', price: '$24.99', available: true }
 ];
 
+interface TldAlternative {
+  extension: string;
+  available: boolean;
+  price: string | null;
+}
+
+interface SearchResponse {
+  success: boolean;
+  domain: string;
+  available: boolean;
+  price?: string;
+  alternatives?: TldAlternative[];
+  error?: string;
+}
+
 export default function DomainsSearch() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<{domain: string, available: boolean, price?: string} | null>(null);
+  const [searchResults, setSearchResults] = useState<{domain: string, available: boolean, price?: string, alternatives?: TldAlternative[]} | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const { toast } = useToast();
 
