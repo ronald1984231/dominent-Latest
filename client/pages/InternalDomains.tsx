@@ -292,7 +292,7 @@ export default function InternalDomains() {
 
   const handleDeleteDomain = async (domainId: string, domainName: string) => {
     try {
-      const response = await fetch(`/api/domains/${domainId}`, {
+      const response = await safeFetch(`/api/domains/${domainId}`, {
         method: "DELETE",
       });
 
@@ -312,7 +312,7 @@ export default function InternalDomains() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Network error. Please try again.",
+        description: getFetchErrorMessage(error),
         variant: "destructive",
       });
     }
