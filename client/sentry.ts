@@ -1,7 +1,10 @@
 import * as Sentry from "@sentry/react";
 
-Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN || "https://YOUR_DSN_HERE", // Replace with your actual DSN from Sentry
+const DSN = import.meta.env.VITE_SENTRY_DSN as string | undefined;
+
+if (DSN && !/^https:\/\/YOUR_DSN_HERE/.test(DSN)) {
+  Sentry.init({
+  dsn: DSN, // Use valid DSN only
   
   integrations: [
     Sentry.browserTracingIntegration(),
@@ -40,6 +43,12 @@ Sentry.init({
     
     return event;
   }
-});
+  });
+} else {
+  // Skip Sentry init in dev if DSN is missing
+  if (import.meta.env.DEV) {
+    console.warn("Sentry DSN not set; skipping client Sentry initialization");
+  }
+}
 
 export default Sentry;
