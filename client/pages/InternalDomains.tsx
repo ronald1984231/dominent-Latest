@@ -256,7 +256,7 @@ export default function InternalDomains() {
     setAddingDomain(true);
     try {
       const request: AddDomainRequest = { domain: newDomain.trim() };
-      const response = await fetch("/api/domains", {
+      const response = await safeFetch("/api/domains", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
@@ -282,7 +282,7 @@ export default function InternalDomains() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Network error. Please try again.",
+        description: getFetchErrorMessage(error),
         variant: "destructive",
       });
     } finally {
