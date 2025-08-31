@@ -13,12 +13,12 @@ import {
   getRegistrars,
   triggerDomainMonitoring,
 } from "./routes/domains-db";
+import { checkDomain } from "./routes/domains";
 import {
-  checkDomain,
   getDomainDetails,
   updateDomain,
   createDNSRecord,
-} from "./routes/domains";
+} from "./routes/domains-db";
 import {
   getRegistrars as getRegistrarsList,
   getRegistrarById,
