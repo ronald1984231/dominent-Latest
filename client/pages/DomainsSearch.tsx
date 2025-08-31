@@ -194,71 +194,117 @@ export default function DomainsSearch() {
               <h2 className="text-4xl font-bold text-gray-900 mb-4">Other TLDs</h2>
               <p className="text-xl text-gray-600">Explore alternative domain extensions for your project</p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Name Column */}
-              <div className="space-y-4">
-                <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
-                  Name
-                </div>
-                {TLD_EXTENSIONS.slice(0, Math.ceil(TLD_EXTENSIONS.length / 2)).map((tld, index) => (
-                  <div key={index} className="flex items-center space-x-3 py-2">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span className="text-gray-900 font-medium">
-                      {getDisplayDomain(searchResults.domain, tld.extension)}
-                    </span>
-                  </div>
-                ))}
-              </div>
 
-              {/* Available Column */}
-              <div className="space-y-4">
-                <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
-                  Available
-                </div>
-                {TLD_EXTENSIONS.slice(0, Math.ceil(TLD_EXTENSIONS.length / 2)).map((tld, index) => (
-                  <div key={index} className="flex items-center justify-between py-2">
-                    <span className="text-gray-600">Domain available</span>
-                    <div className="flex items-center space-x-3">
-                      <span className="text-gray-900 font-semibold">{tld.price}</span>
-                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
-                        Add
-                      </Button>
+            {(() => {
+              // Use API alternatives if available, otherwise fallback to hardcoded list
+              const tldOptions = searchResults.alternatives && searchResults.alternatives.length > 0
+                ? searchResults.alternatives
+                : TLD_EXTENSIONS;
+
+              const firstHalf = tldOptions.slice(0, Math.ceil(tldOptions.length / 2));
+              const secondHalf = tldOptions.slice(Math.ceil(tldOptions.length / 2));
+
+              return (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Name Column */}
+                    <div className="space-y-4">
+                      <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
+                        Name
+                      </div>
+                      {firstHalf.map((tld, index) => (
+                        <div key={index} className="flex items-center space-x-3 py-2">
+                          {tld.available ? (
+                            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                          )}
+                          <span className="text-gray-900 font-medium">
+                            {getDisplayDomain(searchResults.domain, tld.extension)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Available Column */}
+                    <div className="space-y-4">
+                      <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
+                        Available
+                      </div>
+                      {firstHalf.map((tld, index) => (
+                        <div key={index} className="flex items-center justify-between py-2">
+                          <span className={`text-gray-600 ${!tld.available ? 'line-through' : ''}`}>
+                            {tld.available ? 'Domain available' : 'Not available'}
+                          </span>
+                          <div className="flex items-center space-x-3">
+                            {tld.available && tld.price && (
+                              <>
+                                <span className="text-gray-900 font-semibold">{tld.price}</span>
+                                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                                  Add
+                                </Button>
+                              </>
+                            )}
+                            {!tld.available && (
+                              <Badge variant="destructive" className="text-xs">
+                                Taken
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Second Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-              {/* Name Column */}
-              <div className="space-y-4">
-                {TLD_EXTENSIONS.slice(Math.ceil(TLD_EXTENSIONS.length / 2)).map((tld, index) => (
-                  <div key={index} className="flex items-center space-x-3 py-2">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span className="text-gray-900 font-medium">
-                      {getDisplayDomain(searchResults.domain, tld.extension)}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                  {/* Second Row */}
+                  {secondHalf.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                      {/* Name Column */}
+                      <div className="space-y-4">
+                        {secondHalf.map((tld, index) => (
+                          <div key={index} className="flex items-center space-x-3 py-2">
+                            {tld.available ? (
+                              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                            ) : (
+                              <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                            )}
+                            <span className="text-gray-900 font-medium">
+                              {getDisplayDomain(searchResults.domain, tld.extension)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
 
-              {/* Available Column */}
-              <div className="space-y-4">
-                {TLD_EXTENSIONS.slice(Math.ceil(TLD_EXTENSIONS.length / 2)).map((tld, index) => (
-                  <div key={index} className="flex items-center justify-between py-2">
-                    <span className="text-gray-600">Domain available</span>
-                    <div className="flex items-center space-x-3">
-                      <span className="text-gray-900 font-semibold">{tld.price}</span>
-                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
-                        Add
-                      </Button>
+                      {/* Available Column */}
+                      <div className="space-y-4">
+                        {secondHalf.map((tld, index) => (
+                          <div key={index} className="flex items-center justify-between py-2">
+                            <span className={`text-gray-600 ${!tld.available ? 'line-through' : ''}`}>
+                              {tld.available ? 'Domain available' : 'Not available'}
+                            </span>
+                            <div className="flex items-center space-x-3">
+                              {tld.available && tld.price && (
+                                <>
+                                  <span className="text-gray-900 font-semibold">{tld.price}</span>
+                                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                                    Add
+                                  </Button>
+                                </>
+                              )}
+                              {!tld.available && (
+                                <Badge variant="destructive" className="text-xs">
+                                  Taken
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </section>
       )}
