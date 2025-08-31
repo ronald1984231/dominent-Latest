@@ -9,6 +9,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { useToast } from "../hooks/use-toast";
+import { safeFetchJson, getFetchErrorMessage } from "../lib/safeFetch";
 import { Registrar, AddRegistrarRequest } from "@shared/internal-api";
 import { getRegistrarConfig, getRegistrarDisplayNames, RegistrarConfig } from "@shared/registrar-config";
 
