@@ -978,6 +978,7 @@ export default function InternalDomains() {
                           ></div>
                           <div>
                             <Badge
+                              data-testid="domain-status"
                               variant={getStatusBadgeVariant(domain.status)}
                               className="text-xs"
                             >
