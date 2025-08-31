@@ -46,10 +46,51 @@ export const handlers = [
     return HttpResponse.json({
       success: true,
       configs: [
-        { name: "Namecheap", enabled: true },
-        { name: "GoDaddy", enabled: true },
-        { name: "Porkbun", enabled: true }
+        { registrarName: "Namecheap", type: "namecheap", configured: false, valid: false },
+        { registrarName: "GoDaddy", type: "godaddy", configured: false, valid: false },
+        { registrarName: "Cloudflare", type: "cloudflare", configured: false, valid: false },
+        { registrarName: "Network Solutions", type: "networksolutions", configured: false, valid: false },
+        { registrarName: "Enom", type: "enom", configured: false, valid: false }
       ]
+    });
+  }),
+
+  // Mock individual registrar config
+  http.get("/api/registrar-config/:registrarName", ({ params }) => {
+    const registrarName = params.registrarName as string;
+
+    // Return no config found (not an error, just not configured yet)
+    return HttpResponse.json({
+      success: false,
+      registrarName: decodeURIComponent(registrarName),
+      config: null,
+      message: `No configuration found for registrar: ${decodeURIComponent(registrarName)}`
+    });
+  }),
+
+  // Mock registrar config save
+  http.post("/api/registrar-config", async ({ request }) => {
+    const body = await request.json() as { registrarName: string; config: any };
+    return HttpResponse.json({
+      success: true,
+      message: `Configuration saved for ${body.registrarName}`,
+      registrarName: body.registrarName,
+      configType: body.config.type
+    });
+  }),
+
+  // Mock registrar config test
+  http.post("/api/registrar-config/test", async ({ request }) => {
+    const body = await request.json() as { registrarName: string; config: any };
+    return HttpResponse.json({
+      success: true,
+      message: `Configuration test successful for ${body.registrarName}`,
+      registrarName: body.registrarName,
+      configType: body.config.type,
+      testResult: {
+        source: "registrar_api",
+        hasData: true
+      }
     });
   }),
 
