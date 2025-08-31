@@ -463,7 +463,7 @@ export default function InternalDomains() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Network error during import. Please try again.",
+        description: getFetchErrorMessage(error),
         variant: "destructive",
       });
     } finally {
