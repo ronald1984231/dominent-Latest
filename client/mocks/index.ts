@@ -1,5 +1,6 @@
-// Enable mocking in development only
-const ENABLE_MOCKING = import.meta.env.DEV && import.meta.env.VITE_ENABLE_MOCKING === 'true';
+// Enable mocking in development or when explicitly enabled
+const ENABLE_MOCKING = (import.meta.env.DEV && import.meta.env.VITE_ENABLE_MOCKING === 'true') ||
+                       (typeof window !== "undefined" && (window as any).CYPRESS);
 
 export const enableMocking = async () => {
   if (!ENABLE_MOCKING) {
