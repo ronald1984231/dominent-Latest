@@ -187,5 +187,46 @@ export const handlers = [
         recentActivity: []
       }
     });
+  }),
+
+  // Mock domain search
+  http.get("/api/domains/search", ({ request }) => {
+    const url = new URL(request.url);
+    const query = url.searchParams.get('q');
+
+    if (!query) {
+      return HttpResponse.json({ error: "Query parameter required" }, { status: 400 });
+    }
+
+    // Mock domain availability check
+    const isAvailable = Math.random() > 0.3; // 70% chance of being available
+
+    return HttpResponse.json({
+      success: true,
+      domain: query.toLowerCase(),
+      available: isAvailable,
+      price: "$12.99",
+      alternatives: [
+        { extension: ".com", available: true, price: "$12.99" },
+        { extension: ".net", available: true, price: "$14.99" },
+        { extension: ".org", available: true, price: "$13.99" },
+        { extension: ".io", available: false, price: null },
+        { extension: ".co", available: true, price: "$24.99" }
+      ]
+    });
+  }),
+
+  // Mock domain availability check for specific TLD
+  http.get("/api/domains/check/:domain", ({ params }) => {
+    const domain = params.domain as string;
+    const isAvailable = Math.random() > 0.4; // 60% chance of being available
+
+    return HttpResponse.json({
+      success: true,
+      domain: domain,
+      available: isAvailable,
+      price: isAvailable ? "$12.99" : null,
+      registrar: isAvailable ? null : "GoDaddy"
+    });
   })
 ];
