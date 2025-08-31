@@ -137,12 +137,12 @@ export default function DomainDetail() {
         priority: dnsForm.type === "MX" ? dnsForm.priority : undefined
       };
       
-      const response = await fetch(`/api/domains/${id}/dns`, {
+      const response = await safeFetch(`/api/domains/${id}/dns`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
       });
-      
+
       if (response.ok) {
         toast({
           title: "Success",
