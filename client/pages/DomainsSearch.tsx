@@ -93,14 +93,15 @@ export default function DomainsSearch() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Main Search Section */}
-      <section className="py-20 bg-white">
+      {/* Hero Search Section */}
+      <section className="relative py-20 bg-gradient-to-br from-blue-50 via-white to-cyan-50 overflow-hidden">
+        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="text-center space-y-8">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
               Search your next domains
             </h1>
-            
+
             {/* Search Input */}
             <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
               <div className="flex-1">
@@ -117,7 +118,7 @@ export default function DomainsSearch() {
                 onClick={handleSearch}
                 disabled={isSearching || !searchTerm.trim()}
                 size="lg"
-                className="h-14 px-8 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-lg"
+                className="h-14 px-8 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg"
               >
                 {isSearching ? (
                   <div className="flex items-center space-x-2">
