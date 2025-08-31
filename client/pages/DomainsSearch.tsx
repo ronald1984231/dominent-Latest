@@ -136,13 +136,30 @@ export default function DomainsSearch() {
             {/* Search Results */}
             {searchResults && (
               <div className="mt-12">
-                <Card className="border-2 border-green-200 bg-green-50 max-w-md mx-auto">
+                <Card className={`border-2 max-w-md mx-auto ${
+                  searchResults.available
+                    ? 'border-green-200 bg-green-50'
+                    : 'border-red-200 bg-red-50'
+                }`}>
                   <CardContent className="p-6">
                     <div className="flex items-center justify-center space-x-3">
-                      <CheckCircle className="w-6 h-6 text-green-600" />
-                      <span className="text-lg font-semibold text-green-800">
-                        {searchResults.domain}.ai is available
-                      </span>
+                      {searchResults.available ? (
+                        <CheckCircle className="w-6 h-6 text-green-600" />
+                      ) : (
+                        <XCircle className="w-6 h-6 text-red-600" />
+                      )}
+                      <div className="text-center">
+                        <span className={`text-lg font-semibold ${
+                          searchResults.available ? 'text-green-800' : 'text-red-800'
+                        }`}>
+                          {searchResults.domain}.com is {searchResults.available ? 'available' : 'not available'}
+                        </span>
+                        {searchResults.available && searchResults.price && (
+                          <div className="text-sm text-gray-600 mt-1">
+                            Starting at {searchResults.price}/year
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
