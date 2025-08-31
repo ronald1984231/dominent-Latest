@@ -159,7 +159,7 @@ export default function DomainDetail() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create DNS record. Please try again.",
+        description: getFetchErrorMessage(error),
         variant: "destructive",
       });
     } finally {
