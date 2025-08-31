@@ -213,15 +213,23 @@ export const getDomainDetails: RequestHandler = async (req, res) => {
     const { id } = req.params as { id: string };
     if (!id) return res.status(400).json({ error: "Domain id is required" });
 
-    const sql = `
+    const baseSelect = `
       SELECT id, domain, subdomain, registrar, expiration_date, expiry_date,
              ssl_status, ssl_expiry, status, last_check, last_whois_check,
              last_ssl_check, is_active, created_at
       FROM domains
-      WHERE id = $1
+      WHERE %COND%
       LIMIT 1
     `;
-    const result = await db.query(sql, [id]);
+
+    // Try by id first
+    let result = await db.query(baseSelect.replace("%COND%", "id = $1"), [id]);
+
+    // If not found, try by domain name
+    if (result.rows.length === 0) {
+      result = await db.query(baseSelect.replace("%COND%", "domain = $1"), [id]);
+    }
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Domain not found" });
     }
@@ -339,13 +347,29 @@ export const createDNSRecord: RequestHandler = async (req, res) => {
     const { id } = req.params as { id: string };
     const { domainId, name, type, value, ttl = 3600, priority }: CreateDNSRecordRequest = req.body;
 
-    if (!id || !domainId || id !== domainId) {
+    if (!id || !domainId) {
       return res.status(400).json({ error: "Invalid domain id" });
     }
 
-    const exists = await db.query("SELECT 1 FROM domains WHERE id = $1", [id]);
-    if (exists.rows.length === 0) {
-      return res.status(404).json({ error: "Domain not found" });
+    // Accept either numeric/string ID or domain name in the path and body
+    const exists = await db.query(
+      "SELECT id FROM domains WHERE id = $1 OR domain = $1 LIMIT 1",
+      [id]
+    );
+
+    let effectiveId = id;
+    if (exists.rows.length > 0) {
+      effectiveId = exists.rows[0].id;
+    } else {
+      // Try resolving from body value as well
+      const bodyLookup = await db.query(
+        "SELECT id FROM domains WHERE id = $1 OR domain = $1 LIMIT 1",
+        [domainId]
+      );
+      if (bodyLookup.rows.length === 0) {
+        return res.status(404).json({ error: "Domain not found" });
+      }
+      effectiveId = bodyLookup.rows[0].id;
     }
 
     const record: DNSRecord = {
