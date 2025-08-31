@@ -201,18 +201,34 @@ export const handlers = [
     // Mock domain availability check
     const isAvailable = Math.random() > 0.3; // 70% chance of being available
 
+    // More comprehensive TLD alternatives with realistic availability
+    const tldAlternatives = [
+      { extension: ".com", available: Math.random() > 0.4, price: "$12.99" },
+      { extension: ".net", available: Math.random() > 0.3, price: "$14.99" },
+      { extension: ".org", available: Math.random() > 0.2, price: "$13.99" },
+      { extension: ".io", available: Math.random() > 0.6, price: "$39.99" },
+      { extension: ".co", available: Math.random() > 0.3, price: "$24.99" },
+      { extension: ".ai", available: Math.random() > 0.7, price: "$89.99" },
+      { extension: ".app", available: Math.random() > 0.4, price: "$19.99" },
+      { extension: ".dev", available: Math.random() > 0.5, price: "$15.99" },
+      { extension: ".me", available: Math.random() > 0.3, price: "$19.99" },
+      { extension: ".info", available: Math.random() > 0.2, price: "$11.99" },
+      { extension: ".biz", available: Math.random() > 0.3, price: "$15.99" },
+      { extension: ".tech", available: Math.random() > 0.4, price: "$29.99" },
+      { extension: ".xyz", available: Math.random() > 0.2, price: "$9.99" },
+      { extension: ".online", available: Math.random() > 0.3, price: "$19.99" },
+      { extension: ".store", available: Math.random() > 0.4, price: "$34.99" }
+    ].map(tld => ({
+      ...tld,
+      price: tld.available ? tld.price : null
+    }));
+
     return HttpResponse.json({
       success: true,
       domain: query.toLowerCase(),
       available: isAvailable,
       price: "$12.99",
-      alternatives: [
-        { extension: ".com", available: true, price: "$12.99" },
-        { extension: ".net", available: true, price: "$14.99" },
-        { extension: ".org", available: true, price: "$13.99" },
-        { extension: ".io", available: false, price: null },
-        { extension: ".co", available: true, price: "$24.99" }
-      ]
+      alternatives: tldAlternatives
     });
   }),
 
